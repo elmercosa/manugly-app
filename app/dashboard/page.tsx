@@ -93,14 +93,14 @@ const Kpis = {
 
 const kpiList = [Kpis.Sales, Kpis.Profit, Kpis.Customers];
 
-export type DailyPerformance = {
+type DailyPerformance = {
   date: string;
   Sales: number;
   Profit: number;
   Customers: number;
 };
 
-export const performance: DailyPerformance[] = [
+const performance: DailyPerformance[] = [
   {
     date: "2023-05-01",
     Sales: 900.73,
@@ -127,7 +127,7 @@ export const performance: DailyPerformance[] = [
   },
 ];
 
-export type SalesPerson = {
+type SalesPerson = {
   name: string;
   leads: number;
   sales: string;
@@ -137,7 +137,7 @@ export type SalesPerson = {
   status: string;
 };
 
-export const salesPeople: SalesPerson[] = [
+const salesPeople: SalesPerson[] = [
   {
     name: "Peter Doe",
     leads: 45,
@@ -219,7 +219,7 @@ export default function DashboardExample() {
       </Text>
 
       <div className="mt-6">
-        <Grid numItemsLg={3} className="gap-6 mt-6">
+        <Grid numItemsLg={3} className="mt-6 gap-6">
           {kpiData.map((item) => (
             <Card key={item.title}>
               <Flex alignItems="start">
@@ -270,7 +270,7 @@ export default function DashboardExample() {
                 </div>
               </div>
               {/* web */}
-              <div className="hidden mt-8 sm:block">
+              <div className="mt-8 hidden sm:block">
                 <AreaChart {...areaChartArgs} />
               </div>
               {/* mobile */}

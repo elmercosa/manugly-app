@@ -1,13 +1,12 @@
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { LoadingDots } from "@/components/shared/icons";
-import { Children } from "react";
 
 export default function LoadingButton({
   children,
   provider,
 }: {
-  children: typeof Children;
+  children: ReactNode;
   provider: string;
 }) {
   const [signInClicked, setSignInClicked] = useState(false);

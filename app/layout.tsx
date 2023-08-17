@@ -2,6 +2,8 @@ import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Providers } from "./providers";
+import Nav from "@/components/layout/nav";
+import Footer from "@/components/layout/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,10 +18,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="light scroll-smooth">
       <body className={inter.className}>
         <Providers>
-          <main className="grid-cols-12 grid my-10">{children}</main>
+          <Nav></Nav>
+          <main className="pt-20 grid grid-cols-12 min-h-screen">
+            {children}
+          </main>
+          <Footer></Footer>
         </Providers>
       </body>
     </html>

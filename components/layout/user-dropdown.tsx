@@ -1,55 +1,61 @@
 "use client";
 
-import { useState } from "react";
-import { signOut } from "next-auth/react";
-import Popover from "@/components/shared/popover";
 import Image from "next/image";
 import { Session } from "next-auth";
-import Link from "next/link";
-import { Squares2X2Icon } from "@heroicons/react/24/outline";
+import {
+  Avatar,
+  AvatarGroup,
+  AvatarIcon,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownSection,
+  DropdownTrigger,
+  User,
+} from "@nextui-org/react";
+import { signOut } from "next-auth/react";
 
 export default function UserDropdown({ session }: { session: Session }) {
-  const { email, image } = session?.user || {};
-  const [openPopover, setOpenPopover] = useState(false);
+  const { email, image, name } = session?.user || {};
+  const shortName = name?.charAt(0) || "Usuario";
+  const logout = () => {
+    signOut();
+  };
 
   if (!email) return null;
 
   return (
     <div className="relative inline-block text-left">
-      <Popover
-        content={
-          <div className="w-full p-2 bg-white rounded-md sm:w-56">
-            <Link
-              className="relative flex items-center justify-start w-full p-2 space-x-2 text-sm text-left transition-all duration-75 rounded-md hover:bg-gray-100"
-              href="/dashboard"
-            >
-              <Squares2X2Icon className="w-4 h-4" />
-              <p className="text-sm">Dashboard</p>
-            </Link>
-            <button
-              className="relative flex items-center justify-start w-full p-2 space-x-2 text-sm text-left transition-all duration-75 rounded-md hover:bg-gray-100"
-              onClick={() => signOut()}
-            >
-              <p className="text-sm">Logout</p>
-            </button>
-          </div>
-        }
-        align="end"
-        openPopover={openPopover}
-        setOpenPopover={setOpenPopover}
-      >
-        <button
-          onClick={() => setOpenPopover(!openPopover)}
-          className="flex items-center justify-center w-8 h-8 overflow-hidden transition-all duration-75 border border-gray-300 rounded-full focus:outline-none active:scale-95 sm:h-9 sm:w-9"
-        >
-          <Image
-            alt={email}
-            src={image || `https://avatars.dicebear.com/api/micah/${email}.svg`}
-            width={40}
-            height={40}
+      <Dropdown placement="bottom-start">
+        <DropdownTrigger>
+          <User
+            as="button"
+            avatarProps={{
+              isBordered: true,
+              src: image,
+              name: shortName,
+            }}
+            className="transition-transform"
+            name={name}
           />
-        </button>
-      </Popover>
+        </DropdownTrigger>
+        <DropdownMenu aria-label="User Actions" variant="flat">
+          <DropdownSection title="Actions" showDivider>
+            <DropdownItem key="settings">Mi perfil</DropdownItem>
+            <DropdownItem key="team_settings">Configuración</DropdownItem>
+          </DropdownSection>
+          <DropdownSection title="Danger zone">
+            <DropdownItem
+              key="delete"
+              className="text-danger"
+              color="danger"
+              onAction={(key) => logout()}
+            >
+              Cerrar sesión
+            </DropdownItem>
+          </DropdownSection>
+        </DropdownMenu>
+      </Dropdown>
     </div>
   );
 }

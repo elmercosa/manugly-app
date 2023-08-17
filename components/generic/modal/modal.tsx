@@ -16,10 +16,12 @@ export function CustomModal({
   backdrop = undefined,
   buttonColor = ButtonColor.Primary,
   title,
+  buttonTitle,
 }: {
   children?: React.ReactNode;
   backdrop?: Backdrop;
   title: string;
+  buttonTitle: string;
   buttonColor?: ButtonColor;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -32,30 +34,21 @@ export function CustomModal({
     <>
       <div className="flex flex-wrap gap-3">
         <Button
-          variant="flat"
           color={buttonColor}
           onPress={() => handleOpen()}
-          className="capitalize"
+          className="text-white"
+          radius="full"
         >
-          {title}
+          {buttonTitle}
         </Button>
       </div>
       <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose}>
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
-                Modal Title
-              </ModalHeader>
+              <ModalHeader className="text-2xl font-bold">{title}</ModalHeader>
               <ModalBody>{children}</ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onClick={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
-                </Button>
-              </ModalFooter>
+              <ModalFooter></ModalFooter>
             </>
           )}
         </ModalContent>

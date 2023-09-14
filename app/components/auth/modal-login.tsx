@@ -9,12 +9,17 @@ import { useState } from "react";
 
 export function ModalLogin() {
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("borjarodrilore@gmail.com");
+  const [password, setPassword] = useState("password-borja");
   const login = (provider: string) => {
     setIsLoading(true);
     if (provider != "credentials") {
       signIn(provider);
     } else {
-      signIn(provider);
+      signIn(provider, {
+        email,
+        password,
+      });
     }
   };
   return (
@@ -25,16 +30,20 @@ export function ModalLogin() {
     >
       <div className="flex flex-col gap-2">
         <Input
-          autoFocus
           label="Email"
+          type="email"
           placeholder="manugly@test.com"
           variant="bordered"
+          value={email}
+          onValueChange={setEmail}
         />
         <Input
           label="Contraseña"
           placeholder="manuglyisthebest1234"
           type="password"
           variant="bordered"
+          value={password}
+          onValueChange={setPassword}
         />
         <div className="flex justify-between px-1">
           <Checkbox
@@ -53,6 +62,7 @@ export function ModalLogin() {
             color="primary"
             className="text-white font-semibold"
             isLoading={isLoading}
+            onClick={() => login("credentials")}
           >
             Acceder
           </Button>

@@ -4,7 +4,6 @@ import { Parameters } from "@/factory/types/parameters";
 
 export default function Generator({ type }: { type: string }) {
   const parameters = Parameters.getInstance().getParameters();
-  console.log("paramaters :>> ", typeof parameters);
   return (
     <div>
       {Object.values(parameters).map((parameter: any) => {

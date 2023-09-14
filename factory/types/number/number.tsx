@@ -1,4 +1,4 @@
-import { ExportType } from "@/factory/types/ interfaces";
+import { ExportType } from "@/factory/types/interfaces";
 
 const name = "Number";
 

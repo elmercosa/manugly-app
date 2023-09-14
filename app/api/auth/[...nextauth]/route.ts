@@ -2,34 +2,29 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import Auth0Provider from "next-auth/providers/auth0";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { post } from "@/services/request";
+
+var jwt = require("jsonwebtoken");
 
 export const authOptions: NextAuthOptions = {
+  session: { strategy: "jwt" },
   providers: [
     CredentialsProvider({
       name: "Credentials",
-      credentials: {
-        username: {
-          label: "username",
-          type: "email",
-          placeholder: "example@email.com",
-        },
-        password: { label: "password", type: "password" },
-      },
+      credentials: {},
       async authorize(credentials, req) {
-        console.log("credentials :>> ", credentials);
-        console.log("req :>> ", req);
-        // Add logic here to look up the user from the credentials supplied
-        const user = { id: "1", name: "J Smith", email: "jsmith@example.com" };
+        const userData = await post("/auth/loginUser", credentials);
 
-        if (user) {
-          // Any object returned will be saved in `user` property of the JWT
-          return user;
-        } else {
-          // If you return null then an error will be displayed advising the user to check their details.
+        const secret = process.env.NEXTAUTH_SECRET || "";
+        let user = null;
+
+        try {
+          user = jwt.verify(userData.accessToken, secret);
+        } catch (e) {
           return null;
-
-          // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
         }
+
+        return user ?? null;
       },
     }),
     GoogleProvider({
@@ -42,6 +37,15 @@ export const authOptions: NextAuthOptions = {
       issuer: process.env.AUTH0_ISSUER as string,
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      return { ...token, ...user };
+    },
+    async session({ session, token, user }) {
+      session.user = token as any;
+      return session;
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);

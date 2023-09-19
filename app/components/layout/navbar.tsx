@@ -12,11 +12,7 @@ export default function NavBar({ session }: { session: Session | null }) {
 
   return (
     <div
-      className={`fixed top-0 w-full grid grid-cols-12 ${
-        scrolled
-          ? "border-b border-primary/20 bg-white/50 backdrop-blur-xl dark:border-gray-700 dark:bg-black/50"
-          : "bg-white/0"
-      } z-30 transition-all`}
+      className={`fixed top-0 w-full grid grid-cols-12 border-b border-primary/10 backdrop-blur-xl dark:border-gray-700 dark:bg-black/50 bg-white/0 z-30 transition-all`}
     >
       <div className="flex items-center justify-between h-16 col-start-2 col-end-12">
         <Link

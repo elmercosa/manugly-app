@@ -11,19 +11,17 @@ import {
 } from "@nextui-org/modal";
 import { Button } from "@nextui-org/button";
 
-export function CustomModal({
-  children,
-  backdrop = undefined,
-  buttonColor = ButtonColor.Primary,
-  title,
-  buttonTitle,
-}: {
+interface CustomModalProps {
   children?: React.ReactNode;
   backdrop?: Backdrop;
   title: string;
   buttonTitle: string;
   buttonColor?: ButtonColor;
-}) {
+  className?: string;
+  showFooter: boolean;
+}
+
+export function CustomModal(props: CustomModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleOpen = () => {
@@ -34,21 +32,28 @@ export function CustomModal({
     <>
       <div className="flex flex-wrap gap-3">
         <Button
-          color={buttonColor}
           onPress={() => handleOpen()}
-          className="text-white"
-          radius="full"
+          className="text-white gradient shadow-md"
+          radius="lg"
         >
-          {buttonTitle}
+          {props.buttonTitle}
         </Button>
       </div>
-      <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose}>
+      <Modal
+        size="lg"
+        backdrop={props.backdrop}
+        isOpen={isOpen}
+        onClose={onClose}
+        className={props.className}
+      >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="text-2xl font-bold">{title}</ModalHeader>
-              <ModalBody>{children}</ModalBody>
-              <ModalFooter></ModalFooter>
+              <ModalHeader className="text-2xl font-bold">
+                {props.title}
+              </ModalHeader>
+              <ModalBody>{props.children}</ModalBody>
+              {props.showFooter && <ModalFooter></ModalFooter>}
             </>
           )}
         </ModalContent>

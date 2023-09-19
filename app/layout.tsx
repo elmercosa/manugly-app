@@ -1,11 +1,19 @@
 import "@/styles/globals.css";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { Providers } from "./providers";
-import Nav from "@/components/layout/nav";
-import Footer from "@/components/layout/footer";
 
-const inter = Inter({ subsets: ["latin"] });
+import type { Metadata } from "next";
+import { DM_Sans, Roboto_Mono } from "next/font/google";
+
+import { Providers } from "./providers";
+
+const roboto_mono = Roboto_Mono({
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const dm = DM_Sans({
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,14 +27,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="light scroll-smooth">
-      <body className={inter.className}>
-        <Providers>
-          <Nav></Nav>
-          <main className="pt-20 grid grid-cols-12 min-h-screen">
-            {children}
-          </main>
-          <Footer></Footer>
-        </Providers>
+      <body className={dm.className}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

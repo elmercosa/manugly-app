@@ -1,11 +1,13 @@
-import { CustomModal } from "@/components/generic/modal/modal";
-import { Backdrop } from "@/components/generic/modal/modal.types";
 import { Checkbox } from "@nextui-org/checkbox";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { Button, Divider } from "@nextui-org/react";
+import { IconBrandGoogle, IconShieldFilled } from "@tabler/icons-react";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+
+import { CustomModal } from "@/components/generic/modal/modal";
+import { Backdrop } from "@/components/generic/modal/modal.types";
 
 export function ModalLogin() {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,32 +18,38 @@ export function ModalLogin() {
     if (provider != "credentials") {
       signIn(provider);
     } else {
-      signIn(provider, {
-        email,
-        password,
-      });
+      signIn(
+        provider,
+        {
+          email,
+          password,
+        },
+        { callbackUrl: "/private" },
+      );
     }
   };
   return (
     <CustomModal
       backdrop={Backdrop.Opaque}
-      title="Inicia sesión"
-      buttonTitle="Iniciar sesión"
+      title="Accede a Manugly"
+      buttonTitle="Acceder"
+      className="flex gap-4 p-2"
+      showFooter={false}
     >
       <div className="flex flex-col gap-2">
         <Input
           label="Email"
           type="email"
-          placeholder="manugly@test.com"
           variant="bordered"
+          color="primary"
           value={email}
           onValueChange={setEmail}
         />
         <Input
           label="Contraseña"
-          placeholder="manuglyisthebest1234"
           type="password"
           variant="bordered"
+          color="primary"
           value={password}
           onValueChange={setPassword}
         />
@@ -57,48 +65,45 @@ export function ModalLogin() {
             ¿Olvidaste la contraseña?
           </Link>
         </div>
-        <div className="flex w-full justify-between flex-col gap-2 mt-4">
+        <div className="flex justify-center w-full gap-2 mt-2">
           <Button
-            color="primary"
-            className="text-white font-semibold"
+            className="w-full font-semibold text-white transition-all shadow-md bg-gradient-to-r from-emerald-500 to-emerald-600 hover:text-white hover:from-emerald-600 hover:to-emerald-700"
             isLoading={isLoading}
             onClick={() => login("credentials")}
           >
             Acceder
           </Button>
           <Button
-            color="primary"
-            variant="ghost"
-            className="text-primary font-semibold hover:text-white"
+            className="w-full font-semibold text-white transition-all shadow-md bg-gradient-to-r from-emerald-400 to-emerald-500 hover:text-white hover:from-emerald-500 hover:to-emerald-600"
             isLoading={isLoading}
           >
             Registrarme
           </Button>
         </div>
       </div>
-      <Divider className="mt-2" />
-      <div className="flex flex-col items-center gap-2">
-        <p className="text-xs">O inicia sesión con</p>
-        <div className="flex flex-col gap-2 w-full">
-          <Button
-            color="primary"
-            variant="ghost"
-            className="hover:text-white"
-            onClick={() => login("google")}
-            isLoading={isLoading}
-          >
-            Google
-          </Button>
-          <Button
-            color="primary"
-            variant="ghost"
-            className="hover:text-white"
-            onClick={() => login("auth0")}
-            isLoading={isLoading}
-          >
-            Auth0
-          </Button>
-        </div>
+      <div className="relative w-full my-4">
+        <Divider />
+        <p className="absolute px-4 text-xs -translate-x-1/2 -translate-y-1/2 bg-white top-1/2 left-1/2">
+          O inicia sesión con
+        </p>
+      </div>
+      <div className="flex justify-center w-full gap-4">
+        <Button
+          className="text-emerald-600 font-semibold border-[2px] border-emerald-600 bg-gradient-to-r from-white to-white  shadow-md transition-all hover:border-emerald-500 hover:text-white hover:from-emerald-500 hover:to-emerald-600"
+          onClick={() => login("google")}
+          isLoading={isLoading}
+          startContent={<IconBrandGoogle />}
+        >
+          Google
+        </Button>
+        <Button
+          className="text-emerald-600 font-semibold border-[2px] border-emerald-600 bg-gradient-to-r from-white to-white  shadow-md transition-all hover:border-emerald-500 hover:text-white hover:from-emerald-500 hover:to-emerald-600"
+          onClick={() => login("auth0")}
+          isLoading={isLoading}
+          startContent={<IconShieldFilled />}
+        >
+          Auth0
+        </Button>
       </div>
     </CustomModal>
   );

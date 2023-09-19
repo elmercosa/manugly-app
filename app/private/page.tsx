@@ -6,9 +6,7 @@ import Nav from "@/components/layout/nav";
 export default function App() {
   return (
     <>
-      <Nav></Nav>
-      <main className="grid min-h-screen grid-cols-12 pt-20"></main>
-      <Footer></Footer>
+      <main className="grid min-h-screen grid-cols-12 pt-20 bg-[#F3F2F0]"></main>
     </>
   );
 }

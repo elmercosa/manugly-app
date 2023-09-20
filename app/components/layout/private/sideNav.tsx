@@ -6,7 +6,7 @@ import Menu from "@/components/layout/private/menu";
 
 export default function SideNav() {
   return (
-    <div className="w-[15%] max-w-[15%] h-screen transition-all flex flex-col border-r-[1px] border-gray-100 bg-white">
+    <div className="fixed top-0 left-0 w-64 max-w-[16rem] h-screen transition-all flex flex-col border-r-[1px] border-gray-100 bg-white">
       <div className="flex items-center justify-center border-b-[1px] m-5">
         <Link
           href="/"

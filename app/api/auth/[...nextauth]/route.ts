@@ -1,7 +1,9 @@
+import { verify } from "jsonwebtoken";
 import NextAuth, { NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import Auth0Provider from "next-auth/providers/auth0";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+
 import { post } from "@/services/request";
 
 var jwt = require("jsonwebtoken");

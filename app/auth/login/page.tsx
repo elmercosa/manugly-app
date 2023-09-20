@@ -23,14 +23,11 @@ export default function Login() {
     if (provider != "credentials") {
       signIn(provider);
     } else {
-      signIn(
-        provider,
-        {
-          email,
-          password,
-        },
-        { callbackUrl: "/private" },
-      );
+      signIn(provider, {
+        email,
+        password,
+        callbackUrl: `${window.location.origin}/private`,
+      });
     }
   };
   return (

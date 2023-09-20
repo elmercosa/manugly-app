@@ -1,7 +1,7 @@
 import { Button } from "@nextui-org/react";
 export default function BecomePro() {
   return (
-    <div className="relative flex w-full px-8 pt-10 pb-5 rounded-[50px] bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-md">
+    <div className="relative flex w-full px-8 pt-10 pb-5 rounded-3xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-md">
       <div className="absolute top-0 flex items-center justify-center w-16 h-16 text-2xl font-bold text-white -translate-x-1/2 -translate-y-1/2 border-white rounded-full border-5 left-1/2 bg-emerald-500">
         M
       </div>

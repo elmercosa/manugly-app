@@ -16,11 +16,6 @@
   }
 }
 
-::selection {
-  background: hsl(var(--nextui-secondary));
-  color: white;
-}
-
 @layer components {
   .gradient {
     @apply bg-gradient-to-r from-emerald-500 to-emerald-700;

@@ -2,12 +2,12 @@
 
 import {
   IconBrandMastercard,
-  IconBriefcase,
   IconCalendarEvent,
   IconChartBar,
   IconClipboardData,
   IconHome,
   IconSettings,
+  IconUsersGroup,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -26,9 +26,9 @@ export default function Menu() {
         <IconHome size={20} />
         Inicio
       </Link>
-      <Link href="/private" className={menuClass}>
-        <IconBriefcase size={20} />
-        Productos
+      <Link href="/private/users/templates" className={menuClass}>
+        <IconUsersGroup size={20} />
+        Usuarios
       </Link>
       <Link href="/private" className={menuClass}>
         <IconChartBar size={20} />

@@ -1,13 +1,13 @@
 "use client";
 
-import Image from "next/image";
+import { Button } from "@nextui-org/react";
 import Link from "next/link";
-import useScroll from "@/lib/hooks/use-scroll";
-import UserDropdown from "./user-dropdown";
-import { Session } from "next-auth";
-import { ModalLogin } from "@/components/auth/modal-login";
 
-export default function NavBar({ session }: { session: Session | null }) {
+import useScroll from "@/lib/hooks/use-scroll";
+
+import UserDropdown from "./user-dropdown";
+
+export default function NavBar() {
   const scrolled = useScroll(50);
 
   return (
@@ -22,11 +22,14 @@ export default function NavBar({ session }: { session: Session | null }) {
           Manugly
         </Link>
         <div>
-          {session ? (
-            <UserDropdown session={session} />
-          ) : (
-            <ModalLogin></ModalLogin>
-          )}
+          <Button
+            href="/login"
+            as={Link}
+            color="primary"
+            className="text-white font-bold"
+          >
+            Iniciar sesión
+          </Button>
         </div>
       </div>
     </div>

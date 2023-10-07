@@ -10,10 +10,6 @@ import SearchBar from "./searchBar";
 
 export default async function TopBar() {
   const session = await getServerSession(authOptions);
-  const [userList, setUserList] = useState([]);
-
-  userList.push(7);
-
   return (
     <div className="fixed top-0 right-0 pl-64 w-full transition-all flex items-center border-r-[1px] h-36 max-h-[36]">
       <div className="flex items-center justify-between gap-6 px-10 rounded-xl w-full">

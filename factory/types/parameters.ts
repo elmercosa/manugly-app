@@ -1,14 +1,16 @@
 import { ReactNode } from "react";
 
-import { Schema as Text } from "@/factory/types/text/text";
-import { Schema as Number } from "@/factory/types/number/number";
+import { Schema as CheckboxCustom } from "@/factory/types/checkbox/checkbox";
 import { Schema as Date } from "@/factory/types/date/date";
+import { Schema as Number } from "@/factory/types/number/number";
+import { Schema as Text } from "@/factory/types/text/text";
+import { Schema as TextArea } from "@/factory/types/text/textarea";
 
 interface Components {
   [key: string]: any;
 }
 
-const types = [Text, Number, Date];
+const types = [Text, Number, Date, TextArea, CheckboxCustom];
 
 export class Parameters {
   private static instance: Parameters;

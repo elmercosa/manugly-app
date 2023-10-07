@@ -1,4 +1,5 @@
-import { verify } from "jsonwebtoken";
+import Cookies from "js-cookie";
+import { cookies } from "next/headers";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import Auth0Provider from "next-auth/providers/auth0";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -22,6 +23,9 @@ export const authOptions: NextAuthOptions = {
 
         try {
           user = jwt.verify(userData.accessToken, secret);
+          user.accessToken = userData.accessToken;
+          const cookieStore = cookies();
+          cookieStore.set("accessToken", userData.accessToken);
         } catch (e) {
           return null;
         }

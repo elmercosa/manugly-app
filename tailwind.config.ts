@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 const { nextui } = require("@nextui-org/react");
+const colors = require("tailwindcss/colors");
 
 const config: Config = {
   content: [
@@ -23,7 +24,7 @@ const config: Config = {
       themes: {
         light: {
           colors: {
-            primary: "#6405d5",
+            primary: colors.emerald[500],
             secondary: "#9A4FF7",
           },
         },

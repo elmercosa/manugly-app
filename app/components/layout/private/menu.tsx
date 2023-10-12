@@ -106,28 +106,28 @@ export default function Menu() {
 
       <Link
         href="/private"
-        className={pathname == "/private" ? active : menuClass}
+        className={pathname == "/private/1" ? active : menuClass}
       >
         <IconChartBar size={20} />
         Campañas
       </Link>
       <Link
         href="/private"
-        className={pathname == "/private" ? active : menuClass}
+        className={pathname == "/private/1" ? active : menuClass}
       >
         <IconCalendarEvent size={20} />
         Horarios
       </Link>
       <Link
         href="/private"
-        className={pathname == "/private" ? active : menuClass}
+        className={pathname == "/private/1" ? active : menuClass}
       >
         <IconBrandMastercard size={20} />
         Metodos de pago
       </Link>
       <Link
         href="/private"
-        className={pathname == "/private" ? active : menuClass}
+        className={pathname == "/private/1" ? active : menuClass}
       >
         <IconSettings size={24} />
         Configuración

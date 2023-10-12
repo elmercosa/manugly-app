@@ -9,6 +9,7 @@ export async function post(method: string, data: any) {
   try {
     response = await axios.post(API_URL + method, data);
   } catch (e) {
+    console.log("e :>> ", e);
     return false;
   }
 

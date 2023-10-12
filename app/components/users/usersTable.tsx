@@ -42,9 +42,11 @@ export default function UsersTable() {
   useEffect(() => {
     const fetchUsers = async () => {
       const data = await userService.getAllUsers();
-      setUsers(data);
-      setIsLoading(false);
-      setPages(Math.ceil(data.length / rowsPerPage));
+      if (data) {
+        setUsers(data);
+        setIsLoading(false);
+        setPages(Math.ceil(data.length / rowsPerPage));
+      }
     };
     fetchUsers();
   }, []);

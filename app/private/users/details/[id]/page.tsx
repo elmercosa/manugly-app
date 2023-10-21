@@ -8,15 +8,16 @@ import { userService } from "@/services/userService";
 export default function CreateTemplate({ params }: { params: { id: string } }) {
   const [user, setUser] = useState({});
   const [isLoaded, setIsLoaded] = useState(false);
+  console.log("params.id :>> ", params.id);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const data = await userService.getUser(params.id);
-      setUser(data);
-      setIsLoaded(true);
-    };
-    fetchUsers();
-  }, []);
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     const data = await userService.getUser(params.id);
+  //     setUser(data);
+  //     setIsLoaded(true);
+  //   };
+  //   fetchUsers();
+  // }, []);
 
   return (
     <div className="flex flex-col w-full gap-6 pb-10 h-full">

@@ -1,18 +1,14 @@
 "use client";
-import { Input } from "@nextui-org/react";
-import { IconSearch } from "@tabler/icons-react";
+import { useAtom } from "jotai";
+
+import { businessAtom } from "@/app/store/store";
+
 export default function SearchBar() {
+  const [business, setBusiness] = useAtom(businessAtom);
+
   return (
-    <Input
-      classNames={{
-        base: "max-w-full h-full",
-        input: "text-small",
-        inputWrapper: "h-full text-default-500 rounded-full",
-      }}
-      placeholder="Escribe para buscar..."
-      size="sm"
-      startContent={<IconSearch size={18} className="text-black" />}
-      type="search"
-    />
+    <div className="p-2 bg-emerald-500 rounded-3xl text-white text-sm font-semibold">
+      {business?.name}
+    </div>
   );
 }

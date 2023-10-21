@@ -20,7 +20,7 @@ export default function RootLayout({
       <SideNav></SideNav>
       <TopBar></TopBar>
       <div className="flex pl-64 pt-36 w-full">
-        <div className="flex px-6 w-full h-fit">{children}</div>
+        <div className="flex px-6 w-full">{children}</div>
       </div>
     </main>
   );

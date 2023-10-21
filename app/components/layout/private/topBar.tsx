@@ -1,6 +1,5 @@
 import { IconBell, IconInfoCircle } from "@tabler/icons-react";
 import { getServerSession } from "next-auth/next";
-import { useState } from "react";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import BreadCrumbs from "@/components/layout/private/breadCrumbs";
@@ -19,8 +18,8 @@ export default async function TopBar() {
         </div>
         <div className="flex items-center justify-center h-auto gap-2 p-2 bg-white rounded-full shadow-md">
           <SearchBar></SearchBar>
-          <IconBell size={40} />
-          <IconInfoCircle size={40} />
+          <IconBell size={20} />
+          <IconInfoCircle size={20} />
           <UserDropdown session={session} />
         </div>
       </div>

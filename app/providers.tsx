@@ -1,14 +1,14 @@
 "use client";
 
 import { NextUIProvider } from "@nextui-org/react";
-import { Provider } from "react-redux";
+import { QueryClient, QueryClientProvider } from "react-query";
 
-import { store } from "../redux/store";
+const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <Provider store={store}>
+    <QueryClientProvider client={queryClient}>
       <NextUIProvider>{children}</NextUIProvider>
-    </Provider>
+    </QueryClientProvider>
   );
 }

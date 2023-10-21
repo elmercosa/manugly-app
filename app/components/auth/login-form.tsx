@@ -15,7 +15,7 @@ import { useState } from "react";
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("borjarodrilore@gmail.com");
-  const [password, setPassword] = useState("password-borja");
+  const [password, setPassword] = useState("password-admin");
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
   const login = (provider: string) => {

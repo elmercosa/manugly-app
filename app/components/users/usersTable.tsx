@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Button,
   Dropdown,
@@ -24,10 +26,14 @@ import {
   IconEye,
   IconPlus,
   IconSearch,
+  IconSettings,
   IconTrash,
 } from "@tabler/icons-react";
+import { useAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "react-query";
 
+import { businessAtom } from "@/app/store/store";
 import { userService } from "@/services/userService";
 
 export default function UsersTable() {
@@ -37,22 +43,28 @@ export default function UsersTable() {
   const [pages, setPages] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [isLoading, setIsLoading] = useState(true);
+  const [business, setBusiness] = useAtom(businessAtom);
+
+  const { isLoading, data } = useQuery({
+    queryKey: ["users", business?.id],
+    queryFn: () => userService.getAllUsers(business?.id),
+    retry: false,
+  });
+
+  const { isFetching } = useQuery({
+    queryKey: ["users", business?.id],
+    retry: false,
+  });
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const data = await userService.getAllUsers();
-      if (data) {
-        setUsers(data);
-        setIsLoading(false);
-        setPages(Math.ceil(data.length / rowsPerPage));
-      }
-    };
-    fetchUsers();
-  }, []);
+    if (data && !isLoading) {
+      setUsers(data);
+      setPages(Math.ceil(data.length / rowsPerPage));
+    }
+  }, [isLoading, data, rowsPerPage]);
 
   useEffect(() => {
-    let usersFiltered = users.filter((user) => {
+    let usersFiltered = users.filter((user: any) => {
       return (
         user.name.toLowerCase().includes(filterValue.toLowerCase()) ||
         user.surname.toLowerCase().includes(filterValue.toLowerCase()) ||
@@ -77,19 +89,29 @@ export default function UsersTable() {
     return (
       <div className="flex flex-col gap-4 w-full">
         <div className="flex justify-between gap-3 items-end ">
-          <Input
-            isClearable
-            className=" sm:max-w-[44%]"
-            placeholder="Buscar por nombre, apellidos, email..."
-            startContent={<IconSearch />}
-            value={filterValue}
-            onValueChange={setFilterValue}
-          />
+          <div className="flex gap-3 w-1/2 items-center justify-start">
+            <Input
+              isClearable
+              className=" sm:max-w-[44%] shadow-md rounded-xl"
+              placeholder="Buscar por nombre, apellidos, email..."
+              startContent={<IconSearch />}
+              value={filterValue}
+              onValueChange={setFilterValue}
+            />
+            <Button
+              href="/private/users/config"
+              as={Link}
+              className="bg-emerald-500 text-white shadow-md"
+              startContent={<IconSettings size={20} />}
+            >
+              Configurar usuarios
+            </Button>
+          </div>
           <div className="flex gap-3 w-1/2 items-center justify-end">
             <Select
               label="Usuarios por página"
               defaultSelectedKeys={["10"]}
-              className="max-w-[200px]"
+              className="max-w-[200px] shadow-md rounded-xl"
               size="sm"
               onChange={handleSelectionChange}
             >
@@ -100,7 +122,7 @@ export default function UsersTable() {
               ))}
             </Select>
             <Button
-              className="bg-emerald-500 text-white"
+              className="bg-emerald-500 text-white shadow-md rounded-xl"
               startContent={<IconPlus size={20} />}
             >
               Añadir usuario
@@ -128,7 +150,7 @@ export default function UsersTable() {
         />
       </div>
     );
-  }, [page, pages]);
+  }, [page, pages, users]);
   return (
     <>
       <Table
@@ -155,7 +177,7 @@ export default function UsersTable() {
             isLoading ? "Cargando..." : "No hay usuarios que mostrar"
           }
         >
-          {(item) => (
+          {(item: any) => (
             <TableRow key={item?.id}>
               <TableCell>{item?.name}</TableCell>
               <TableCell>{item?.surname}</TableCell>

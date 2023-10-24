@@ -1,10 +1,34 @@
-import { Checkbox, CheckboxGroup, Input, Textarea } from "@nextui-org/react";
+import {
+  Button,
+  Checkbox,
+  Chip,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Spinner,
+  Textarea,
+  Tooltip,
+} from "@nextui-org/react";
+import {
+  IconCircleCheckFilled,
+  IconCircleXFilled,
+  IconTrash,
+} from "@tabler/icons-react";
+import { useAtom } from "jotai";
+import Cookies from "js-cookie";
+import { use, useEffect, useState } from "react";
 
+import { businessAtom } from "@/app/store/store";
 import { ExportType } from "@/factory/types/interfaces";
+import { paramService } from "@/services/paramService";
 
-export const name = "Texto Largo";
+const name = "Texto Largo";
+const type = "textarea";
 
-export function TextAreaCustom() {
+function TextAreaCustom() {
   return (
     <Textarea
       name="text"
@@ -15,25 +39,216 @@ export function TextAreaCustom() {
   );
 }
 
-export function Configuration() {
+function Configuration({ save, paramData }: { save?: any; paramData?: any }) {
+  const [id, setId] = useState(null);
+  const [title, setTitle] = useState("");
+
+  const [isSaved, setIsSaved] = useState(false);
+  const [errorOnSave, setErrorOnSave] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const businessId = Cookies.get("businessId");
+
+  // Config
+  const [max, setMax] = useState("3");
+  const [required, setRequired] = useState(false);
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const removeParam = async () => {
+    setIsOpen(false);
+  };
+
+  const saveParam = async () => {
+    setSaving(true);
+
+    const config = {
+      max: max,
+      required: required,
+    };
+
+    const key = title.toLowerCase().replace(/ /g, "_");
+    const keyNormalized = key.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    const param = {
+      title: title,
+      key: keyNormalized,
+      type: type,
+      config: JSON.stringify(config),
+      businessId: businessId,
+    };
+    const response = await paramService.createParam(param);
+
+    if (response) {
+      setId(response.id);
+      setIsSaved(true);
+      setErrorOnSave(false);
+    } else {
+      setErrorOnSave(true);
+      setIsSaved(false);
+    }
+
+    setSaving(false);
+  };
+
+  const updateParam = async () => {
+    setSaving(true);
+
+    const config = {
+      max: max,
+      required: required,
+    };
+
+    const param = {
+      config: JSON.stringify(config),
+      businessId: businessId,
+      id: id,
+    };
+    const response = await paramService.editParam(param);
+
+    if (response) {
+      setIsSaved(true);
+      setErrorOnSave(false);
+    } else {
+      setErrorOnSave(true);
+      setIsSaved(false);
+    }
+
+    setSaving(false);
+  };
+
+  useEffect(() => {
+    if (save && !isSaved) {
+      if (id === null) {
+        saveParam();
+      } else {
+        updateParam();
+      }
+      setSaving(false);
+    }
+  }, [save]);
+
+  useEffect(() => {
+    if (paramData) {
+      setId(paramData.id);
+      setTitle(paramData.title);
+      if (paramData.configuration && paramData.configuration.length > 0) {
+        const config = JSON.parse(paramData.configuration[0].configuration);
+        setMax(config.max);
+        setRequired(config.required);
+      }
+    }
+  }, [paramData]);
+
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-xl font-semibold">
-        Configuración para parámetro de Texto largo
-      </h2>
-      <div className="flex gap-2">
-        <Input type="text" name="name" label="Nombre del parámetro" />
-        <Checkbox>¿Obligatorio?</Checkbox>
+    <div className="flex flex-col gap-4 relative">
+      <h2 className="text-2xl font-semibold">Texto largo</h2>
+      <div className="flex">
+        <Input
+          type="text"
+          name="name"
+          label="Nombre del parámetro"
+          value={title}
+          onValueChange={setTitle}
+          readOnly={id !== null}
+        />
       </div>
-      <div className="flex gap-2">
-        <Input type="number" name="min" label="Numero minimo de lineas" />
-        <Input type="number" name="max" label="Numero maximo de lineas" />
+      <div className="flex flex-col gap-2">
+        <h3 className="text-base font-semibold">Configuración avanzada</h3>
+        <div className="flex gap-2">
+          <Input
+            type="number"
+            className="max-w-fit"
+            name="max"
+            label="Longitud máxima"
+            variant="bordered"
+            value={max}
+            onValueChange={setMax}
+            min={3}
+          />
+          <Checkbox isSelected={required} onValueChange={setRequired}>
+            ¿Obligatorio?
+          </Checkbox>
+        </div>
       </div>
+      <div className="flex justify-end absolute top-0 right-0">
+        <Tooltip content="Borrar usuario">
+          <Button
+            startContent={<IconTrash size={16} />}
+            onPress={() => setIsOpen(true)}
+            isDisabled={saving}
+            color="danger"
+            variant="light"
+            isIconOnly
+          ></Button>
+        </Tooltip>
+      </div>
+      <div className="flex justify-end absolute bottom-0 right-0">
+        {isSaved && (
+          <Chip
+            startContent={<IconCircleCheckFilled size={18} />}
+            variant="faded"
+            color="success"
+          >
+            Guardado
+          </Chip>
+        )}
+        {errorOnSave && (
+          <Chip
+            startContent={<IconCircleXFilled size={18} />}
+            variant="faded"
+            color="danger"
+          >
+            Error al guardar
+          </Chip>
+        )}
+
+        {saving && (
+          <Chip
+            startContent={
+              <Spinner aria-label="Loading..." size="sm" className="text-xs" />
+            }
+            variant="faded"
+            className="text-xs"
+          >
+            Guardando cambios...
+          </Chip>
+        )}
+      </div>
+      <Modal isOpen={isOpen} hideCloseButton={true}>
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1 text-xl">
+            ¿Estás seguro?
+          </ModalHeader>
+          <ModalBody>
+            <p>
+              Este parmámetro se eliminará de todos los usuarios que lo tengan
+              asignado y no podrás recuperarlo.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="danger"
+              variant="light"
+              onPress={() => setIsOpen(false)}
+            >
+              No
+            </Button>
+            <Button
+              className="bg-emerald-500 text-white shadow-md"
+              onPress={removeParam}
+            >
+              Sí
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }
 
 export const Schema: ExportType = {
+  type,
   name,
   component: TextAreaCustom,
   configuration: Configuration,

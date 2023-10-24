@@ -10,9 +10,9 @@ import SearchBar from "./searchBar";
 export default async function TopBar() {
   const session = await getServerSession(authOptions);
   return (
-    <div className="fixed top-0 right-0 pl-64 w-full transition-all flex items-center border-r-[1px] h-36 max-h-[36]">
-      <div className="flex items-center justify-between gap-6 px-10 rounded-xl w-full">
-        <div className="flex flex-col h-full gap-1">
+    <div className="fixed top-0 right-0 z-50 pl-64 w-full transition-all flex items-center border-r-[1px] h-32 max-h-[32] ">
+      <div className="flex items-center justify-between gap-6 px-10 rounded-xl w-full  h-full">
+        <div className="flex flex-col h-full gap-1 justify-center">
           <BreadCrumbs></BreadCrumbs>
           <h1 className="text-4xl font-bold text-neutral-700">Inicio</h1>
         </div>

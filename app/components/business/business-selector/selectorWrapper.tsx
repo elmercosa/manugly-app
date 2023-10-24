@@ -8,7 +8,7 @@ import BusinessSelector from "./selector";
 export default async function SelectorWrapper() {
   const session = await getServerSession(authOptions);
   const user = session?.user || [];
-  const businesses = Object.values(user.businesses);
+  const businesses = user.businesses ? Object.values(user.businesses) : [];
   return (
     <>
       {businesses.length ? (

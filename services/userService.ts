@@ -1,4 +1,4 @@
-import { get, getTest, post } from "@/services/request";
+import { get, getTest, postPrivate } from "@/services/request";
 
 async function getAllUsers(id: string) {
   const response = await getTest(`/users/findAll/${id}`);
@@ -15,7 +15,13 @@ async function getBusiness() {
   return response;
 }
 
+async function createUser(data: any, businessId: any) {
+  const response = await postPrivate(`/users/create/${businessId}`, data);
+  return response;
+}
+
 export const userService = {
+  createUser,
   getAllUsers,
   getUser,
   getBusiness,

@@ -1,8 +1,8 @@
 "use client";
 
 import {
-  Button,
   cn,
+  Link,
   Modal,
   ModalBody,
   ModalContent,
@@ -10,19 +10,17 @@ import {
   ModalHeader,
   Radio,
   RadioGroup,
-  useDisclosure,
 } from "@nextui-org/react";
-import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 
-import { businessAtom } from "@/app/store/store";
+import { Loader } from "@/components/generic/loader/loader";
 import { businessService } from "@/services/businessService";
 
-export default function BusinessSelector(user: any) {
-  const [business, setBusiness] = useAtom(businessAtom);
+export default function BusinessSelector({ user }: { user: any }) {
   const [isOpen, setIsOpen] = useState(true);
   const [businesses, setBusinesses] = useState([]);
+  const [business, setBusiness] = useState();
 
   useEffect(() => {
     if (business) {
@@ -31,8 +29,8 @@ export default function BusinessSelector(user: any) {
   }, [business]);
 
   const { isLoading, data } = useQuery({
-    queryKey: ["business", user.user.id],
-    queryFn: () => businessService.getBusiness(user.user.id),
+    queryKey: ["business", user.id],
+    queryFn: () => businessService.getBusiness(user.id),
     retry: false,
   });
 
@@ -50,18 +48,26 @@ export default function BusinessSelector(user: any) {
             Selecciona un negocio para continuar
           </ModalHeader>
           <ModalBody>
-            <RadioGroup
-              label="Negocios"
-              description="Podrás cambiar de negocio siempre que quieras"
-              value={business}
-              onValueChange={setBusiness}
-            >
-              {businesses.map((business: any) => (
-                <CustomRadio value={business} key={business.id}>
-                  {business.name}
-                </CustomRadio>
-              ))}
-            </RadioGroup>
+            <Loader isLoading={isLoading}>
+              <RadioGroup
+                description={
+                  <span>
+                    ¿Quieres crear un nuevo negocio? Puedes hacerlo{" "}
+                    <Link href="/private?new-business" className="text-sm">
+                      aquí
+                    </Link>
+                  </span>
+                }
+                value={business}
+                onValueChange={setBusiness}
+              >
+                {businesses.map((business: any) => (
+                  <CustomRadio value={business} key={business.id}>
+                    {business.name}
+                  </CustomRadio>
+                ))}
+              </RadioGroup>
+            </Loader>
           </ModalBody>
         </ModalContent>
       </Modal>

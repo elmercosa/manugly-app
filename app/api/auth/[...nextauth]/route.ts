@@ -24,6 +24,7 @@ export const authOptions: NextAuthOptions = {
         try {
           user = jwt.verify(userData.accessToken, secret);
           user.accessToken = userData.accessToken;
+          user.business = null;
           const cookieStore = cookies();
           cookieStore.set("accessToken", userData.accessToken);
         } catch (e) {

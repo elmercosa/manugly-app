@@ -29,11 +29,10 @@ import {
   IconSettings,
   IconTrash,
 } from "@tabler/icons-react";
-import { useAtom } from "jotai";
+import Cookies from "js-cookie";
 import { useEffect, useMemo, useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 
-import { businessAtom } from "@/app/store/store";
 import { userService } from "@/services/userService";
 
 export default function UsersTable() {
@@ -43,16 +42,15 @@ export default function UsersTable() {
   const [pages, setPages] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [business, setBusiness] = useAtom(businessAtom);
 
   const { isLoading, data } = useQuery({
-    queryKey: ["users", business?.id],
-    queryFn: () => userService.getAllUsers(business?.id),
+    queryKey: ["users", Cookies.get("businessId")],
+    queryFn: () => userService.getAllUsers(Cookies.get("businessId") ?? ""),
     retry: false,
   });
 
   const { isFetching } = useQuery({
-    queryKey: ["users", business?.id],
+    queryKey: ["users", Cookies.get("businessId")],
     retry: false,
   });
 
@@ -124,6 +122,8 @@ export default function UsersTable() {
             <Button
               className="bg-emerald-500 text-white shadow-md rounded-xl"
               startContent={<IconPlus size={20} />}
+              as={Link}
+              href="/private/users/add"
             >
               Añadir usuario
             </Button>

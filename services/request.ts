@@ -44,6 +44,28 @@ export async function postPrivate(method: string, data: any) {
   }
 }
 
+export async function remove(method: string, data: any) {
+  let response;
+
+  let headers = {
+    "Content-type": "application/json",
+    Authorization: `Bearer ${Cookies.get("accessToken")}`,
+  };
+
+  try {
+    response = await axios.delete(API_URL + method, { data, headers });
+  } catch (e) {
+    console.log("e :>> ", e);
+    return false;
+  }
+
+  if (response) {
+    return response.data;
+  } else {
+    return false;
+  }
+}
+
 export async function get(method: string) {
   let response;
 

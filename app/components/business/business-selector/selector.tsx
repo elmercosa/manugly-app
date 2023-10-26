@@ -17,14 +17,21 @@ import { useQuery } from "react-query";
 import { Loader } from "@/components/generic/loader/loader";
 import { businessService } from "@/services/businessService";
 
-export default function BusinessSelector({ user }: { user: any }) {
-  const [isOpen, setIsOpen] = useState(true);
+export default function BusinessSelector({
+  user,
+  isOpen,
+  setIsOpen,
+}: {
+  user: any;
+  isOpen: boolean;
+  setIsOpen: any;
+}) {
   const [businesses, setBusinesses] = useState([]);
   const [business, setBusiness] = useState();
 
   useEffect(() => {
     if (business) {
-      setIsOpen(false);
+      // setIsOpen(false);
     }
   }, [business]);
 

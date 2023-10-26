@@ -1,9 +1,9 @@
-import SelectorWrapper from "@/components/business/business-selector/selectorWrapper";
+import SelectorContainer from "@/components/business/business-selector/container";
 
 export default function App() {
   return (
     <main className="grid min-h-screen grid-cols-12 pt-20 bg-[#F3F2F0]">
-      <SelectorWrapper></SelectorWrapper>
+      <SelectorContainer />
     </main>
   );
 }

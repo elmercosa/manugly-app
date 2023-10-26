@@ -13,9 +13,16 @@ import { useState } from "react";
 
 import { businessService } from "@/services/businessService";
 
-export default function BusinessCreator(user: any) {
-  const ownerId = user.user.id;
-  const [isOpen, setIsOpen] = useState(true);
+export default function BusinessCreator({
+  user,
+  isOpen,
+  setIsOpen,
+}: {
+  user: any;
+  isOpen: boolean;
+  setIsOpen: any;
+}) {
+  const ownerId = user.id;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
@@ -80,7 +87,7 @@ export default function BusinessCreator(user: any) {
           </ModalBody>
           <ModalFooter>
             <Button
-              className="bg-emerald-500 text-white shadow-md rounded-xl"
+              className="text-white shadow-md bg-emerald-500 rounded-xl"
               onClick={createBusiness}
               isLoading={loading}
             >

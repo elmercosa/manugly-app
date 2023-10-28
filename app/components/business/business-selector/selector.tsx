@@ -14,7 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 
-import { Loader } from "@/components/generic/loader/loader";
+import { Loader } from "@/components/loader";
 import { businessService } from "@/services/businessService";
 
 export default function BusinessSelector({
@@ -31,7 +31,7 @@ export default function BusinessSelector({
 
   useEffect(() => {
     if (business) {
-      // setIsOpen(false);
+      setIsOpen(false);
     }
   }, [business]);
 

@@ -2,10 +2,9 @@ import { IconBell, IconInfoCircle } from "@tabler/icons-react";
 import { getServerSession } from "next-auth/next";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import SelectorWrapper from "@/components/business/business-selector/wrapper";
 import BreadCrumbs from "@/components/layout/private/breadCrumbs";
 import UserDropdown from "@/components/layout/user-dropdown";
-
-import SearchBar from "./searchBar";
 
 export default async function TopBar() {
   const session = await getServerSession(authOptions);
@@ -17,7 +16,7 @@ export default async function TopBar() {
           <h1 className="text-4xl font-bold text-neutral-700">Inicio</h1>
         </div>
         <div className="flex items-center justify-center h-auto gap-2 p-2 bg-white rounded-full shadow-md">
-          <SearchBar></SearchBar>
+          <SelectorWrapper user={session?.user}></SelectorWrapper>
           <IconBell size={20} />
           <IconInfoCircle size={20} />
           <UserDropdown session={session} />

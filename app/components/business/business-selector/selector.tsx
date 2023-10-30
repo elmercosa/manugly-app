@@ -1,36 +1,62 @@
 "use client";
 
 import {
-  cn,
+  Button,
+  Input,
   Link,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Radio,
   RadioGroup,
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 
+import { useBusiness } from "@/app/contexts/business/context";
+import CustomRadio from "@/components/custom/custom-radio";
 import { Loader } from "@/components/loader";
 import { businessService } from "@/services/businessService";
 
 export default function BusinessSelector({ user }: { user: any }) {
+  const { state, dispatch } = useBusiness();
+
   const [isOpen, setIsOpen] = useState(true);
   const [businesses, setBusinesses] = useState([]);
   const [business, setBusiness] = useState();
-  const businesseseseese = user.businesses
-    ? Object.values(user.businesses)
-    : [];
+  const [showForm, setShowForm] = useState(false);
+  const [isBusinessSelected, setIsBusinessSelected] = useState(false);
 
-  useEffect(() => {
-    if (business) {
-      setIsOpen(false);
+  // create business
+  const ownerId = user.id;
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
+  const [colour, setColour] = useState("red");
+  const [loading, setLoading] = useState(false);
+
+  const createBusiness = async () => {
+    if (name && email && address && phone) {
+      setLoading(true);
+      const business = {
+        name,
+        email,
+        address,
+        phone,
+        colour,
+        ownerId,
+      };
+      const response = await businessService.createBusiness(business);
+
+      if (response) {
+        window.location.reload();
+      }
     }
-  }, [business]);
+  };
 
+  //fetch businesses
   const { isLoading, data } = useQuery({
     queryKey: ["business", user.id],
     queryFn: () => businessService.getBusiness(user.id),
@@ -38,61 +64,128 @@ export default function BusinessSelector({ user }: { user: any }) {
   });
 
   useEffect(() => {
+    if (state.business.id !== "") {
+      setIsOpen(false);
+      setIsBusinessSelected(true);
+    }
+  }, [state]);
+
+  useEffect(() => {
     if (data) {
       setBusinesses(data);
+      if (!data.length) {
+        setShowForm(true);
+      }
     }
   }, [data]);
 
+  useEffect(() => {
+    if (business) {
+      dispatch({ type: "set", data: business });
+      setIsOpen(false);
+      window.location.reload();
+    }
+  }, [business]);
+
   return (
     <>
-      <Modal isOpen={isOpen} backdrop="blur" hideCloseButton={true}>
+      <Button
+        onClick={() => setIsOpen(true)}
+        className="bg-emerald-500 text-white rounded-full p-2"
+      >
+        {state.business.name}
+      </Button>
+      <Modal
+        isOpen={isOpen}
+        backdrop="blur"
+        hideCloseButton={!isBusinessSelected}
+        onClose={() => setIsOpen(false)}
+      >
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1 text-xl">
-            Selecciona un negocio para continuar
+            {showForm ? "Crea tu negocio" : "Selecciona un negocio"}
           </ModalHeader>
           <ModalBody>
             <Loader isLoading={isLoading}>
-              <RadioGroup
-                description={
-                  <span>
-                    ¿Quieres crear un nuevo negocio? Puedes hacerlo{" "}
-                    <Link href="/admin?new-business" className="text-sm">
-                      aquí
-                    </Link>
-                  </span>
-                }
-                value={business}
-                onValueChange={setBusiness}
-              >
-                {businesses.map((business: any) => (
-                  <CustomRadio value={business} key={business.id}>
-                    {business.name}
-                  </CustomRadio>
-                ))}
-              </RadioGroup>
+              {!showForm ? (
+                <RadioGroup
+                  description={
+                    <span>
+                      ¿Quieres crear un nuevo negocio? Puedes hacerlo{" "}
+                      <Link
+                        className="text-xs cursor-pointer"
+                        onClick={() => setShowForm(true)}
+                      >
+                        aquí
+                      </Link>
+                    </span>
+                  }
+                  value={business}
+                  onValueChange={(value: any) => setBusiness(value)}
+                >
+                  {businesses.map((business: any) => (
+                    <CustomRadio value={business} key={business.id}>
+                      {business.name}
+                    </CustomRadio>
+                  ))}
+                </RadioGroup>
+              ) : (
+                <>
+                  <Input
+                    autoFocus
+                    label="Nombre"
+                    placeholder="Nombre del negocio"
+                    value={name}
+                    onValueChange={setName}
+                  />
+                  <Input
+                    type="email"
+                    label="Email"
+                    placeholder="Email del negocio"
+                    value={email}
+                    onValueChange={setEmail}
+                  />
+                  <Input
+                    label="Dirección"
+                    placeholder="Dirección del negocio"
+                    value={address}
+                    onValueChange={setAddress}
+                  />
+                  <Input
+                    label="Teléfono"
+                    type="tel"
+                    placeholder="Teléfono del negocio"
+                    value={phone}
+                    onValueChange={setPhone}
+                  />
+                </>
+              )}
             </Loader>
           </ModalBody>
+          {showForm && (
+            <ModalFooter>
+              {businesses.length > 0 && (
+                <Button
+                  className="shadow-md rounded-xl"
+                  color="danger"
+                  variant="flat"
+                  onClick={() => setShowForm(false)}
+                  isLoading={loading}
+                >
+                  Atrás
+                </Button>
+              )}
+              <Button
+                className="text-white shadow-md bg-emerald-500 rounded-xl"
+                onClick={createBusiness}
+                isLoading={loading}
+              >
+                Crear negocio
+              </Button>
+            </ModalFooter>
+          )}
         </ModalContent>
       </Modal>
     </>
   );
 }
-
-const CustomRadio = (props: any) => {
-  const { children, ...otherProps } = props;
-
-  return (
-    <Radio
-      {...otherProps}
-      classNames={{
-        base: cn(
-          "inline-flex m-0 bg-content2 hover:bg-content3 items-center justify-between",
-          "flex-row-reverse max-w-[1000px] cursor-pointer rounded-lg gap-4 p-4 border-2 border-transparent",
-          "data-[selected=true]:border-primary data-[selected=true]:bg-content1",
-        ),
-      }}
-    >
-      {children}
-    </Radio>
-  );
-};

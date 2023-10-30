@@ -15,17 +15,17 @@
     startContent={<IconUsers size={20} />}
   >
     <div className="flex flex-col w-full gap-1 px-1">
-      <Link href="/private/users/" className={secondaryClass}>
+      <Link href="/admin/users/" className={secondaryClass}>
         <IconUsersGroup
           size={20}
-          className={pathname == "/private/users" ? activeSecondary : ""}
+          className={pathname == "/admin/users" ? activeSecondary : ""}
         />
         Ver usuarios
       </Link>
-      <Link href="/private/users/config" className={secondaryClass}>
+      <Link href="/admin/users/config" className={secondaryClass}>
         <IconSettings
           size={20}
-          className={pathname == "/private/users/config" ? activeSecondary : ""}
+          className={pathname == "/admin/users/config" ? activeSecondary : ""}
         />
         Configuración
       </Link>

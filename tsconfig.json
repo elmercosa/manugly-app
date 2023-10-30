@@ -27,7 +27,7 @@
       "@/styles/*": ["./styles/*"],
       "@/factory/*": ["./factory/*"],
       "@/services/*": ["./services/*"],
-      "@/redux/*": ["./app/redux/*"]
+      "@/contexts/*": ["./app/contexts/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

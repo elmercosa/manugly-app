@@ -26,7 +26,7 @@ export default function LoginForm() {
       signIn(provider, {
         email,
         password,
-        callbackUrl: `${window.location.origin}/private`,
+        callbackUrl: `${window.location.origin}/admin`,
       });
     }
   };

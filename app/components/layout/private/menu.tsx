@@ -60,44 +60,41 @@ export default function Menu() {
   };
   return (
     <div className="flex h-[80%] flex-col w-full px-5 gap-1">
-      <Link
-        href="/private"
-        className={pathname == "/private" ? active : menuClass}
-      >
+      <Link href="/admin" className={pathname == "/admin" ? active : menuClass}>
         <IconHome size={20} />
         Inicio
       </Link>
       <Link
-        href="/private/users/"
-        className={pathname == "/private/users" ? active : menuClass}
+        href="/admin/users/"
+        className={pathname == "/admin/users" ? active : menuClass}
       >
         <IconUsersGroup size={20} />
         Usuarios
       </Link>
       <Link
-        href="/private"
-        className={pathname == "/private/1" ? active : menuClass}
+        href="/admin"
+        className={pathname == "/admin/1" ? active : menuClass}
       >
         <IconChartBar size={20} />
         Campañas
       </Link>
       <Link
-        href="/private"
-        className={pathname == "/private/1" ? active : menuClass}
+        href="/admin"
+        className={pathname == "/admin/1" ? active : menuClass}
       >
         <IconCalendarEvent size={20} />
         Horarios
       </Link>
       <Link
-        href="/private"
-        className={pathname == "/private/1" ? active : menuClass}
+        href="/admin"
+        className={pathname == "/admin/1" ? active : menuClass}
       >
         <IconBrandMastercard size={20} />
         Metodos de pago
       </Link>
       <Link
-        href="/private"
-        className={pathname == "/private/1" ? active : menuClass}
+        href="/admin"
+        className={pathname == "/admin/1" ? active : menuClass}
       >
         <IconSettings size={24} />
         Configuración

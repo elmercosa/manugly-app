@@ -43,7 +43,7 @@ export default function AddUser() {
     };
     const response = await userService.createUser(user, businessId);
     if (response) {
-      push(`/private/users/parameters/${response.id}`);
+      push(`/admin/users/parameters/${response.id}`);
     } else {
     }
     setIsLoading(false);

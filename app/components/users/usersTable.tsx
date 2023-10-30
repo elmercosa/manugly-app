@@ -97,7 +97,7 @@ export default function UsersTable() {
               onValueChange={setFilterValue}
             />
             <Button
-              href="/private/users/config"
+              href="/admin/users/config"
               as={Link}
               className="bg-emerald-500 text-white shadow-md"
               startContent={<IconSettings size={20} />}
@@ -123,7 +123,7 @@ export default function UsersTable() {
               className="bg-emerald-500 text-white shadow-md rounded-xl"
               startContent={<IconPlus size={20} />}
               as={Link}
-              href="/private/users/add"
+              href="/admin/users/add"
             >
               Añadir usuario
             </Button>
@@ -187,7 +187,7 @@ export default function UsersTable() {
                   <Tooltip content="Ver usuario">
                     <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                       <Link
-                        href={`/private/users/details/${item?.id}`}
+                        href={`/admin/users/details/${item?.id}`}
                         className="text-gray-400"
                       >
                         <IconEye />
@@ -196,10 +196,7 @@ export default function UsersTable() {
                   </Tooltip>
                   <Tooltip content="Editar usuario">
                     <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                      <Link
-                        href="/private/users/edit"
-                        className="text-gray-400"
-                      >
+                      <Link href="/admin/users/edit" className="text-gray-400">
                         <IconEdit />
                       </Link>
                     </span>

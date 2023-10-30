@@ -17,17 +17,13 @@ import { useQuery } from "react-query";
 import { Loader } from "@/components/loader";
 import { businessService } from "@/services/businessService";
 
-export default function BusinessSelector({
-  user,
-  isOpen,
-  setIsOpen,
-}: {
-  user: any;
-  isOpen: boolean;
-  setIsOpen: any;
-}) {
+export default function BusinessSelector({ user }: { user: any }) {
+  const [isOpen, setIsOpen] = useState(true);
   const [businesses, setBusinesses] = useState([]);
   const [business, setBusiness] = useState();
+  const businesseseseese = user.businesses
+    ? Object.values(user.businesses)
+    : [];
 
   useEffect(() => {
     if (business) {
@@ -60,7 +56,7 @@ export default function BusinessSelector({
                 description={
                   <span>
                     ¿Quieres crear un nuevo negocio? Puedes hacerlo{" "}
-                    <Link href="/private?new-business" className="text-sm">
+                    <Link href="/admin?new-business" className="text-sm">
                       aquí
                     </Link>
                   </span>

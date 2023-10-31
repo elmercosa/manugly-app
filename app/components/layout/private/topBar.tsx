@@ -19,7 +19,7 @@ export default async function TopBar() {
           <SelectorWrapper user={session?.user}></SelectorWrapper>
           <IconBell size={20} />
           <IconInfoCircle size={20} />
-          <UserDropdown session={session} />
+          <UserDropdown session={session ?? undefined} />
         </div>
       </div>
     </div>

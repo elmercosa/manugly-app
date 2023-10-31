@@ -37,6 +37,13 @@ export default function BusinessSelector({ user }: { user: any }) {
   const [colour, setColour] = useState("red");
   const [loading, setLoading] = useState(false);
 
+  //fetch businesses
+  const { isLoading, data } = useQuery({
+    queryKey: ["business", user.id],
+    queryFn: () => businessService.getBusiness(user.id),
+    retry: false,
+  });
+
   const createBusiness = async () => {
     if (name && email && address && phone) {
       setLoading(true);
@@ -55,13 +62,6 @@ export default function BusinessSelector({ user }: { user: any }) {
       }
     }
   };
-
-  //fetch businesses
-  const { isLoading, data } = useQuery({
-    queryKey: ["business", user.id],
-    queryFn: () => businessService.getBusiness(user.id),
-    retry: false,
-  });
 
   useEffect(() => {
     if (state.business.id !== "") {

@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
 
-import UsersTable from "@/components/users/usersTable";
+import TableWrapper from "@/components/users/tableWrapper";
 
 export default function Users() {
   return (
     <main className="w-full">
-      <UsersTable />
+      <TableWrapper />
     </main>
   );
 }

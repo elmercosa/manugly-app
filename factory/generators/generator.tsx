@@ -8,20 +8,33 @@ import {
   DropdownTrigger,
 } from "@nextui-org/react";
 import { IconDeviceFloppy, IconPlus } from "@tabler/icons-react";
-import { useAtom } from "jotai";
-import Cookies from "js-cookie";
-import { Key, useEffect, useState } from "react";
+import { Key, use, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 
-import { businessAtom } from "@/app/store/store";
+import { useBusiness } from "@/app/contexts/business/context";
 import { Parameters } from "@/factory/types/parameters";
 import { paramService } from "@/services/paramService";
 
+interface ParameterType {
+  param: any;
+  data: any;
+}
+
 export default function Generator() {
+  const { state } = useBusiness();
+
   const parameters = Parameters.getInstance().getParameters();
-  const [params, setParams] = useState([]);
+  const [params, setParams] = useState([] as ParameterType[]);
   const [save, setSave] = useState(false);
-  const businessId = Cookies.get("businessId");
+  const [enableQuery, setEnableQuery] = useState(false);
+
+  const { isLoading, data } = useQuery({
+    queryKey: ["users", state.business.id],
+    queryFn: () => paramService.getAllParams(state.business.id ?? ""),
+    retry: false,
+    refetchOnWindowFocus: false,
+    enabled: enableQuery,
+  });
 
   const onChange = (key: Key) => {
     if (parameters[key]) {
@@ -36,16 +49,16 @@ export default function Generator() {
       setSave(false);
     }, 1000);
   };
-  const { isLoading, data } = useQuery({
-    queryKey: ["users", businessId],
-    queryFn: () => paramService.getAllParams(businessId),
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
+
+  useEffect(() => {
+    if (state.business.id !== "") {
+      setEnableQuery(true);
+    }
+  }, [state.business.id]);
 
   useEffect(() => {
     if (data && !isLoading) {
-      let params = [];
+      let params: ParameterType[] = [];
       data.forEach((param: any) => {
         if (parameters[param.type]) {
           let parameter = { param: parameters[param.type], data: param };

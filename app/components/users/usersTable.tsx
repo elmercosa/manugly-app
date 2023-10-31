@@ -2,15 +2,11 @@
 
 import {
   Button,
-  Dropdown,
-  DropdownMenu,
-  DropdownTrigger,
   Input,
   Link,
   Pagination,
   Select,
   SelectItem,
-  SelectSection,
   Spinner,
   Table,
   TableBody,
@@ -21,7 +17,6 @@ import {
   Tooltip,
 } from "@nextui-org/react";
 import {
-  IconChevronUp,
   IconEdit,
   IconEye,
   IconPlus,
@@ -29,10 +24,10 @@ import {
   IconSettings,
   IconTrash,
 } from "@tabler/icons-react";
-import Cookies from "js-cookie";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 
+import { useBusiness } from "@/app/contexts/business/context";
 import { userService } from "@/services/userService";
 
 export default function UsersTable() {
@@ -42,17 +37,23 @@ export default function UsersTable() {
   const [pages, setPages] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [enableQuery, setEnableQuery] = useState(false);
+
+  const { state } = useBusiness();
 
   const { isLoading, data } = useQuery({
-    queryKey: ["users", Cookies.get("businessId")],
-    queryFn: () => userService.getAllUsers(Cookies.get("businessId") ?? ""),
+    queryKey: ["users", state.business.id],
+    queryFn: () => userService.getAllUsers(state.business.id ?? ""),
     retry: false,
+    refetchOnWindowFocus: false,
+    enabled: enableQuery,
   });
 
-  const { isFetching } = useQuery({
-    queryKey: ["users", Cookies.get("businessId")],
-    retry: false,
-  });
+  useEffect(() => {
+    if (state.business.id !== "") {
+      setEnableQuery(true);
+    }
+  }, [state.business.id]);
 
   useEffect(() => {
     if (data && !isLoading) {

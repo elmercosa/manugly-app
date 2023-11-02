@@ -1,14 +1,9 @@
 import "@/styles/globals.css";
 
 import type { Metadata } from "next";
-import { DM_Sans, Roboto_Mono } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 
 import { Providers } from "./providers";
-
-const roboto_mono = Roboto_Mono({
-  subsets: ["latin"],
-  display: "swap",
-});
 
 const dm = DM_Sans({
   subsets: ["latin"],

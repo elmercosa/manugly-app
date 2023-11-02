@@ -1,17 +1,20 @@
 import * as React from "react";
 
-type Action = { type: "set"; data: any } | { type: "decrement"; data: any };
+type Action = { type: "set"; data: any } | { type: "add"; data: any };
 type Dispatch = (action: Action) => void;
-type Params = {
+export type ParamsType = {
   param: any;
   data: any;
+  isValid: boolean;
+  isValidated: boolean;
+  isSaved: boolean;
 };
 type State = {
-  parameters: Params[];
+  parameters: ParamsType[];
 };
 type ParameterProviderProps = { children: React.ReactNode };
 
-let initialState: Params[] = [];
+let initialState: ParamsType[] = [];
 let name = "parameters";
 
 const ParameterStateContext = React.createContext<
@@ -21,11 +24,15 @@ const ParameterStateContext = React.createContext<
 function parameterReducer(state: State, action: Action) {
   switch (action.type) {
     case "set": {
-      localStorage.setItem(name, JSON.stringify(action.data));
       return { parameters: action.data };
     }
+    case "add": {
+      let parameter: ParamsType = action.data;
+      state.parameters.push(parameter);
+      return { parameters: state.parameters };
+    }
     default: {
-      throw new Error(`Unhandled action type: ${action.type}`);
+      throw new Error(`Unhandled action type`);
     }
   }
 }
@@ -43,8 +50,6 @@ function ParameterProvider({ children }: ParameterProviderProps) {
       dispatch({ type: "set", data: initialState });
     }
   }, []);
-  // NOTE: you *might* need to memoize this value
-  // Learn more in http://kcd.im/optimize-context
   const value = { state, dispatch };
   return (
     <ParameterStateContext.Provider value={value}>

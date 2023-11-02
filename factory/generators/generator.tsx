@@ -8,29 +8,26 @@ import {
   DropdownTrigger,
 } from "@nextui-org/react";
 import { IconDeviceFloppy, IconPlus } from "@tabler/icons-react";
-import { Key, use, useEffect, useState } from "react";
+import { Key, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 
 import { useBusiness } from "@/app/contexts/business/context";
+import { ParamsType, useParameters } from "@/app/contexts/parameter/context";
 import { Parameters } from "@/factory/types/parameters";
 import { paramService } from "@/services/paramService";
 
-interface ParameterType {
-  param: any;
-  data: any;
-}
-
 export default function Generator() {
   const { state } = useBusiness();
+  const paramsContext = useParameters();
 
   const parameters = Parameters.getInstance().getParameters();
-  const [params, setParams] = useState([] as ParameterType[]);
   const [save, setSave] = useState(false);
   const [enableQuery, setEnableQuery] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const { isLoading, data } = useQuery({
     queryKey: ["users", state.business.id],
-    queryFn: () => paramService.getAllParams(state.business.id ?? ""),
+    queryFn: () => paramService.getAllParams(state.business.id),
     retry: false,
     refetchOnWindowFocus: false,
     enabled: enableQuery,
@@ -38,11 +35,19 @@ export default function Generator() {
 
   const onChange = (key: Key) => {
     if (parameters[key]) {
-      let parameter = { param: parameters[key], data: null };
-      params.push(parameter);
-      setParams([...params]);
+      let index = paramsContext.state.parameters.length;
+      let parameter = {
+        param: parameters[key],
+        data: null,
+        isValid: false,
+        isValidated: false,
+        isSaved: false,
+        index: index,
+      };
+      paramsContext.dispatch({ type: "add", data: parameter });
     }
   };
+
   const saveParams = () => {
     setSave(true);
     setTimeout(() => {
@@ -58,14 +63,21 @@ export default function Generator() {
 
   useEffect(() => {
     if (data && !isLoading) {
-      let params: ParameterType[] = [];
-      data.forEach((param: any) => {
+      let params: ParamsType[] = [];
+      data.forEach((param: any, index: any) => {
         if (parameters[param.type]) {
-          let parameter = { param: parameters[param.type], data: param };
+          let parameter = {
+            param: parameters[param.type],
+            data: param,
+            isValid: false,
+            isValidated: false,
+            isSaved: false,
+            index: index,
+          };
           params.push(parameter);
         }
       });
-      setParams([...params]);
+      paramsContext.dispatch({ type: "set", data: params });
     }
   }, [data, isLoading]);
 
@@ -105,25 +117,28 @@ export default function Generator() {
         </div>
       </div>
       <div className="flex flex-col w-full gap-6 h-full">
-        {isLoading && (
+        {isLoading ? (
           <div className="flex flex-col gap-2 items-center justify-center w-full h-full ">
             <CircularProgress aria-label="Loading..." />
             <span>Cargando...</span>
           </div>
+        ) : (
+          paramsContext.state.parameters.map((parameter: any, index) => {
+            return (
+              <div
+                key={index}
+                className="bg-white rounded-xl shadow-md p-4 w-full"
+              >
+                {parameter.param.configuration && (
+                  <parameter.param.configuration
+                    save={save}
+                    paramData={parameter.data}
+                  />
+                )}
+              </div>
+            );
+          })
         )}
-        {Object.values(params).map((parameter: any, index) => {
-          return (
-            <div
-              key={index}
-              className="bg-white rounded-xl shadow-md p-4 w-full"
-            >
-              <parameter.param.configuration
-                save={save}
-                paramData={parameter.data}
-              />
-            </div>
-          );
-        })}
       </div>
     </div>
   );

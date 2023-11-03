@@ -8,11 +8,9 @@ import {
   DropdownTrigger,
 } from "@nextui-org/react";
 import { IconDeviceFloppy, IconPlus } from "@tabler/icons-react";
-import { useAtom } from "jotai";
 import { Key, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 
-import { businessAtom } from "@/app/store/store";
 import { Parameters } from "@/factory/types/parameters";
 import { paramService } from "@/services/paramService";
 

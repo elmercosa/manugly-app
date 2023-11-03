@@ -1,13 +1,18 @@
 import * as React from "react";
 
-type Action = { type: "set"; data: any } | { type: "add"; data: any };
+type Action =
+  | { type: "set"; data: any }
+  | { type: "add"; data: any }
+  | { type: "setIsSaving"; index: number }
+  | { type: "setParamData"; title: any; key: any; index: number }
+  | { type: "setIsValid"; index: number; isValid: boolean };
 type Dispatch = (action: Action) => void;
 export type ParamsType = {
   param: any;
   data: any;
   isValid: boolean;
   isValidated: boolean;
-  isSaved: boolean;
+  isSaving: boolean;
 };
 type State = {
   parameters: ParamsType[];
@@ -30,6 +35,28 @@ function parameterReducer(state: State, action: Action) {
       let parameter: ParamsType = action.data;
       state.parameters.push(parameter);
       return { parameters: state.parameters };
+    }
+    case "setIsSaving": {
+      let params = state.parameters;
+      if (params[action.index]) {
+        params[action.index].isSaving = !params[action.index].isSaving;
+      }
+      return { parameters: params };
+    }
+    case "setParamData": {
+      let params = state.parameters;
+      if (params[action.index]) {
+        params[action.index].data.title = action.title;
+        params[action.index].data.key = action.key;
+      }
+      return { parameters: params };
+    }
+    case "setIsValid": {
+      let params = state.parameters;
+      if (params[action.index]) {
+        params[action.index].isValid = action.isValid;
+      }
+      return { parameters: params };
     }
     default: {
       throw new Error(`Unhandled action type`);

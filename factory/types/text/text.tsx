@@ -1,9 +1,7 @@
 import { Checkbox, Chip, Input, Spinner } from "@nextui-org/react";
 import { IconCircleCheckFilled, IconCircleXFilled } from "@tabler/icons-react";
-import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 
-import { businessAtom } from "@/app/store/store";
 import { ExportType } from "@/factory/types/interfaces";
 import { ParamConfiguration } from "@/factory/types/param";
 import { paramService } from "@/services/paramService";
@@ -28,8 +26,6 @@ function Text({
   const [isSaved, setIsSaved] = useState(false);
   const [errorOnSave, setErrorOnSave] = useState(false);
   const [saving, setSaving] = useState(false);
-
-  const [business, setBusiness] = useAtom(businessAtom);
 
   // Config
   const [max, setMax] = useState("3");
@@ -159,7 +155,15 @@ function Text({
   );
 }
 
-function Configuration({ save, paramData }: { save?: any; paramData?: any }) {
+function Configuration({
+  save,
+  paramData,
+  index,
+}: {
+  save?: any;
+  paramData?: any;
+  index?: any;
+}) {
   // Config
   const [max, setMax] = useState("3");
   const [specialChars, setSpecialChars] = useState(false);
@@ -197,37 +201,36 @@ function Configuration({ save, paramData }: { save?: any; paramData?: any }) {
   }, [max, specialChars, numbers, required]);
 
   return (
-    <div className="flex flex-col gap-4 relative">
-      <ParamConfiguration
-        save={save}
-        data={paramData}
-        config={config}
-        type={type}
-        paramTitle={name}
-      >
-        <div className="flex gap-2">
-          <Input
-            type="number"
-            className="max-w-fit"
-            name="max"
-            label="Longitud máxima"
-            variant="bordered"
-            value={max}
-            onValueChange={setMax}
-            min={3}
-          />
-          <Checkbox isSelected={specialChars} onValueChange={setSpecialChars}>
-            Permitir caracteres especiales
-          </Checkbox>
-          <Checkbox isSelected={numbers} onValueChange={setNumbers}>
-            Permitir numeros
-          </Checkbox>
-          <Checkbox isSelected={required} onValueChange={setRequired}>
-            ¿Obligatorio?
-          </Checkbox>
-        </div>
-      </ParamConfiguration>
-    </div>
+    <ParamConfiguration
+      save={save}
+      data={paramData}
+      config={config}
+      type={type}
+      paramTitle={name}
+      index={index}
+    >
+      <div className="flex gap-2">
+        <Input
+          type="number"
+          className="max-w-fit"
+          name="max"
+          label="Longitud máxima"
+          variant="bordered"
+          value={max}
+          onValueChange={setMax}
+          min={3}
+        />
+        <Checkbox isSelected={specialChars} onValueChange={setSpecialChars}>
+          Permitir caracteres especiales
+        </Checkbox>
+        <Checkbox isSelected={numbers} onValueChange={setNumbers}>
+          Permitir numeros
+        </Checkbox>
+        <Checkbox isSelected={required} onValueChange={setRequired}>
+          ¿Obligatorio?
+        </Checkbox>
+      </div>
+    </ParamConfiguration>
   );
 }
 

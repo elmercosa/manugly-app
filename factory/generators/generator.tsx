@@ -13,6 +13,7 @@ import { useQuery } from "react-query";
 
 import { useBusiness } from "@/app/contexts/business/context";
 import { ParamsType, useParameters } from "@/app/contexts/parameter/context";
+import { PageLoader } from "@/components/pageLoader";
 import { Parameters } from "@/factory/types/parameters";
 import { paramService } from "@/services/paramService";
 
@@ -33,15 +34,20 @@ export default function Generator() {
     enabled: enableQuery,
   });
 
-  const onChange = (key: Key) => {
+  const onChange = (key: any) => {
     if (parameters[key]) {
       let index = paramsContext.state.parameters.length;
       let parameter = {
         param: parameters[key],
-        data: null,
+        data: {
+          id: null,
+          key: null,
+          title: null,
+          type: key,
+        },
         isValid: false,
         isValidated: false,
-        isSaved: false,
+        isSaving: false,
         index: index,
       };
       paramsContext.dispatch({ type: "add", data: parameter });
@@ -49,11 +55,27 @@ export default function Generator() {
   };
 
   const saveParams = () => {
-    setSave(true);
-    setTimeout(() => {
-      setSave(false);
-    }, 1000);
+    const validParams = paramsContext.state.parameters.filter(
+      (param) => param.isValid === true,
+    );
+    if (validParams.length === paramsContext.state.parameters.length) {
+      setSave(true);
+    }
   };
+
+  useEffect(() => {
+    if (paramsContext.state.parameters.length) {
+      const paramsSaving = paramsContext.state.parameters.filter(
+        (param) => param.isSaving === true,
+      );
+      if (paramsSaving.length) {
+        setIsSaving(true);
+      } else {
+        setIsSaving(false);
+        setSave(false);
+      }
+    }
+  }, [paramsContext]);
 
   useEffect(() => {
     if (state.business.id !== "") {
@@ -71,7 +93,7 @@ export default function Generator() {
             data: param,
             isValid: false,
             isValidated: false,
-            isSaved: false,
+            isSaving: false,
             index: index,
           };
           params.push(parameter);
@@ -116,30 +138,31 @@ export default function Generator() {
           </Button>
         </div>
       </div>
-      <div className="flex flex-col w-full gap-6 h-full">
-        {isLoading ? (
-          <div className="flex flex-col gap-2 items-center justify-center w-full h-full ">
-            <CircularProgress aria-label="Loading..." />
-            <span>Cargando...</span>
-          </div>
-        ) : (
-          paramsContext.state.parameters.map((parameter: any, index) => {
+
+      {isLoading && (
+        <div className="flex flex-col gap-2 items-center justify-center w-full h-full">
+          <CircularProgress aria-label="Loading..." />
+          <span>Cargando...</span>
+        </div>
+      )}
+
+      <div
+        className="flex flex-col w-full h-full gap-4"
+        style={{ gridTemplateColumns: "1fr 1fr" }}
+      >
+        {!isLoading &&
+          paramsContext.state.parameters.map((parameter: any, index: any) => {
             return (
-              <div
+              <parameter.param.configuration
                 key={index}
-                className="bg-white rounded-xl shadow-md p-4 w-full"
-              >
-                {parameter.param.configuration && (
-                  <parameter.param.configuration
-                    save={save}
-                    paramData={parameter.data}
-                  />
-                )}
-              </div>
+                index={index}
+                save={save}
+                paramData={parameter.data}
+              />
             );
-          })
-        )}
+          })}
       </div>
+      <PageLoader isLoading={isSaving} />
     </div>
   );
 }

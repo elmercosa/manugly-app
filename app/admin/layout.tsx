@@ -18,9 +18,9 @@ export default function RootLayout({
   return (
     <main className="flex bg-emerald-50/30 h-screen">
       <SideNav></SideNav>
-      <TopBar></TopBar>
-      <div className="flex pl-64 pt-36 w-full">
-        <div className="flex px-6 w-full">{children}</div>
+      <div className="flex flex-col pl-64 w-full">
+        <TopBar></TopBar>
+        <div className="flex px-10 w-full">{children}</div>
       </div>
     </main>
   );

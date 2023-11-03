@@ -16,11 +16,8 @@ import {
   IconCircleXFilled,
   IconTrash,
 } from "@tabler/icons-react";
-import { useAtom } from "jotai";
-import Cookies from "js-cookie";
 import { use, useEffect, useState } from "react";
 
-import { businessAtom } from "@/app/store/store";
 import { ExportType } from "@/factory/types/interfaces";
 import { paramService } from "@/services/paramService";
 

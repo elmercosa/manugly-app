@@ -9,7 +9,7 @@ import UserDropdown from "@/components/layout/user-dropdown";
 export default async function TopBar() {
   const session = await getServerSession(authOptions);
   return (
-    <div className="fixed top-0 right-0 z-50 pl-64 w-full transition-all flex items-center border-r-[1px] h-32 max-h-[32] ">
+    <div className="w-full transition-all flex items-center border-r-[1px] h-32 max-h-[32] py-10">
       <div className="flex items-center justify-between gap-6 px-10 rounded-xl w-full  h-full">
         <div className="flex flex-col h-full gap-1 justify-center">
           <BreadCrumbs></BreadCrumbs>

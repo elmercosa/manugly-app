@@ -2,7 +2,6 @@
 
 import { Button, Input } from "@nextui-org/react";
 import { IconDeviceFloppy } from "@tabler/icons-react";
-import { useAtom } from "jotai";
 import Cookies from "js-cookie";
 import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";

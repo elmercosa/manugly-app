@@ -5,7 +5,7 @@ import Setter from "@/factory/generators/setter";
 
 export default function Page({ params }: { params: { id: string } }) {
   const userId = params.id;
-  const businessId = Cookies.get("businessId");
+  const businessId = "";
 
   return (
     <div className="flex flex-col gap-6 h-full w-full">

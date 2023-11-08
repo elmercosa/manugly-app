@@ -81,7 +81,7 @@ export default function BusinessSelector({ user }: { user: any }) {
 
   useEffect(() => {
     if (business) {
-      dispatch({ type: "set", data: business });
+      // dispatch({ type: "set", data: business });
       setIsOpen(false);
       window.location.reload();
     }

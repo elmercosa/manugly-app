@@ -1,4 +1,5 @@
-<Accordion className="p-0" motionProps={motionProps}>
+{
+  /* <Accordion className="p-0" motionProps={motionProps}>
   <AccordionItem
     key="1"
     aria-label="Usuarios"
@@ -31,4 +32,5 @@
       </Link>
     </div>
   </AccordionItem>
-</Accordion>;
+</Accordion>; */
+}

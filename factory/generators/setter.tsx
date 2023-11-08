@@ -48,7 +48,7 @@ export default function Setter({
           params.push(parameter);
         }
       });
-      setParams(params);
+      // setParams(params);
     }
   }, [data, isLoading]);
 

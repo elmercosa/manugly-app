@@ -23,7 +23,7 @@ export default function CreateTemplate({ params }: { params: { id: string } }) {
       <div className="flex flex-col gap-4 bg-white rounded-xl p-5 shadow-md">
         <Skeleton isLoaded={isLoaded} className="rounded-lg">
           <h2 className="h-16 text-5xl font-bold">
-            {user.name} {user.surname}
+            {/* {user.name} {user.surname} */}
           </h2>
         </Skeleton>
         <Skeleton isLoaded={isLoaded} className="rounded-lg">
@@ -31,7 +31,7 @@ export default function CreateTemplate({ params }: { params: { id: string } }) {
             type="email"
             label="Email del usuario"
             labelPlacement="outside"
-            value={user.email}
+            // value={user.email}
             readOnly
           />
         </Skeleton>

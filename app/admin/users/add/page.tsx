@@ -7,7 +7,6 @@ import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { businessAtom } from "@/app/store/store";
 import Setter from "@/factory/generators/setter";
 import { userService } from "@/services/userService";
 
@@ -18,8 +17,7 @@ export default function AddUser() {
   const [idDocument, setIdDocument] = useState("69696969xxx");
   const firstLogin = true;
   const [isLoading, setIsLoading] = useState(false);
-  const [business, setBusiness] = useAtom(businessAtom);
-  const businessId = Cookies.get("businessId");
+  // const businessId = Cookies.get("businessId");
 
   // const { isLoading, data } = useQuery({
   //   queryKey: ["users", businessId],
@@ -40,12 +38,12 @@ export default function AddUser() {
       firstLogin,
       password: idDocument,
     };
-    const response = await userService.createUser(user, businessId);
-    if (response) {
-      push(`/admin/users/parameters/${response.id}`);
-    } else {
-    }
-    setIsLoading(false);
+    // const response = await userService.createUser(user, businessId);
+    // if (response) {
+    //   push(`/admin/users/parameters/${response.id}`);
+    // } else {
+    // }
+    // setIsLoading(false);
   };
   return (
     <div className="flex flex-col gap-6 h-full w-full">

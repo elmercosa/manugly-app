@@ -21,7 +21,6 @@ import { useAtom } from "jotai";
 import Cookies from "js-cookie";
 import { use, useEffect, useState } from "react";
 
-import { businessAtom } from "@/app/store/store";
 import { ExportType } from "@/factory/types/interfaces";
 import { paramService } from "@/services/paramService";
 
@@ -47,7 +46,7 @@ function Configuration({ save, paramData }: { save?: any; paramData?: any }) {
   const [errorOnSave, setErrorOnSave] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const businessId = Cookies.get("businessId");
+  const businessId = "";
 
   // Config
   const [max, setMax] = useState("3");

@@ -122,12 +122,12 @@ function CheckboxCustom({
     <div className="flex flex-col gap-4 relative">
       <h2 className="text-2xl font-semibold">{title}</h2>
       <div className="flex">
-        <Checkbox
+        {/* <Checkbox
           type="date"
           label="Escribe aquí"
-          isSelected={value}
-          onValueChange={setValue}
-        />
+          // isSelected={value}
+          // onValueChange={setValue}
+        /> */}
       </div>
       <div className="flex justify-end absolute top-0 right-0">
         {isSaved && (
@@ -173,8 +173,6 @@ function Configuration({ save, paramData }: { save?: any; paramData?: any }) {
   const [errorOnSave, setErrorOnSave] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const businessId = Cookies.get("businessId");
-
   // Config
   const [checkedDefault, setCheckedDefault] = useState(false);
   const [required, setRequired] = useState(false);
@@ -201,7 +199,7 @@ function Configuration({ save, paramData }: { save?: any; paramData?: any }) {
       key: keyNormalized,
       type: type,
       config: JSON.stringify(config),
-      businessId: businessId,
+      // businessId: businessId,
     };
     const response = await paramService.createParam(param);
 
@@ -227,7 +225,7 @@ function Configuration({ save, paramData }: { save?: any; paramData?: any }) {
 
     const param = {
       config: JSON.stringify(config),
-      businessId: businessId,
+      // businessId: businessId,
       id: id,
     };
     const response = await paramService.editParam(param);

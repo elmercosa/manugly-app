@@ -19,6 +19,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { ReactNode, useEffect, useState } from "react";
+import { setTimeout } from "timers";
 
 import { useBusiness } from "@/app/contexts/business/context";
 import { ParamsType, useParameters } from "@/app/contexts/parameter/context";
@@ -66,32 +67,6 @@ export function ParamConfiguration({
   const businessContext = useBusiness();
   const paramsContext = useParameters();
 
-  useEffect(() => {
-    if (paramsContext.state.parameters.length) {
-      const parameter = paramsContext.state.parameters[index];
-      const key = normalize(title);
-
-      const repeated = paramsContext.state.parameters.filter(
-        (param) => param.data.key == key,
-      );
-
-      if (repeated.length > 1) {
-        setIsRepeated(true);
-        paramsContext.dispatch({
-          type: "setIsValid",
-          index: index,
-          isValid: false,
-        });
-      } else {
-        setIsRepeated(false);
-      }
-
-      if (parameter) {
-        setParam(parameter);
-      }
-    }
-  }, [paramsContext]);
-
   const switchSaveState = () => {
     paramsContext.dispatch({
       type: "setIsSaving",
@@ -103,9 +78,19 @@ export function ParamConfiguration({
     if (response) {
       setIsSaved(true);
       setErrorOnSave(false);
+      paramsContext.dispatch({
+        type: "setError",
+        index: index,
+        hasErrors: false,
+      });
     } else {
       setErrorOnSave(true);
       setIsSaved(false);
+      paramsContext.dispatch({
+        type: "setError",
+        index: index,
+        hasErrors: true,
+      });
     }
     switchSaveState();
   };
@@ -179,6 +164,11 @@ export function ParamConfiguration({
     if (data.id) {
       setId(data.id);
       setTitle(data.title);
+      paramsContext.dispatch({
+        type: "setIsValid",
+        index: index,
+        isValid: true,
+      });
     }
   }, [data]);
 
@@ -191,8 +181,35 @@ export function ParamConfiguration({
         title,
         key,
       });
+      checkIsRepeated();
     }
   }, [title]);
+
+  const checkIsRepeated = () => {
+    setTimeout(() => {
+      const key = normalize(title);
+
+      const repeated = paramsContext.state.parameters.filter(
+        (param) => param.data.key == key,
+      );
+
+      if (repeated.length > 1) {
+        setIsRepeated(true);
+        paramsContext.dispatch({
+          type: "setIsValid",
+          index: index,
+          isValid: false,
+        });
+      } else {
+        setIsRepeated(false);
+        paramsContext.dispatch({
+          type: "setIsValid",
+          index: index,
+          isValid: true,
+        });
+      }
+    }, 50);
+  };
 
   return (
     <div className="bg-white rounded-xl shadow-md p-4 flex flex-col gap-4 relative">
@@ -207,14 +224,14 @@ export function ParamConfiguration({
             onValueChange={setTitle}
             readOnly={id !== null}
             isInvalid={id == null && isRepeated}
-            variant="bordered"
+            variant={id !== null ? "faded" : "bordered"}
           />
         </div>
         <div className="flex flex-col gap-2">
           <h3 className="text-base font-semibold">Configuración avanzada</h3>
           <div className="flex gap-2">{children}</div>
         </div>
-        <div className="flex justify-end absolute top-0 right-0">
+        <div className="flex justify-end absolute top-0 right-0 w-full">
           <Tooltip content="Borrar usuario">
             <Button
               startContent={<IconTrash size={16} />}
@@ -227,7 +244,7 @@ export function ParamConfiguration({
           </Tooltip>
         </div>
         <Spacer y={2} />
-        <div className="flex justify-end absolute bottom-0 right-0 gap-2">
+        <div className="flex justify-end absolute bottom-0 right-0 gap-2 w-full">
           {isSaved && (
             <Chip
               startContent={<IconCircleCheckFilled size={18} />}

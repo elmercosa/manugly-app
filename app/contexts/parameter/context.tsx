@@ -5,7 +5,8 @@ type Action =
   | { type: "add"; data: any }
   | { type: "setIsSaving"; index: number }
   | { type: "setParamData"; title: any; key: any; index: number }
-  | { type: "setIsValid"; index: number; isValid: boolean };
+  | { type: "setIsValid"; index: number; isValid: boolean }
+  | { type: "setError"; index: number; hasErrors: boolean };
 type Dispatch = (action: Action) => void;
 export type ParamsType = {
   param: any;
@@ -13,6 +14,7 @@ export type ParamsType = {
   isValid: boolean;
   isValidated: boolean;
   isSaving: boolean;
+  hasError: boolean;
 };
 type State = {
   parameters: ParamsType[];
@@ -55,6 +57,13 @@ function parameterReducer(state: State, action: Action) {
       let params = state.parameters;
       if (params[action.index]) {
         params[action.index].isValid = action.isValid;
+      }
+      return { parameters: params };
+    }
+    case "setError": {
+      let params = state.parameters;
+      if (params[action.index]) {
+        params[action.index].hasError = action.hasErrors;
       }
       return { parameters: params };
     }

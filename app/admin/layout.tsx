@@ -1,6 +1,8 @@
 import "@/styles/globals.css";
+import "react-toastify/dist/ReactToastify.css";
 
 import type { Metadata } from "next";
+import { ToastContainer } from "react-toastify";
 
 import SideNav from "@/components/layout/private/sideNav";
 import TopBar from "@/components/layout/private/topBar";
@@ -20,6 +22,18 @@ export default function RootLayout({
       <SideNav></SideNav>
       <div className="flex flex-col pl-64 w-full">
         <TopBar></TopBar>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
         <div className="flex px-10 w-full">{children}</div>
       </div>
     </main>

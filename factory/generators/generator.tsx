@@ -10,6 +10,7 @@ import {
 import { IconDeviceFloppy, IconPlus } from "@tabler/icons-react";
 import { Key, useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 
 import { useBusiness } from "@/app/contexts/business/context";
 import { ParamsType, useParameters } from "@/app/contexts/parameter/context";
@@ -48,6 +49,7 @@ export default function Generator() {
         isValid: false,
         isValidated: false,
         isSaving: false,
+        hasError: false,
         index: index,
       };
       paramsContext.dispatch({ type: "add", data: parameter });
@@ -60,22 +62,41 @@ export default function Generator() {
     );
     if (validParams.length === paramsContext.state.parameters.length) {
       setSave(true);
+    } else {
+      toast.error(
+        "Se han encontrado errores en los parámetros.\n Por favor, revisa los campos marcados en rojo.",
+      );
     }
   };
 
   useEffect(() => {
-    if (paramsContext.state.parameters.length) {
+    if (paramsContext.state.parameters.length && save) {
       const paramsSaving = paramsContext.state.parameters.filter(
         (param) => param.isSaving === true,
       );
-      if (paramsSaving.length) {
+
+      if (paramsSaving.length && !isSaving) {
         setIsSaving(true);
-      } else {
+      }
+
+      if (!paramsSaving.length && isSaving) {
+        const paramsWithError = paramsContext.state.parameters.filter(
+          (param) => param.hasError === true,
+        );
+
+        if (paramsWithError.length) {
+          toast.error(
+            "Ha ocurrido un error al guardar.\n Por favor, revisa los campos marcados en rojo.",
+          );
+        } else {
+          toast.success("Guardado correctamente!");
+        }
+
         setIsSaving(false);
         setSave(false);
       }
     }
-  }, [paramsContext]);
+  }, [paramsContext, save]);
 
   useEffect(() => {
     if (state.business.id !== "") {
@@ -94,6 +115,7 @@ export default function Generator() {
             isValid: false,
             isValidated: false,
             isSaving: false,
+            hasError: false,
             index: index,
           };
           params.push(parameter);
@@ -146,10 +168,7 @@ export default function Generator() {
         </div>
       )}
 
-      <div
-        className="flex flex-col w-full h-full gap-4"
-        style={{ gridTemplateColumns: "1fr 1fr" }}
-      >
+      <div className="flex flex-col w-full h-full gap-4">
         {!isLoading &&
           paramsContext.state.parameters.map((parameter: any, index: any) => {
             return (

@@ -9,7 +9,7 @@ export default function App() {
   return (
     <>
       <NavBar></NavBar>
-      <main className="grid min-h-screen grid-cols-12 pt-20"></main>
+      <main className="grid grid-cols-12 pt-20"></main>
       <Footer></Footer>
     </>
   );

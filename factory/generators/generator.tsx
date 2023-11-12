@@ -8,7 +8,7 @@ import {
   DropdownTrigger,
 } from "@nextui-org/react";
 import { IconDeviceFloppy, IconPlus } from "@tabler/icons-react";
-import { Key, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 
@@ -112,7 +112,7 @@ export default function Generator() {
           let parameter = {
             param: parameters[param.type],
             data: param,
-            isValid: false,
+            isValid: true,
             isValidated: false,
             isSaving: false,
             hasError: false,
@@ -127,17 +127,17 @@ export default function Generator() {
 
   return (
     <div className="flex flex-col gap-6 h-full">
-      <div className="flex w-full justify-between items-center gap-4 bg-white rounded-xl p-4 shadow-md">
+      <div className="flex w-full justify-between items-center gap-4">
         <h2 className="text-3xl font-semibold">Parámetros del usuario</h2>
         <div className="flex gap-2">
           <Dropdown>
             <DropdownTrigger>
               <Button
-                className="bg-emerald-500 text-white shadow-md"
-                startContent={<IconPlus size={20} />}
+                className="bg-emerald-500 text-white rounded-xl font-semibold"
+                startContent={<IconPlus size={20} className="font-semibold" />}
                 isDisabled={isLoading}
               >
-                Añadir parametro
+                Añadir parámetro
               </Button>
             </DropdownTrigger>
             <DropdownMenu aria-label="Action event example" onAction={onChange}>
@@ -151,8 +151,10 @@ export default function Generator() {
             </DropdownMenu>
           </Dropdown>
           <Button
-            className="bg-emerald-500 text-white shadow-md"
-            startContent={<IconDeviceFloppy size={20} />}
+            className="bg-emerald-500 text-white rounded-xl font-semibold"
+            startContent={
+              <IconDeviceFloppy size={20} className="font-semibold" />
+            }
             onClick={saveParams}
             isDisabled={isLoading}
           >
@@ -168,7 +170,7 @@ export default function Generator() {
         </div>
       )}
 
-      <div className="flex flex-col w-full h-full gap-4">
+      <div className="grid grid-cols-3 w-full h-full gap-4">
         {!isLoading &&
           paramsContext.state.parameters.map((parameter: any, index: any) => {
             return (

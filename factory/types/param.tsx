@@ -7,34 +7,300 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Spacer,
-  Spinner,
+  Switch,
+  Textarea,
   Tooltip,
 } from "@nextui-org/react";
 import {
+  IconAlertTriangleFilled,
   IconCircleCheckFilled,
-  IconCirclePlus,
   IconCircleXFilled,
   IconSquareRoundedPlusFilled,
-  IconTrash,
+  IconTrashFilled,
 } from "@tabler/icons-react";
 import { ReactNode, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { setTimeout } from "timers";
 
 import { useBusiness } from "@/app/contexts/business/context";
 import { ParamsType, useParameters } from "@/app/contexts/parameter/context";
 import { paramService } from "@/services/paramService";
 
-function Component({
+export function ParamComponent({
+  paramTitle,
   children,
   save,
   data,
+  config,
+  type,
+  index,
+  userId,
 }: {
   children: ReactNode;
   save: boolean;
   data: any;
+  config: any;
+  type: string;
+  paramTitle: string;
+  index: number;
+  userId: string;
 }) {
-  return { children };
+  const [id, setId] = useState(null);
+  const [title, setTitle] = useState("");
+  const [required, setRequired] = useState(false);
+
+  //invalid state
+  const [isInvalid, setIsInvalid] = useState(false);
+
+  const [isSaved, setIsSaved] = useState(false);
+  const [errorOnSave, setErrorOnSave] = useState(false);
+
+  // Value
+  const [value, setValue] = useState(undefined as any);
+  const [idValue, setIdValue] = useState(null as any);
+
+  // Contexts
+  const businessContext = useBusiness();
+  const paramsContext = useParameters();
+
+  const switchSaveState = () => {
+    paramsContext.dispatch({
+      type: "setIsSaving",
+      index: index,
+    });
+  };
+
+  const afterSave = (response: any) => {
+    if (response) {
+      setIsSaved(true);
+      setErrorOnSave(false);
+      paramsContext.dispatch({
+        type: "setError",
+        index: index,
+        hasErrors: false,
+      });
+    } else {
+      setErrorOnSave(true);
+      setIsSaved(false);
+      paramsContext.dispatch({
+        type: "setError",
+        index: index,
+        hasErrors: true,
+      });
+    }
+    switchSaveState();
+  };
+
+  const saveParam = async () => {
+    let valueAux = type === "checkbox" ? value.toString() : value;
+
+    const param = {
+      businessId: businessContext.state.business.id,
+      value: valueAux,
+      userId: userId,
+      paramId: id,
+    };
+    const response = await paramService.linkParam(param);
+
+    if (response) {
+      setIdValue(true);
+    }
+
+    afterSave(response);
+  };
+
+  const updateParam = async () => {
+    let valueAux = type === "checkbox" ? value.toString() : value;
+    console.log("valueAux :>> ", valueAux);
+    const param = {
+      businessId: businessContext.state.business.id,
+      id: id,
+      value: valueAux,
+      userId: userId,
+    };
+    const response = await paramService.setValue(param);
+
+    afterSave(response);
+  };
+
+  useEffect(() => {
+    if (save && !isSaved) {
+      switchSaveState();
+      if (idValue === null) {
+        saveParam();
+      } else {
+        updateParam();
+      }
+    }
+  }, [save]);
+
+  useEffect(() => {
+    if (type === "checkbox") {
+      setValue(false);
+    }
+  }, [type]);
+
+  useEffect(() => {
+    if (data.id) {
+      setId(data.id);
+      setTitle(data.title);
+
+      if (data.value) {
+        setIdValue(data.idValue);
+        console.log("data :>> ", data);
+        if (type === "checkbox") {
+          setValue(data.value === "true");
+        } else {
+          setValue(data.value);
+        }
+      }
+
+      if (data.configuration && data.configuration.length) {
+        const config = JSON.parse(data.configuration[0].configuration);
+        setRequired(config.required);
+      }
+
+      paramsContext.dispatch({
+        type: "setIsValid",
+        index: index,
+        isValid: true,
+      });
+    }
+  }, [data]);
+
+  useEffect(() => {
+    console.log("value :>> ", value);
+    if (value) {
+      setIsSaved(false);
+      paramsContext.dispatch({
+        type: "setValue",
+        index: index,
+        value: value,
+      });
+      paramsContext.dispatch({
+        type: "setIsValid",
+        index: index,
+        isValid: true,
+      });
+    }
+  }, [value]);
+
+  useEffect(() => {
+    if (paramsContext.state.parameters.length) {
+      let param = paramsContext.state.parameters[index];
+      if (param && !param.isValid) {
+        setIsInvalid(true);
+      } else {
+        setIsInvalid(false);
+      }
+    }
+  }, [paramsContext]);
+
+  return (
+    <div className="bg-white rounded-xl p-4 flex flex-col gap-4">
+      <div className="flex flex-col gap-4 justify-between h-full">
+        {type !== "textarea" && type !== "checkbox" && (
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold text-gray-500">
+                {paramTitle}
+              </span>
+              <h2 className="text-xl font-bold">
+                {title}
+                {required && <span className="text-red-500">*</span>}
+              </h2>
+            </div>
+            <Input
+              type={type}
+              startContent={children}
+              name="name"
+              value={value}
+              onValueChange={(data) => setValue(data)}
+              isRequired={required}
+              variant="bordered"
+              errorMessage={isInvalid ? "Este campo es obligatorio" : ""}
+              isInvalid={isInvalid}
+              size="sm"
+            />
+          </div>
+        )}
+
+        {type === "textarea" && (
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold text-gray-500">
+                {paramTitle}
+              </span>
+              <h2 className="text-xl font-bold">
+                {title}
+                {required && <span className="text-red-500">*</span>}
+              </h2>
+            </div>
+            <Textarea
+              value={value}
+              onValueChange={setValue}
+              isRequired={required}
+              variant="bordered"
+              errorMessage={isInvalid ? "Este campo es obligatorio" : ""}
+              isInvalid={isInvalid}
+              size="sm"
+            />
+          </div>
+        )}
+
+        {type === "checkbox" && (
+          <div className="flex items-center gap-2 w-full justify-between">
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold text-gray-500">
+                {paramTitle}
+              </span>
+              <h2 className="text-xl font-bold">
+                {title}
+                {required && <span className="text-red-500">*</span>}
+              </h2>
+            </div>
+            <Switch
+              size="sm"
+              isSelected={value}
+              onValueChange={setValue}
+              aria-label={title}
+              classNames={{
+                wrapper: "m-0",
+              }}
+            />
+          </div>
+        )}
+        <div className="flex justify-end bottom-2 right-2 gap-2 ">
+          {isSaved && (
+            <Chip
+              startContent={<IconCircleCheckFilled size={18} />}
+              variant="flat"
+              color="success"
+              classNames={{
+                content: "text-black",
+              }}
+              radius="sm"
+            >
+              Guardado
+            </Chip>
+          )}
+          {errorOnSave && (
+            <Chip
+              startContent={<IconCircleXFilled size={18} />}
+              variant="flat"
+              color="danger"
+              classNames={{
+                content: "text-black",
+              }}
+              radius="sm"
+            >
+              Error al guardar
+            </Chip>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function ParamConfiguration({
@@ -56,13 +322,14 @@ export function ParamConfiguration({
 }) {
   const [id, setId] = useState(null);
   const [title, setTitle] = useState("");
+  const [required, setRequired] = useState(false);
+
   const [isSaved, setIsSaved] = useState(false);
   const [errorOnSave, setErrorOnSave] = useState(false);
   const [saving, setSaving] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isRepeated, setIsRepeated] = useState(false);
-
-  const [param, setParam] = useState({} as ParamsType);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const businessContext = useBusiness();
   const paramsContext = useParameters();
@@ -101,17 +368,31 @@ export function ParamConfiguration({
   };
 
   const removeParam = async () => {
-    const param = {
-      businessId: businessContext.state.business.id,
-      parameterId: id,
-    };
-    const response = await paramService.removeParam(param);
+    setIsDeleting(true);
+    if (id) {
+      const param = {
+        businessId: businessContext.state.business.id,
+        parameterId: id,
+      };
+      const response = await paramService.removeParam(param);
 
-    if (response) {
-      console.log("11111 :>> ", 11111);
+      if (response) {
+        toast.success("Parámetro eliminado correctamente");
+        paramsContext.dispatch({
+          type: "remove",
+          index: index,
+        });
+      } else {
+        toast.error("No se pudo eliminar el parámetro");
+      }
     } else {
-      console.log("11111 :>> ", 1221);
+      toast.success("Parámetro eliminado correctamente");
+      paramsContext.dispatch({
+        type: "remove",
+        index: index,
+      });
     }
+    setIsDeleting(false);
     setIsOpen(false);
   };
 
@@ -164,6 +445,10 @@ export function ParamConfiguration({
     if (data.id) {
       setId(data.id);
       setTitle(data.title);
+      if (data.configuration && data.configuration.length) {
+        const config = JSON.parse(data.configuration[0].configuration);
+        setRequired(config.required);
+      }
       paramsContext.dispatch({
         type: "setIsValid",
         index: index,
@@ -171,6 +456,18 @@ export function ParamConfiguration({
       });
     }
   }, [data]);
+
+  useEffect(() => {
+    if (id === null) {
+      checkIsRepeated();
+    }
+  }, [paramsContext]);
+
+  useEffect(() => {
+    if (config) {
+      config.required = required;
+    }
+  }, [required, config]);
 
   useEffect(() => {
     if (title.length) {
@@ -212,44 +509,79 @@ export function ParamConfiguration({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-4 flex flex-col gap-4 relative">
-      <div className="flex flex-col gap-4 relative">
-        <h2 className="text-2xl font-semibold">{paramTitle}</h2>
-        <div className="flex">
-          <Input
-            type="text"
-            name="name"
-            label="Nombre del parámetro"
-            value={title}
-            onValueChange={setTitle}
-            readOnly={id !== null}
-            isInvalid={id == null && isRepeated}
-            variant={id !== null ? "faded" : "bordered"}
-          />
+    <div className="bg-white rounded-xl p-4 flex flex-col gap-4">
+      <div className="flex flex-col gap-4 justify-between h-full">
+        <div className="flex flex-col gap-6">
+          {id == null ? (
+            <div className="flex flex-col gap-2">
+              <h2 className="text-xl font-bold">{paramTitle}</h2>
+              <Input
+                type="text"
+                name="name"
+                label={id !== null ? "" : "Nombre del parámetro"}
+                value={title}
+                onValueChange={setTitle}
+                readOnly={id !== null}
+                isInvalid={id == null && isRepeated}
+                variant={id !== null ? "faded" : "bordered"}
+                size="sm"
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold text-gray-500">
+                {paramTitle}
+              </span>
+              <h2 className="text-xl font-bold">{title}</h2>
+            </div>
+          )}
+          <div className="flex flex-col gap-1 relative">
+            <h3 className="text-sm font-semibold absolute top-0 left-2 -translate-y-1/2 bg-white px-2">
+              Configuración avanzada
+            </h3>
+            <div className="flex flex-col gap-2 border rounded-lg p-3 pt-4">
+              {children}
+              <div className="flex items-center gap-2 w-full justify-between">
+                <span className="text-sm">¿Obligatorio?</span>
+                <Switch
+                  size="sm"
+                  isSelected={required}
+                  onValueChange={setRequired}
+                  aria-label="¿Obligatorio?"
+                  classNames={{
+                    wrapper: "m-0",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-2">
-          <h3 className="text-base font-semibold">Configuración avanzada</h3>
-          <div className="flex gap-2">{children}</div>
-        </div>
-        <div className="flex justify-end absolute top-0 right-0 w-full">
-          <Tooltip content="Borrar usuario">
+        <div className="flex justify-end bottom-2 right-2 gap-2 ">
+          <Tooltip
+            content="Borrar usuario"
+            color="danger"
+            placement="left-start"
+          >
             <Button
-              startContent={<IconTrash size={16} />}
+              startContent={<IconTrashFilled size={16} />}
               onPress={() => setIsOpen(true)}
               isDisabled={saving}
-              color="danger"
-              variant="light"
+              size="sm"
+              className="w-7 h-7 min-h-[28px] min-w-[28px]"
               isIconOnly
+              color="danger"
+              variant="flat"
             ></Button>
           </Tooltip>
-        </div>
-        <Spacer y={2} />
-        <div className="flex justify-end absolute bottom-0 right-0 gap-2 w-full">
           {isSaved && (
             <Chip
               startContent={<IconCircleCheckFilled size={18} />}
-              variant="faded"
+              variant="flat"
               color="success"
+              classNames={{
+                content: "text-black",
+              }}
+              radius="sm"
             >
               Guardado
             </Chip>
@@ -257,17 +589,25 @@ export function ParamConfiguration({
           {errorOnSave && (
             <Chip
               startContent={<IconCircleXFilled size={18} />}
-              variant="faded"
+              variant="flat"
               color="danger"
+              classNames={{
+                content: "text-black",
+              }}
+              radius="sm"
             >
               Error al guardar
             </Chip>
           )}
           {isRepeated && (
             <Chip
-              startContent={<IconCircleXFilled size={18} />}
-              variant="faded"
-              color="danger"
+              startContent={<IconAlertTriangleFilled size={18} />}
+              variant="flat"
+              color="warning"
+              classNames={{
+                content: "text-black",
+              }}
+              radius="sm"
             >
               Parámetro repetido
             </Chip>
@@ -276,26 +616,14 @@ export function ParamConfiguration({
           {!id && (
             <Chip
               startContent={<IconSquareRoundedPlusFilled size={18} />}
-              variant="faded"
+              variant="flat"
               color="secondary"
+              classNames={{
+                content: "text-black",
+              }}
+              radius="sm"
             >
               Nuevo
-            </Chip>
-          )}
-
-          {saving && (
-            <Chip
-              startContent={
-                <Spinner
-                  aria-label="Loading..."
-                  size="sm"
-                  className="text-xs"
-                />
-              }
-              variant="faded"
-              className="text-xs"
-            >
-              Guardando cambios...
             </Chip>
           )}
         </div>
@@ -321,6 +649,7 @@ export function ParamConfiguration({
               <Button
                 className="bg-emerald-500 text-white shadow-md"
                 onPress={removeParam}
+                isLoading={isDeleting}
               >
                 Sí
               </Button>

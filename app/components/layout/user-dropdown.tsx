@@ -7,18 +7,14 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
-  Switch,
 } from "@nextui-org/react";
 import {
   IconAdjustmentsAlt,
   IconBrush,
   IconLogout,
-  IconMoon,
+  IconRobotFace,
   IconSearch,
-  IconSun,
-  IconSwitchVertical,
   IconUser,
-  IconUserHexagon,
 } from "@tabler/icons-react";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
@@ -43,12 +39,12 @@ export default function UserDropdown({ session }: { session?: Session }) {
         }}
       >
         <DropdownTrigger>
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 bg-white rounded-xl p-2">
             <p className="text-sm font-bold whitespace-nowrap">
               👋 Hola, {name}
             </p>
-            <div className="flex items-center justify-center w-[32px] h-[32px] rounded-full bg-emerald-500 text-white">
-              <IconUser size={20} />
+            <div className="flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500 text-white">
+              <IconRobotFace size={18} />
             </div>
           </div>
         </DropdownTrigger>

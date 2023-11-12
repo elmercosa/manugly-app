@@ -18,9 +18,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="flex bg-emerald-50/30 h-screen">
+    <main className="grid grid-cols-12 bg-gray-100 h-screen max-h-screen p-4">
       <SideNav></SideNav>
-      <div className="flex flex-col pl-64 w-full">
+      <div className="flex flex-col w-full col-start-3 col-end-13 max-h-screen overflow-y-auto pl-10 pr-6">
         <TopBar></TopBar>
         <ToastContainer
           position="bottom-right"
@@ -34,7 +34,7 @@ export default function RootLayout({
           pauseOnHover
           theme="light"
         />
-        <div className="flex px-10 w-full">{children}</div>
+        <div className="flex w-full justify-center">{children}</div>
       </div>
     </main>
   );

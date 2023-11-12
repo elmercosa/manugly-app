@@ -91,7 +91,7 @@ export default function BusinessSelector({ user }: { user: any }) {
     <>
       <Button
         onClick={() => setIsOpen(true)}
-        className="bg-emerald-500 text-white rounded-full p-2"
+        className="bg-emerald-500 text-white rounded-xl p-4 font-bold"
       >
         {state.business.name}
       </Button>

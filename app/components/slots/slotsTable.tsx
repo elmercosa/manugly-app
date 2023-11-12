@@ -20,7 +20,6 @@ import {
   IconEdit,
   IconEye,
   IconPlus,
-  IconRobotFace,
   IconSearch,
   IconSettings,
   IconTrash,
@@ -31,9 +30,7 @@ import { useQuery } from "react-query";
 import { useBusiness } from "@/app/contexts/business/context";
 import { userService } from "@/services/userService";
 
-import AddUserForm from "./addForm";
-
-export default function UsersTable() {
+export default function SlotsTable() {
   const [users, setUsers] = useState([]);
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(1);
@@ -102,7 +99,7 @@ export default function UsersTable() {
                     "border-none bg-white shadow-none rounded-xl w-96",
                 }}
                 startContent={<IconSearch size={20} />}
-                placeholder="Buscar por nombre, apellidos, email..."
+                placeholder="Buscar por título, descripción"
                 value={filterValue}
                 onValueChange={setFilterValue}
                 radius="none"
@@ -113,22 +110,12 @@ export default function UsersTable() {
           </div>
           <div className="flex gap-3 w-1/2 items-center justify-end">
             <Button
-              href="/admin/users/config"
-              as={Link}
-              className="bg-emerald-500 text-white font-semibold rounded-xl "
-              startContent={
-                <IconSettings size={20} className="font-semibold" />
-              }
-            >
-              Configurar usuarios
-            </Button>
-            <Button
-              href="/admin/users/add"
-              as={Link}
-              className="bg-emerald-500 text-white font-semibold rounded-xl "
+              className="bg-emerald-500 text-white  rounded-xl  font-semibold"
               startContent={<IconPlus size={20} className="font-semibold" />}
+              as={Link}
+              href="/admin/users/add"
             >
-              Añadir usuario
+              Añadir evento
             </Button>
           </div>
         </div>
@@ -192,22 +179,19 @@ export default function UsersTable() {
               <TableCell>{item?.email}</TableCell>
               <TableCell>
                 <div className="relative flex items-center gap-2">
-                  <Tooltip content="Editar parámetros">
+                  <Tooltip content="Ver usuario">
                     <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                       <Link
-                        href={`/admin/users/parameters/${item?.id}`}
+                        href={`/admin/users/details/${item?.id}`}
                         className="text-gray-400"
                       >
-                        <IconRobotFace />
+                        <IconEye />
                       </Link>
                     </span>
                   </Tooltip>
                   <Tooltip content="Editar usuario">
                     <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                      <Link
-                        href={`/admin/users/edit/${item?.id}`}
-                        className="text-gray-400"
-                      >
+                      <Link href="/admin/users/edit" className="text-gray-400">
                         <IconEdit />
                       </Link>
                     </span>

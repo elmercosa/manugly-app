@@ -13,7 +13,6 @@ import {
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { title } from "process";
 
 export default function Menu() {
   const pathname = usePathname();
@@ -66,38 +65,17 @@ export default function Menu() {
       </Link>
       <Link
         href="/admin/users/"
-        className={pathname == "/admin/users" ? active : menuClass}
+        className={pathname.includes("/admin/users") ? active : menuClass}
       >
         <IconUsersGroup size={20} />
         Usuarios
       </Link>
       <Link
-        href="/admin"
-        className={pathname == "/admin/1" ? active : menuClass}
-      >
-        <IconChartBar size={20} />
-        Campañas
-      </Link>
-      <Link
-        href="/admin"
-        className={pathname == "/admin/1" ? active : menuClass}
+        href="/admin/slots/"
+        className={pathname.includes("/admin/slots") ? active : menuClass}
       >
         <IconCalendarEvent size={20} />
-        Horarios
-      </Link>
-      <Link
-        href="/admin"
-        className={pathname == "/admin/1" ? active : menuClass}
-      >
-        <IconBrandMastercard size={20} />
-        Metodos de pago
-      </Link>
-      <Link
-        href="/admin"
-        className={pathname == "/admin/1" ? active : menuClass}
-      >
-        <IconSettings size={24} />
-        Configuración
+        Citas
       </Link>
     </div>
   );

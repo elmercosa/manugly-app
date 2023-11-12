@@ -1,15 +1,16 @@
-"use client";
-import Cookies from "js-cookie";
-
+import BusinessWrapper from "@/components/business/businessWrapper";
+import ParametersWrapper from "@/components/parameters/parametersWrapper";
 import Setter from "@/factory/generators/setter";
 
 export default function Page({ params }: { params: { id: string } }) {
   const userId = params.id;
-  const businessId = Cookies.get("businessId");
-
   return (
-    <div className="flex flex-col gap-6 h-full w-full">
-      <Setter userId={userId} businessId={businessId} />
-    </div>
+    <main className="w-full">
+      <BusinessWrapper>
+        <ParametersWrapper>
+          <Setter userId={userId} />
+        </ParametersWrapper>
+      </BusinessWrapper>
+    </main>
   );
 }

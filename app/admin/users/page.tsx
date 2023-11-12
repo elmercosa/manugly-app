@@ -1,12 +1,18 @@
 "use client";
 import React from "react";
 
-import TableWrapper from "@/components/users/tableWrapper";
+import BusinessWrapper from "@/components/business/businessWrapper";
+import ParametersWrapper from "@/components/parameters/parametersWrapper";
+import UsersTable from "@/components/users/usersTable";
 
 export default function Users() {
   return (
     <main className="w-full">
-      <TableWrapper />
+      <BusinessWrapper>
+        <ParametersWrapper>
+          <UsersTable />
+        </ParametersWrapper>
+      </BusinessWrapper>
     </main>
   );
 }

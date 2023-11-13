@@ -35,6 +35,8 @@ export function ParamComponent({
   type,
   index,
   userId,
+  errorMessage,
+  description,
 }: {
   children: ReactNode;
   save: boolean;
@@ -44,6 +46,8 @@ export function ParamComponent({
   paramTitle: string;
   index: number;
   userId: string;
+  errorMessage: string;
+  description: string;
 }) {
   const [id, setId] = useState(null);
   const [title, setTitle] = useState("");
@@ -92,7 +96,8 @@ export function ParamComponent({
   };
 
   const saveParam = async () => {
-    let valueAux = type === "checkbox" ? value.toString() : value;
+    let valueAux =
+      type === "checkbox" || type === "number" ? value.toString() : value;
 
     const param = {
       businessId: businessContext.state.business.id,
@@ -110,8 +115,8 @@ export function ParamComponent({
   };
 
   const updateParam = async () => {
-    let valueAux = type === "checkbox" ? value.toString() : value;
-    console.log("valueAux :>> ", valueAux);
+    let valueAux =
+      type === "checkbox" || type === "number" ? value.toString() : value;
     const param = {
       businessId: businessContext.state.business.id,
       id: id,
@@ -138,6 +143,9 @@ export function ParamComponent({
     if (type === "checkbox") {
       setValue(false);
     }
+    if (type === "number") {
+      setValue(0);
+    }
   }, [type]);
 
   useEffect(() => {
@@ -147,7 +155,7 @@ export function ParamComponent({
 
       if (data.value) {
         setIdValue(data.idValue);
-        console.log("data :>> ", data);
+
         if (type === "checkbox") {
           setValue(data.value === "true");
         } else {
@@ -169,20 +177,12 @@ export function ParamComponent({
   }, [data]);
 
   useEffect(() => {
-    console.log("value :>> ", value);
-    if (value) {
-      setIsSaved(false);
-      paramsContext.dispatch({
-        type: "setValue",
-        index: index,
-        value: value,
-      });
-      paramsContext.dispatch({
-        type: "setIsValid",
-        index: index,
-        isValid: true,
-      });
-    }
+    paramsContext.dispatch({
+      type: "setValue",
+      index: index,
+      value: value,
+    });
+    setIsSaved(false);
   }, [value]);
 
   useEffect(() => {
@@ -199,7 +199,7 @@ export function ParamComponent({
   return (
     <div className="bg-white rounded-xl p-4 flex flex-col gap-4">
       <div className="flex flex-col gap-4 justify-between h-full">
-        {type !== "textarea" && type !== "checkbox" && (
+        {type !== "textarea" && type !== "checkbox" && type !== "date" && (
           <div className="flex flex-col gap-4">
             <div className="flex flex-col">
               <span className="text-xs font-semibold text-gray-500">
@@ -212,15 +212,45 @@ export function ParamComponent({
             </div>
             <Input
               type={type}
-              startContent={children}
               name="name"
               value={value}
               onValueChange={(data) => setValue(data)}
               isRequired={required}
               variant="bordered"
-              errorMessage={isInvalid ? "Este campo es obligatorio" : ""}
+              errorMessage={isInvalid ? errorMessage : ""}
+              description={description}
               isInvalid={isInvalid}
               size="sm"
+              isClearable
+            />
+          </div>
+        )}
+
+        {type === "date" && (
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold text-gray-500">
+                {paramTitle}
+              </span>
+              <h2 className="text-xl font-bold">
+                {title}
+                {required && <span className="text-red-500">*</span>}
+              </h2>
+            </div>
+            <Input
+              type={type}
+              name="name"
+              value={value}
+              onValueChange={(data) => setValue(data)}
+              isRequired={required}
+              variant="bordered"
+              errorMessage={isInvalid ? errorMessage : ""}
+              description={description}
+              isInvalid={isInvalid}
+              size="sm"
+              min={JSON.parse(data.configuration[0].configuration).min}
+              max={JSON.parse(data.configuration[0].configuration).max}
+              isClearable
             />
           </div>
         )}

@@ -1,7 +1,8 @@
-import { Switch, Textarea } from "@nextui-org/react";
+import { Input, Switch, Textarea } from "@nextui-org/react";
 import { useCounter } from "@uidotdev/usehooks";
 import { useEffect, useState } from "react";
 
+import { useParameters } from "@/app/contexts/parameter/context";
 import CustomInputNumber from "@/components/custom/custom-input-number";
 import { ExportType } from "@/factory/types/interfaces";
 
@@ -21,6 +22,35 @@ function TextAreaCustom({
   userId?: any;
   index?: any;
 }) {
+  const [config, setConfig] = useState({ min: 0, max: 100, required: false });
+  const [value, setValue] = useState("");
+  const paramsContext = useParameters();
+  useEffect(() => {
+    if (paramsContext.state.parameters.length) {
+      let param = paramsContext.state.parameters[index];
+      let config = JSON.parse(param.data.configuration[0].configuration);
+      setConfig(config);
+      if (typeof param.data.value == "string") {
+        let valueAux = param.data.value;
+        if (valueAux !== value) {
+          setValue(valueAux);
+          paramsContext.dispatch({
+            type: "setIsValid",
+            index: index,
+            isValid: true,
+          });
+        }
+
+        if (param.data.value == "" && config.required) {
+          paramsContext.dispatch({
+            type: "setIsValid",
+            index: index,
+            isValid: false,
+          });
+        }
+      }
+    }
+  }, [paramsContext]);
   return (
     <ParamComponent
       save={save}
@@ -30,6 +60,10 @@ function TextAreaCustom({
       paramTitle={name}
       index={index}
       userId={userId}
+      errorMessage={`Este valor ${
+        config.required ? "es obligatorio y" : ""
+      } debe estar entre ${config.min} y ${config.max}`}
+      description={`Este valor debe estar entre ${config.min} y ${config.max}`}
     >
       <></>
     </ParamComponent>
@@ -48,13 +82,11 @@ function Configuration({
   // Config
   const [required, setRequired] = useState(false);
   const [config, setConfig] = useState({});
-  const maxLines = useCounter(10, {
-    min: 10,
-  });
+  const [max, setMax] = useState(100);
 
   const makeConfig = () => {
     const configuration = {
-      max: maxLines[0],
+      max,
       required: required,
     };
     setConfig(configuration);
@@ -68,7 +100,7 @@ function Configuration({
     ) {
       if (paramData.configuration && paramData.configuration.length > 0) {
         const config = JSON.parse(paramData.configuration[0].configuration);
-        maxLines[1].set(config.max);
+        setMax(config.max);
         setRequired(config.required);
         makeConfig();
       }
@@ -77,7 +109,7 @@ function Configuration({
 
   useEffect(() => {
     makeConfig();
-  }, [maxLines[0], required]);
+  }, [max, required]);
 
   return (
     <ParamConfiguration
@@ -90,11 +122,16 @@ function Configuration({
     >
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-sm">Máximo de líneas</span>
-          <CustomInputNumber
-            number={maxLines[0]}
-            increment={maxLines[1].increment}
-            decrement={maxLines[1].decrement}
+          <span className="text-sm">Valor mínimo</span>
+          <Input
+            type="number"
+            value={max.toString()}
+            onValueChange={(value) => setMax(parseInt(value))}
+            size="sm"
+            className="max-w-[5rem]"
+            classNames={{
+              inputWrapper: "h-fit",
+            }}
           />
         </div>
       </div>

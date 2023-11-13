@@ -30,6 +30,8 @@ function CheckboxCustom({
       paramTitle={name}
       index={index}
       userId={userId}
+      description=""
+      errorMessage=""
     >
       <></>
     </ParamComponent>

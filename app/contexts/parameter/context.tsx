@@ -6,6 +6,7 @@ type Action =
   | { type: "setIsSaving"; index: number }
   | { type: "setParamData"; title: any; key: any; index: number }
   | { type: "setIsValid"; index: number; isValid: boolean }
+  | { type: "setIsValidated"; index: number; isValidated: boolean }
   | { type: "setError"; index: number; hasErrors: boolean }
   | { type: "remove"; index: number }
   | { type: "setValue"; index: number; value: any };
@@ -59,6 +60,13 @@ function parameterReducer(state: State, action: Action) {
       let params = state.parameters;
       if (params[action.index]) {
         params[action.index].isValid = action.isValid;
+      }
+      return { parameters: params };
+    }
+    case "setIsValidated": {
+      let params = state.parameters;
+      if (params[action.index]) {
+        params[action.index].isValidated = action.isValidated;
       }
       return { parameters: params };
     }

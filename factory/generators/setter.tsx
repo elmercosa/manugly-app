@@ -48,14 +48,14 @@ export default function Setter({ userId }: { userId: string }) {
 
         if (!paramConfig.required) {
           return true;
-        } else if (paramConfig.required && param.data.value === null) {
+        } else if (paramConfig.required && !param.data.value) {
           paramsContext.dispatch({
             type: "setIsValid",
             index: index,
             isValid: false,
           });
           return false;
-        } else if (paramConfig.required && param.data.value !== null) {
+        } else if (paramConfig.required && param.data.value) {
           return true;
         } else {
           return false;
@@ -129,7 +129,7 @@ export default function Setter({ userId }: { userId: string }) {
             param: parameters[param.type],
             data: param,
             isValid: true,
-            isValidated: false,
+            isValidated: true,
             isSaving: false,
             hasError: false,
             index: index,

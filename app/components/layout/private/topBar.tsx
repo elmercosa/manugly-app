@@ -5,6 +5,8 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import SelectorWrapper from "@/components/business/business-selector/wrapper";
 import UserDropdown from "@/components/layout/user-dropdown";
 
+import FeedBack from "./feedback";
+
 export default async function TopBar() {
   const session = await getServerSession(authOptions);
   return (
@@ -14,6 +16,7 @@ export default async function TopBar() {
           <h1 className="text-3xl font-bold text-neutral-700">Inicio</h1>
         </div>
         <div className="flex items-center justify-center h-auto gap-2">
+          <FeedBack session={session ?? undefined} />
           <SelectorWrapper user={session?.user}></SelectorWrapper>
           <div className=" bg-white rounded-xl w-10 h-10 flex items-center justify-center">
             <IconBell size={18} />

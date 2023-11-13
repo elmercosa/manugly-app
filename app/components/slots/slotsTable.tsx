@@ -26,28 +26,60 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 
 import { useBusiness } from "@/app/contexts/business/context";
-import { userService } from "@/services/userService";
+import { slotService } from "@/services/slotService";
+
+import { PageLoader } from "../pageLoader";
 
 export default function SlotsTable() {
-  const [users, setUsers] = useState([]);
+  const [slots, setSlots] = useState([]);
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [enableQuery, setEnableQuery] = useState(false);
+  const [slotSelected, setSlotSelected] = useState({ id: "" });
+
+  const [deleteSlot, setDeleteSlot] = useState(false);
 
   const { state } = useBusiness();
 
   const { isLoading, data } = useQuery({
-    queryKey: ["users", state.business.id],
-    queryFn: () => userService.getAllUsers(state.business.id ?? ""),
+    queryKey: ["slots", state.business.id],
+    queryFn: () => slotService.getAllSlots(state.business.id ?? ""),
     retry: false,
     refetchOnWindowFocus: false,
     enabled: enableQuery,
   });
+
+  const removeSlots = useQuery({
+    queryKey: ["removeSlot", slotSelected.id],
+    queryFn: () => slotService.removeSlot(slotSelected.id),
+    retry: false,
+    refetchOnWindowFocus: false,
+    enabled: deleteSlot,
+  });
+
+  const handleRemoveSlot = (slot: any) => {
+    setSlotSelected(slot);
+    setDeleteSlot(true);
+  };
+
+  useEffect(() => {
+    if (removeSlots.data && !removeSlots.isLoading) {
+      setEnableQuery(true);
+      setDeleteSlot(false);
+      toast.success("Cita eliminada correctamente");
+      window.location.reload();
+    }
+
+    if (removeSlots.isError) {
+      toast.error("Error al eliminar la cita");
+    }
+  }, [removeSlots.data, removeSlots.isError, removeSlots.isLoading]);
 
   useEffect(() => {
     if (state.business.id !== "") {
@@ -57,20 +89,15 @@ export default function SlotsTable() {
 
   useEffect(() => {
     if (data && !isLoading) {
-      setUsers(data);
+      console.log("slots :>> ", data);
+      setSlots(data);
       setPages(Math.ceil(data.length / rowsPerPage));
     }
   }, [isLoading, data, rowsPerPage]);
 
   useEffect(() => {
-    if (users) {
-      let usersFiltered = users.filter((user: any) => {
-        return (
-          user?.name?.toLowerCase().includes(filterValue.toLowerCase()) ||
-          user?.surname?.toLowerCase().includes(filterValue.toLowerCase()) ||
-          user?.email?.toLowerCase().includes(filterValue.toLowerCase())
-        );
-      });
+    if (slots) {
+      let usersFiltered = slots;
 
       const start = (page - 1) * rowsPerPage;
       const end = start + rowsPerPage;
@@ -80,11 +107,7 @@ export default function SlotsTable() {
       setItems(usersPaginated);
       setPages(Math.ceil(usersFiltered.length / rowsPerPage));
     }
-  }, [filterValue, users, page, rowsPerPage]);
-
-  const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(Number(e.target.value));
-  };
+  }, [filterValue, slots, page, rowsPerPage]);
 
   const topContent = useMemo(() => {
     return (
@@ -113,7 +136,7 @@ export default function SlotsTable() {
               className="bg-emerald-500 text-white  rounded-xl  font-semibold"
               startContent={<IconPlus size={20} className="font-semibold" />}
               as={Link}
-              href="/admin/users/add"
+              href="/admin/slots/add"
             >
               Añadir evento
             </Button>
@@ -127,7 +150,7 @@ export default function SlotsTable() {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="text-default-400 text-small">
-          Total {users.length} usuarios
+          Total {slots.length} citas
         </span>
         <Pagination
           isCompact
@@ -143,7 +166,7 @@ export default function SlotsTable() {
         />
       </div>
     );
-  }, [page, pages, users]);
+  }, [page, pages, slots]);
   return (
     <>
       <Table
@@ -159,9 +182,11 @@ export default function SlotsTable() {
         }}
       >
         <TableHeader>
-          <TableColumn>NOMBRE</TableColumn>
-          <TableColumn>APELLIDOS</TableColumn>
-          <TableColumn>EMAIL</TableColumn>
+          <TableColumn>TÍTULO</TableColumn>
+          <TableColumn>DESCRIPCIÓN</TableColumn>
+          <TableColumn>FECHA DE INICIO</TableColumn>
+          <TableColumn>FECHA DE FIN</TableColumn>
+          <TableColumn>USUARIO</TableColumn>
           <TableColumn>ACCIONES</TableColumn>
         </TableHeader>
         <TableBody
@@ -174,12 +199,18 @@ export default function SlotsTable() {
         >
           {(item: any) => (
             <TableRow key={item?.id}>
-              <TableCell>{item?.name}</TableCell>
-              <TableCell>{item?.surname}</TableCell>
-              <TableCell>{item?.email}</TableCell>
+              <TableCell>{item?.title}</TableCell>
+              <TableCell>{item?.description}</TableCell>
+              <TableCell>
+                {new Date(item?.start).toLocaleDateString()}
+              </TableCell>
+              <TableCell> {new Date(item?.end).toLocaleDateString()}</TableCell>
+              <TableCell>
+                {item?.user.name} {item?.user.surname}
+              </TableCell>
               <TableCell>
                 <div className="relative flex items-center gap-2">
-                  <Tooltip content="Ver usuario">
+                  {/* <Tooltip content="Ver usuario">
                     <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                       <Link
                         href={`/admin/users/details/${item?.id}`}
@@ -188,19 +219,28 @@ export default function SlotsTable() {
                         <IconEye />
                       </Link>
                     </span>
-                  </Tooltip>
-                  <Tooltip content="Editar usuario">
+                  </Tooltip> */}
+                  {/* <Tooltip content="Editar usuario">
                     <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                       <Link href="/admin/users/edit" className="text-gray-400">
                         <IconEdit />
                       </Link>
                     </span>
-                  </Tooltip>
-                  <Tooltip color="danger" content="Borrar usuario">
+                  </Tooltip> */}
+                  <Tooltip color="danger" content="Borrar cita">
                     <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                      <Link href="#" color="danger">
+                      <Button
+                        href="#"
+                        color="danger"
+                        isIconOnly
+                        variant="light"
+                        size="sm"
+                        onClick={() => {
+                          handleRemoveSlot(item);
+                        }}
+                      >
                         <IconTrash />
-                      </Link>
+                      </Button>
                     </span>
                   </Tooltip>
                 </div>
@@ -209,6 +249,7 @@ export default function SlotsTable() {
           )}
         </TableBody>
       </Table>
+      <PageLoader isLoading={removeSlots.isLoading} text="Borrando cita..." />
     </>
   );
 }

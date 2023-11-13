@@ -1,22 +1,23 @@
 import { getTest, postPrivate, remove } from "@/services/request";
 
 async function getAllSlots(businessId: any) {
-  const response = await getTest(`/slots/findByBusiness/${businessId}`);
+  const response = await getTest(`/slots`);
   return response;
 }
 
-async function removeParam(data: any) {
-  const response = await remove(`/slots/delete`, data);
+async function removeSlot(id: any) {
+  console.log("id :>> ", id);
+  const response = await remove(`/slots/${id}`, {});
   return response;
 }
 
-async function linkParam(data: any) {
-  const response = await postPrivate(`/slots/linkParam`, data);
+async function createSlot(data: any) {
+  const response = await postPrivate(`/slots`, data);
   return response;
 }
 
 export const slotService = {
-  linkParam,
-  getAllParams: getAllSlots,
-  removeParam,
+  createSlot,
+  getAllSlots,
+  removeSlot,
 };

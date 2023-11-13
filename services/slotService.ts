@@ -6,7 +6,6 @@ async function getAllSlots(businessId: any) {
 }
 
 async function removeSlot(id: any) {
-  console.log("id :>> ", id);
   const response = await remove(`/slots/${id}`, {});
   return response;
 }

@@ -1,16 +1,14 @@
-import React from "react";
+import LoginForm from "@/components/auth/login-form";
 
-import Footer from "@/components/layout/footer";
-
-import NavBar from "./components/layout/navbar";
-("@/components/layout/navbar");
-
-export default function App() {
+export default function Page() {
   return (
-    <>
-      <NavBar></NavBar>
-      <main className="grid grid-cols-12 pt-20"></main>
-      <Footer></Footer>
-    </>
+    <main className="flex">
+      <div className="flex flex-col items-center justify-center w-3/5 h-screen">
+        <LoginForm></LoginForm>
+      </div>
+      <div className="flex w-2/5 h-screen rounded-bl-[30%] bg-emerald-500 items-center justify-center">
+        <h1 className="text-[200px] font-bold text-white">M</h1>
+      </div>
+    </main>
   );
 }

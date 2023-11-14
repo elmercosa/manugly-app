@@ -202,7 +202,7 @@ export default function UsersTable() {
                       </Link>
                     </span>
                   </Tooltip>
-                  <Tooltip content="Editar usuario">
+                  {/* <Tooltip content="Editar usuario">
                     <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                       <Link
                         href={`/admin/users/edit/${item?.id}`}
@@ -211,14 +211,14 @@ export default function UsersTable() {
                         <IconEdit />
                       </Link>
                     </span>
-                  </Tooltip>
-                  <Tooltip color="danger" content="Borrar usuario">
+                  </Tooltip> */}
+                  {/* <Tooltip color="danger" content="Borrar usuario">
                     <span className="text-lg text-danger cursor-pointer active:opacity-50">
                       <Link href="#" color="danger">
                         <IconTrash />
                       </Link>
                     </span>
-                  </Tooltip>
+                  </Tooltip> */}
                 </div>
               </TableCell>
             </TableRow>

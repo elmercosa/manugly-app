@@ -72,7 +72,11 @@ export default function FeedBack({ session }: { session: any }) {
       >
         Feedback
       </Button>
-      <Modal isOpen={isOpen} placement="top-center">
+      <Modal
+        isOpen={isOpen}
+        placement="top-center"
+        onClose={() => setIsOpen(false)}
+      >
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">
             ¡Tu opinión importa!

@@ -150,7 +150,7 @@ export default function AddSlotForm({ session }: { session?: Session }) {
           <Select
             variant="bordered"
             placeholder="Selecciona un usuario"
-            value={userId}
+            selectedKeys={[userId]}
             onChange={(event) => {
               setUserId(event.target.value);
             }}

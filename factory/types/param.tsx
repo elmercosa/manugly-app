@@ -146,6 +146,9 @@ export function ParamComponent({
     if (type === "number") {
       setValue(0);
     }
+    if (type === "textarea") {
+      setValue("");
+    }
   }, [type]);
 
   useEffect(() => {

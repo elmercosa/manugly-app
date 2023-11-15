@@ -11,17 +11,17 @@ export default async function TopBar() {
   const session = await getServerSession(authOptions);
   return (
     <div className="w-full transition-all flex items-center h-28 min-h-[7rem]">
-      <div className="flex items-center justify-between gap-6 rounded-xl w-full h-full">
-        <div className="flex flex-col h-full gap-1 justify-center">
+      <div className="flex items-center justify-between w-full h-full gap-6 rounded-xl">
+        <div className="flex flex-col justify-center h-full gap-1">
           <h1 className="text-3xl font-bold text-neutral-700">Inicio</h1>
         </div>
         <div className="flex items-center justify-center h-auto gap-2">
           <FeedBack session={session ?? undefined} />
-          <SelectorWrapper user={session?.user}></SelectorWrapper>
-          <div className=" bg-white rounded-xl w-10 h-10 flex items-center justify-center">
+          {/* <SelectorWrapper user={session?.user}></SelectorWrapper> */}
+          <div className="flex items-center justify-center w-10 h-10 bg-white  rounded-xl">
             <IconBell size={18} />
           </div>
-          <div className=" bg-white rounded-xl w-10 h-10 flex items-center justify-center">
+          <div className="flex items-center justify-center w-10 h-10 bg-white  rounded-xl">
             <IconInfoCircle size={18} />
           </div>
           <UserDropdown session={session ?? undefined} />

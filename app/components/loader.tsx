@@ -10,7 +10,7 @@ export function Loader({
   return (
     <>
       {isLoading ? (
-        <div className="flex flex-col gap-2 items-center justify-center w-full h-full ">
+        <div className="flex flex-col items-center justify-center gap-2">
           <CircularProgress aria-label="Loading..." />
           <span>Cargando...</span>
         </div>

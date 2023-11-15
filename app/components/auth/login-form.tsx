@@ -26,7 +26,7 @@ export default function LoginForm() {
       signIn(provider, {
         email,
         password,
-        callbackUrl: `${window.location.origin}/admin`,
+        callbackUrl: `${window.location.origin}/admin/business/selector`,
       });
     }
   };

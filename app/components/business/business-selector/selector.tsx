@@ -1,18 +1,10 @@
 "use client";
 
-import {
-  Button,
-  Input,
-  Link,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  RadioGroup,
-} from "@nextui-org/react";
+import { Button, Input, Link, RadioGroup } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 
 import { useBusiness } from "@/app/contexts/business/context";
 import CustomRadio from "@/components/custom/custom-radio";
@@ -20,33 +12,53 @@ import { Loader } from "@/components/loader";
 import { businessService } from "@/services/businessService";
 
 export default function BusinessSelector({ user }: { user: any }) {
-  const { state, dispatch } = useBusiness();
+  const { push } = useRouter();
 
-  const [isOpen, setIsOpen] = useState(true);
   const [businesses, setBusinesses] = useState([]);
-  const [business, setBusiness] = useState();
+  const [business, setBusiness] = useState({} as any);
   const [showForm, setShowForm] = useState(false);
   const [isBusinessSelected, setIsBusinessSelected] = useState(false);
 
-  // create business
+  const [saveBusiness, setSaveBusiness] = useState(false);
+
+  // business data
   const ownerId = user.id;
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
-  const [colour, setColour] = useState("red");
-  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState(`manugly-${new Date().getTime()}`);
+  const [email, setEmail] = useState(
+    `manugly-${new Date().getTime()}@gmail.com`,
+  );
+  const [address, setAddress] = useState("menugly");
+  const [phone, setPhone] = useState("123456489");
+  const [colour, setColour] = useState("#0C9668");
+
+  const businessContext = useBusiness();
 
   //fetch businesses
-  const { isLoading, data } = useQuery({
-    queryKey: ["business", user.id],
+  const getBusiness = useQuery({
+    queryKey: ["get-business", user.id],
     queryFn: () => businessService.getBusiness(user.id),
+    refetchOnWindowFocus: false,
     retry: false,
   });
 
-  const createBusiness = async () => {
+  // create business
+  const createBusiness = useQuery({
+    queryKey: ["create-business", user.id],
+    queryFn: () => businessService.createBusiness(business),
+    retry: false,
+    refetchOnWindowFocus: false,
+    enabled: saveBusiness,
+  });
+
+  const save = () => {
+    setSaveBusiness(true);
+    if (createBusiness.isFetched) {
+      createBusiness.refetch();
+    }
+  };
+
+  useEffect(() => {
     if (name && email && address && phone) {
-      setLoading(true);
       const business = {
         name,
         email,
@@ -55,137 +67,153 @@ export default function BusinessSelector({ user }: { user: any }) {
         colour,
         ownerId,
       };
-      const response = await businessService.createBusiness(business);
-
-      if (response) {
-        window.location.reload();
-      }
+      setBusiness(business);
     }
-  };
+  }, [name, email, address, phone, colour, ownerId]);
 
   useEffect(() => {
-    if (state.business.id !== "") {
-      setIsOpen(false);
+    if (businessContext.state.business.id !== "") {
       setIsBusinessSelected(true);
     }
-  }, [state]);
+  }, [businessContext.state]);
 
   useEffect(() => {
-    if (data) {
-      setBusinesses(data);
-      if (!data.length) {
+    if (getBusiness.data) {
+      setBusinesses(getBusiness.data);
+      if (!getBusiness.data.length) {
         setShowForm(true);
       }
     }
-  }, [data]);
+  }, [getBusiness.data]);
 
   useEffect(() => {
-    if (business) {
-      dispatch({ type: "set", data: business });
-      setIsOpen(false);
-      window.location.reload();
+    if (createBusiness.data) {
+      toast.success("Negocio creado correctamente");
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    }
+  }, [createBusiness.data]);
+
+  useEffect(() => {
+    if (business.id) {
+      businessContext.dispatch({ type: "set", data: business });
+      push(`/admin/`);
     }
   }, [business]);
 
   return (
-    <>
-      <Button
-        onClick={() => setIsOpen(true)}
-        className="bg-emerald-500 text-white rounded-xl p-4 font-bold"
-      >
-        {state.business.name}
-      </Button>
-      <Modal
-        isOpen={isOpen}
-        backdrop="blur"
-        hideCloseButton={!isBusinessSelected}
-        onClose={() => setIsOpen(false)}
-      >
-        <ModalContent>
-          <ModalHeader className="flex flex-col gap-1 text-xl">
-            {showForm ? "Crea tu negocio" : "Selecciona un negocio"}
-          </ModalHeader>
-          <ModalBody>
-            <Loader isLoading={isLoading}>
-              {!showForm ? (
-                <RadioGroup
-                  description={
-                    <span>
-                      ¿Quieres crear un nuevo negocio? Puedes hacerlo{" "}
-                      <Link
-                        className="text-xs cursor-pointer"
-                        onClick={() => setShowForm(true)}
-                      >
-                        aquí
-                      </Link>
-                    </span>
-                  }
-                  value={business}
-                  onValueChange={(value: any) => setBusiness(value)}
-                >
-                  {businesses.map((business: any) => (
-                    <CustomRadio value={business} key={business.id}>
-                      {business.name}
-                    </CustomRadio>
-                  ))}
-                </RadioGroup>
-              ) : (
-                <>
-                  <Input
-                    autoFocus
-                    label="Nombre"
-                    placeholder="Nombre del negocio"
-                    value={name}
-                    onValueChange={setName}
-                  />
-                  <Input
-                    type="email"
-                    label="Email"
-                    placeholder="Email del negocio"
-                    value={email}
-                    onValueChange={setEmail}
-                  />
-                  <Input
-                    label="Dirección"
-                    placeholder="Dirección del negocio"
-                    value={address}
-                    onValueChange={setAddress}
-                  />
-                  <Input
-                    label="Teléfono"
-                    type="tel"
-                    placeholder="Teléfono del negocio"
-                    value={phone}
-                    onValueChange={setPhone}
-                  />
-                </>
-              )}
-            </Loader>
-          </ModalBody>
-          {showForm && (
-            <ModalFooter>
+    <Loader isLoading={getBusiness.isLoading}>
+      <div className="w-1/3">
+        {!showForm ? (
+          <div className="flex flex-col items-center justify-center gap-4">
+            <h2 className="text-xl font-semibold">Selecciona un negocio</h2>
+            <RadioGroup
+              className="w-full"
+              description={
+                <span className="text-base">
+                  Crea un nuevo negocio{" "}
+                  <Link
+                    className="cursor-pointer"
+                    onClick={() => setShowForm(true)}
+                  >
+                    aquí
+                  </Link>
+                </span>
+              }
+              value={business}
+              onValueChange={(value: any) => setBusiness(value)}
+            >
+              <div className="grid w-full grid-cols-2 gap-2">
+                {businesses.map((business: any) => (
+                  <CustomRadio value={business} key={business.id}>
+                    {business.name}
+                  </CustomRadio>
+                ))}
+              </div>
+            </RadioGroup>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center w-full gap-4">
+            <h2 className="text-xl font-semibold">Datos del negocio</h2>
+            <div className="flex flex-col items-center justify-center w-full gap-4">
+              <Input
+                type="text"
+                label="Nombre del negocio"
+                value={name}
+                onValueChange={setName}
+                isRequired={true}
+                variant="bordered"
+                size="sm"
+                autoFocus
+                isClearable
+              />
+              <Input
+                type="email"
+                label="Email del negocio"
+                value={email}
+                onValueChange={setEmail}
+                isRequired={true}
+                variant="bordered"
+                size="sm"
+                isClearable
+              />
+              <Input
+                type="text"
+                label="Dirección del negocio"
+                value={address}
+                onValueChange={setAddress}
+                isRequired={true}
+                variant="bordered"
+                size="sm"
+                isClearable
+              />
+              <Input
+                type="tel"
+                label="Número de teléfono del negocio"
+                value={phone}
+                onValueChange={setPhone}
+                isRequired={true}
+                variant="bordered"
+                size="sm"
+                isClearable
+              />
+              <div className="flex items-center justify-between w-full px-3 py-2 transition-all border-2 rounded-lg hover:border-default-400">
+                <span className="text-sm text-default-500">
+                  Color para tu negocio
+                  <span className="ml-1 text-red-500">*</span>
+                </span>
+                <input
+                  type="color"
+                  value={colour}
+                  onChange={(event) => {
+                    setColour(event.target.value);
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-end w-full gap-4">
               {businesses.length > 0 && (
                 <Button
                   className="shadow-md rounded-xl"
                   color="danger"
                   variant="flat"
                   onClick={() => setShowForm(false)}
-                  isLoading={loading}
                 >
                   Atrás
                 </Button>
               )}
               <Button
                 className="text-white shadow-md bg-emerald-500 rounded-xl"
-                onClick={createBusiness}
-                isLoading={loading}
+                onClick={save}
+                isLoading={createBusiness.isLoading}
               >
                 Crear negocio
               </Button>
-            </ModalFooter>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+            </div>
+          </div>
+        )}
+      </div>
+    </Loader>
   );
 }

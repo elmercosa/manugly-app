@@ -5,8 +5,6 @@ import {
   Input,
   Link,
   Pagination,
-  Select,
-  SelectItem,
   Spinner,
   Table,
   TableBody,
@@ -31,15 +29,13 @@ import { useQuery } from "react-query";
 import { useBusiness } from "@/app/contexts/business/context";
 import { userService } from "@/services/userService";
 
-import AddUserForm from "./addForm";
-
 export default function UsersTable() {
   const [users, setUsers] = useState([]);
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [filterValue, setFilterValue] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [enableQuery, setEnableQuery] = useState(false);
 
   const { state } = useBusiness();
@@ -91,9 +87,9 @@ export default function UsersTable() {
 
   const topContent = useMemo(() => {
     return (
-      <div className="flex flex-col gap-4 w-full">
-        <div className="flex justify-between gap-3 items-end ">
-          <div className="flex gap-3 w-1/2 items-center justify-start">
+      <div className="flex flex-col w-full gap-4">
+        <div className="flex items-end justify-between gap-3 ">
+          <div className="flex items-center justify-start w-1/2 gap-3">
             <div className="flex">
               <Input
                 isClearable
@@ -111,11 +107,11 @@ export default function UsersTable() {
               />
             </div>
           </div>
-          <div className="flex gap-3 w-1/2 items-center justify-end">
+          <div className="flex items-center justify-end w-1/2 gap-3">
             <Button
               href="/admin/users/config"
               as={Link}
-              className="bg-emerald-500 text-white font-semibold rounded-xl "
+              className="font-semibold text-white bg-emerald-500 rounded-xl "
               startContent={
                 <IconSettings size={20} className="font-semibold" />
               }
@@ -125,7 +121,7 @@ export default function UsersTable() {
             <Button
               href="/admin/users/add"
               as={Link}
-              className="bg-emerald-500 text-white font-semibold rounded-xl "
+              className="font-semibold text-white bg-emerald-500 rounded-xl "
               startContent={<IconPlus size={20} className="font-semibold" />}
             >
               Añadir usuario
@@ -138,7 +134,7 @@ export default function UsersTable() {
 
   const bottomContent = useMemo(() => {
     return (
-      <div className="py-2 px-2 flex justify-between items-center">
+      <div className="flex items-center justify-between px-2 py-2">
         <span className="text-default-400 text-small">
           Total {users.length} usuarios
         </span>
@@ -193,7 +189,7 @@ export default function UsersTable() {
               <TableCell>
                 <div className="relative flex items-center gap-2">
                   <Tooltip content="Editar parámetros">
-                    <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                    <span className="text-lg cursor-pointer text-default-400 active:opacity-50">
                       <Link
                         href={`/admin/users/parameters/${item?.id}`}
                         className="text-gray-400"
@@ -202,8 +198,8 @@ export default function UsersTable() {
                       </Link>
                     </span>
                   </Tooltip>
-                  {/* <Tooltip content="Editar usuario">
-                    <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <Tooltip content="Editar usuario">
+                    <span className="text-lg cursor-pointer text-default-400 active:opacity-50">
                       <Link
                         href={`/admin/users/edit/${item?.id}`}
                         className="text-gray-400"
@@ -211,14 +207,14 @@ export default function UsersTable() {
                         <IconEdit />
                       </Link>
                     </span>
-                  </Tooltip> */}
-                  {/* <Tooltip color="danger" content="Borrar usuario">
-                    <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                  </Tooltip>
+                  <Tooltip color="danger" content="Borrar usuario">
+                    <span className="text-lg cursor-pointer text-danger active:opacity-50">
                       <Link href="#" color="danger">
                         <IconTrash />
                       </Link>
                     </span>
-                  </Tooltip> */}
+                  </Tooltip>
                 </div>
               </TableCell>
             </TableRow>

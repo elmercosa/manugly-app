@@ -15,7 +15,7 @@ import { useBusiness } from "@/app/contexts/business/context";
 import { Loader } from "@/components/loader";
 import { businessService } from "@/services/businessService";
 
-export default function BusinessSelect() {
+export default function BusinessSelect({ mini }: { mini?: boolean }) {
   const businessContext = useBusiness();
 
   const { data: session, status } = useSession();
@@ -43,9 +43,11 @@ export default function BusinessSelect() {
           <Button
             isLoading={getBusiness.isLoading}
             className="w-full font-semibold text-white bg-primary"
-            endContent={<IconSwitchVertical size={16} />}
+            endContent={mini ? <></> : <IconSwitchVertical size={16} />}
           >
-            {businessContext.state.business.name}
+            {mini
+              ? businessContext.state.business.name?.charAt(0)
+              : businessContext.state.business.name}
           </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="Static Actions" onAction={handleChange}>

@@ -1,8 +1,6 @@
-import { IconBell, IconInfoCircle } from "@tabler/icons-react";
 import { getServerSession } from "next-auth/next";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import SelectorWrapper from "@/components/business/business-selector/wrapper";
 import UserDropdown from "@/components/layout/user-dropdown";
 
 import FeedBack from "./feedback";
@@ -17,13 +15,6 @@ export default async function TopBar() {
         </div>
         <div className="flex items-center justify-center h-auto gap-2">
           <FeedBack session={session ?? undefined} />
-          {/* <SelectorWrapper user={session?.user}></SelectorWrapper> */}
-          <div className="flex items-center justify-center w-10 h-10 bg-white  rounded-xl">
-            <IconBell size={18} />
-          </div>
-          <div className="flex items-center justify-center w-10 h-10 bg-white  rounded-xl">
-            <IconInfoCircle size={18} />
-          </div>
           <UserDropdown session={session ?? undefined} />
         </div>
       </div>

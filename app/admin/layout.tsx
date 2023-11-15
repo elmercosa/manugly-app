@@ -17,10 +17,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const mini = false;
   return (
-    <main className="grid grid-cols-12 bg-gray-100 h-screen max-h-screen p-4">
-      <SideNav></SideNav>
-      <div className="flex flex-col w-full col-start-3 col-end-13 max-h-screen overflow-y-auto pl-10 pr-6">
+    <main className="flex h-screen max-h-screen p-4 bg-gray-100">
+      <SideNav mini={mini}></SideNav>
+      <div
+        className={`flex flex-col max-h-screen col-start-3 col-end-13 pl-10 pr-6 overflow-y-auto ${
+          mini ? "w-11/12" : "w-10/12"
+        }`}
+      >
         <TopBar></TopBar>
         <ToastContainer
           position="bottom-right"
@@ -34,7 +39,7 @@ export default function RootLayout({
           pauseOnHover
           theme="light"
         />
-        <div className="flex w-full justify-center">{children}</div>
+        <div className="flex justify-center w-full">{children}</div>
       </div>
     </main>
   );

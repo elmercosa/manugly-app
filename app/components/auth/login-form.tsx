@@ -116,7 +116,7 @@ export default function LoginForm() {
         </div>
         <div className="flex flex-col justify-center w-full gap-4 mt-2">
           <Button
-            className="w-full font-bold text-white transition-all duration-300 shadow-md ease-soft-spring bg-gradient-to-r bg-emerald-500 hover:text-white hover:bg-emerald-600"
+            className="w-full font-bold text-white transition-all duration-300 shadow-md ease-soft-spring bg-gradient-to-r bg-manugly hover:text-white hover:bg-emerald-600"
             isLoading={isLoading}
             onClick={() => login("credentials")}
           >

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Button,
   cn,
   Dropdown,
   DropdownItem,
@@ -16,6 +17,7 @@ import {
   IconSearch,
   IconUser,
 } from "@tabler/icons-react";
+import Image from "next/image";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 
@@ -39,14 +41,10 @@ export default function UserDropdown({ session }: { session?: Session }) {
         }}
       >
         <DropdownTrigger>
-          <div className="flex items-center justify-center gap-2 bg-white rounded-xl p-2">
-            <p className="text-sm font-bold whitespace-nowrap">
-              👋 Hola, {name}
-            </p>
-            <div className="flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500 text-white">
-              <IconRobotFace size={18} />
-            </div>
-          </div>
+          <Button className="p-4 font-bold bg-white rounded-xl">
+            <Image src="/manugly.svg" alt="Manugly" width="24" height="24" />
+            <p className="text-sm font-bold whitespace-nowrap">Hola, {name}</p>
+          </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" variant="faded">
           <DropdownSection showDivider>

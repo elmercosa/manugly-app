@@ -1,14 +1,7 @@
-import { Chip, Input, Spinner, Switch } from "@nextui-org/react";
-import {
-  IconCalendarFilled,
-  IconCircleCheckFilled,
-  IconCircleXFilled,
-} from "@tabler/icons-react";
-import { use, useEffect, useState } from "react";
+import { Input, Switch } from "@nextui-org/react";
+import { useEffect, useState } from "react";
 
-import { useParameters } from "@/app/contexts/parameter/context";
 import { ExportType } from "@/factory/types/interfaces";
-import { paramService } from "@/services/paramService";
 
 import { ParamComponent, ParamConfiguration } from "../param";
 
@@ -26,50 +19,39 @@ function DateCustom({
   userId?: any;
   index?: any;
 }) {
-  const [config, setConfig] = useState({
-    min: 0,
-    max: 100,
-    required: false,
-    specialChars: false,
-    numbers: false,
-  });
-  const [value, setValue] = useState();
-  const paramsContext = useParameters();
-  useEffect(() => {
-    if (paramsContext.state.parameters.length) {
-      let param = paramsContext.state.parameters[index];
-      let config = JSON.parse(param.data.configuration[0].configuration);
-      setConfig(config);
-      if (typeof param.data.value == "string") {
-        let valueAux = param.data.value;
-        if (valueAux !== value) {
-          setValue(valueAux);
-          paramsContext.dispatch({
-            type: "setIsValid",
-            index: index,
-            isValid: true,
-          });
-        }
+  const [config, setConfig] = useState({} as any);
 
-        if (param.data.value == "" && config.required) {
-          paramsContext.dispatch({
-            type: "setIsValid",
-            index: index,
-            isValid: false,
-          });
-        }
+  const validateParam = (value: any, config: any) => {
+    setConfig(config);
+    if (typeof value == "string") {
+      if (value == "" && config.required) {
+        return false;
       }
+
+      return true;
+    } else {
+      return true;
     }
-  }, [paramsContext]);
+  };
+  useEffect(() => {
+    if (
+      paramData &&
+      paramData.configuration &&
+      paramData.configuration.length
+    ) {
+      const config = JSON.parse(paramData.configuration[0].configuration);
+      setConfig(config);
+    }
+  }, [paramData]);
   return (
     <ParamComponent
       save={save}
       data={paramData}
-      config={null}
       type={type}
       paramTitle={name}
       index={index}
       userId={userId}
+      validateParam={validateParam}
       errorMessage={config.required ? "Este valor es obligatorio" : ""}
       description=""
     >
@@ -141,7 +123,6 @@ function Configuration({
 
   return (
     <ParamConfiguration
-      save={save}
       data={paramData}
       config={config}
       type={type}
@@ -149,7 +130,7 @@ function Configuration({
       index={index}
     >
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2 w-full justify-between">
+        <div className="flex items-center justify-between w-full gap-2">
           <span className="text-sm">Limitar valores</span>
           <Switch
             size="sm"

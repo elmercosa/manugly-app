@@ -1,9 +1,5 @@
-import { Input, Switch, Textarea } from "@nextui-org/react";
-import { useCounter } from "@uidotdev/usehooks";
 import { useEffect, useState } from "react";
 
-import { useParameters } from "@/app/contexts/parameter/context";
-import CustomInputNumber from "@/components/custom/custom-input-number";
 import { ExportType } from "@/factory/types/interfaces";
 
 import { ParamComponent, ParamConfiguration } from "../param";
@@ -22,44 +18,37 @@ function TextAreaCustom({
   userId?: any;
   index?: any;
 }) {
-  const [config, setConfig] = useState({ min: 0, max: 100, required: false });
-  const [value, setValue] = useState("");
-  const paramsContext = useParameters();
-  useEffect(() => {
-    if (paramsContext.state.parameters.length) {
-      let param = paramsContext.state.parameters[index];
-      let config = JSON.parse(param.data.configuration[0].configuration);
-      setConfig(config);
-      if (typeof param.data.value == "string") {
-        let valueAux = param.data.value;
-        if (valueAux !== value) {
-          setValue(valueAux);
-          paramsContext.dispatch({
-            type: "setIsValid",
-            index: index,
-            isValid: true,
-          });
-        }
-
-        if (param.data.value == "" && config.required) {
-          paramsContext.dispatch({
-            type: "setIsValid",
-            index: index,
-            isValid: false,
-          });
-        }
+  const [config, setConfig] = useState({} as any);
+  const validateParam = (value: any, config: any) => {
+    setConfig(config);
+    if (typeof value == "string") {
+      if (value == "" && config.required) {
+        return false;
       }
+      return true;
+    } else {
+      return true;
     }
-  }, [paramsContext]);
+  };
+  useEffect(() => {
+    if (
+      paramData &&
+      paramData.configuration &&
+      paramData.configuration.length
+    ) {
+      const config = JSON.parse(paramData.configuration[0].configuration);
+      setConfig(config);
+    }
+  }, [paramData]);
   return (
     <ParamComponent
       save={save}
       data={paramData}
-      config={null}
       type={type}
       paramTitle={name}
       index={index}
       userId={userId}
+      validateParam={validateParam}
       errorMessage={`Este valor ${
         config.required ? "es obligatorio y" : ""
       } debe estar entre ${config.min} y ${config.max}`}
@@ -70,71 +59,16 @@ function TextAreaCustom({
   );
 }
 
-function Configuration({
-  save,
-  paramData,
-  index,
-}: {
-  save?: any;
-  paramData?: any;
-  index?: any;
-}) {
-  // Config
-  const [required, setRequired] = useState(false);
-  const [config, setConfig] = useState({});
-  const [max, setMax] = useState(100);
-
-  const makeConfig = () => {
-    const configuration = {
-      max,
-      required: required,
-    };
-    setConfig(configuration);
-  };
-
-  useEffect(() => {
-    if (
-      paramData &&
-      paramData.configuration &&
-      paramData.configuration.length
-    ) {
-      if (paramData.configuration && paramData.configuration.length > 0) {
-        const config = JSON.parse(paramData.configuration[0].configuration);
-        setMax(config.max);
-        setRequired(config.required);
-        makeConfig();
-      }
-    }
-  }, [paramData]);
-
-  useEffect(() => {
-    makeConfig();
-  }, [max, required]);
-
+function Configuration({ paramData, index }: { paramData?: any; index?: any }) {
   return (
     <ParamConfiguration
-      save={save}
       data={paramData}
-      config={config}
+      config={{}}
       type={type}
       paramTitle={name}
       index={index}
     >
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-sm">Valor mínimo</span>
-          <Input
-            type="number"
-            value={max.toString()}
-            onValueChange={(value) => setMax(parseInt(value))}
-            size="sm"
-            className="max-w-[5rem]"
-            classNames={{
-              inputWrapper: "h-fit",
-            }}
-          />
-        </div>
-      </div>
+      <></>
     </ParamConfiguration>
   );
 }

@@ -48,7 +48,7 @@ export default function AddSlotForm({ session }: { session?: Session }) {
   const { push } = useRouter();
 
   const { isLoading, data, isError, isFetched } = useQuery({
-    queryKey: ["add-user", businessContext.state.business.id],
+    queryKey: ["add-user"],
     queryFn: () => slotService.createSlot(slot),
     retry: false,
     refetchOnWindowFocus: false,
@@ -56,7 +56,7 @@ export default function AddSlotForm({ session }: { session?: Session }) {
   });
 
   const allUsers = useQuery({
-    queryKey: ["all-users", businessContext.state.business.id],
+    queryKey: ["all-users"],
     queryFn: () => userService.getAllUsers(businessContext.state.business.id),
     retry: false,
     refetchOnWindowFocus: false,
@@ -101,9 +101,9 @@ export default function AddSlotForm({ session }: { session?: Session }) {
 
   return (
     <div className="flex flex-col w-full gap-4">
-      <div className="flex w-full justify-end items-center">
+      <div className="flex items-center justify-end w-full">
         <Button
-          className="bg-emerald-500 text-white"
+          className="text-white bg-manugly"
           startContent={<IconDeviceFloppy size={20} />}
           onClick={saveUser}
           isLoading={enableQuery && isLoading}
@@ -112,10 +112,10 @@ export default function AddSlotForm({ session }: { session?: Session }) {
         </Button>
       </div>
       <div className="flex flex-col gap-2">
-        <div className="flex p-4 bg-white rounded-xl flex-col gap-2">
+        <div className="flex flex-col gap-2 p-4 bg-white rounded-xl">
           <span className="text-xl font-semibold">
             Título de la cita
-            <span className="text-red-500 font-semibold">*</span>
+            <span className="font-semibold text-red-500">*</span>
           </span>
           <Input
             type="text"
@@ -127,10 +127,10 @@ export default function AddSlotForm({ session }: { session?: Session }) {
             size="sm"
           />
         </div>
-        <div className="flex p-4 bg-white rounded-xl flex-col gap-2">
+        <div className="flex flex-col gap-2 p-4 bg-white rounded-xl">
           <span className="text-xl font-semibold">
             Descripción de la cita
-            <span className="text-red-500 font-semibold">*</span>
+            <span className="font-semibold text-red-500">*</span>
           </span>
           <Input
             type="text"
@@ -142,10 +142,10 @@ export default function AddSlotForm({ session }: { session?: Session }) {
             size="sm"
           />
         </div>
-        <div className="flex p-4 bg-white rounded-xl flex-col gap-2">
+        <div className="flex flex-col gap-2 p-4 bg-white rounded-xl">
           <span className="text-xl font-semibold">
             Usuario
-            <span className="text-red-500 font-semibold">*</span>
+            <span className="font-semibold text-red-500">*</span>
           </span>
           <Select
             variant="bordered"
@@ -163,10 +163,10 @@ export default function AddSlotForm({ session }: { session?: Session }) {
               ))}
           </Select>
         </div>
-        <div className="flex p-4 bg-white rounded-xl flex-col gap-2">
+        <div className="flex flex-col gap-2 p-4 bg-white rounded-xl">
           <span className="text-xl font-semibold">
             Fecha de inicio
-            <span className="text-red-500 font-semibold">*</span>
+            <span className="font-semibold text-red-500">*</span>
           </span>
           <Input
             type="date"
@@ -178,10 +178,10 @@ export default function AddSlotForm({ session }: { session?: Session }) {
             max={dateMax}
           />
         </div>
-        <div className="flex p-4 bg-white rounded-xl flex-col gap-2">
+        <div className="flex flex-col gap-2 p-4 bg-white rounded-xl">
           <span className="text-xl font-semibold">
             Fecha de fin
-            <span className="text-red-500 font-semibold">*</span>
+            <span className="font-semibold text-red-500">*</span>
           </span>
           <Input
             type="date"

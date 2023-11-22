@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
   Tooltip,
+  useDisclosure,
 } from "@nextui-org/react";
 import {
   IconEdit,
@@ -26,8 +27,12 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 
+import { useBreadcrumb } from "@/app/contexts/breadcrumbs/context";
 import { useBusiness } from "@/app/contexts/business/context";
 import { userService } from "@/services/userService";
+
+import AddUserForm from "./addUser";
+import DeleteUser from "./deleteUser";
 
 export default function UsersTable() {
   const [users, setUsers] = useState([]);
@@ -39,14 +44,22 @@ export default function UsersTable() {
   const [enableQuery, setEnableQuery] = useState(false);
 
   const { state } = useBusiness();
+  const breadcrumbContext = useBreadcrumb();
 
   const { isLoading, data } = useQuery({
-    queryKey: ["users", state.business.id],
+    queryKey: ["users"],
     queryFn: () => userService.getAllUsers(state.business.id ?? ""),
     retry: false,
     refetchOnWindowFocus: false,
     enabled: enableQuery,
   });
+
+  useEffect(() => {
+    breadcrumbContext.dispatch({
+      type: "set",
+      data: "Usuarios",
+    });
+  }, []);
 
   useEffect(() => {
     if (state.business.id !== "") {
@@ -111,21 +124,14 @@ export default function UsersTable() {
             <Button
               href="/admin/users/config"
               as={Link}
-              className="font-semibold text-white bg-emerald-500 rounded-xl "
+              className="font-semibold text-white bg-manugly rounded-xl "
               startContent={
                 <IconSettings size={20} className="font-semibold" />
               }
             >
               Configurar usuarios
             </Button>
-            <Button
-              href="/admin/users/add"
-              as={Link}
-              className="font-semibold text-white bg-emerald-500 rounded-xl "
-              startContent={<IconPlus size={20} className="font-semibold" />}
-            >
-              Añadir usuario
-            </Button>
+            <AddUserForm />
           </div>
         </div>
       </div>
@@ -188,33 +194,18 @@ export default function UsersTable() {
               <TableCell>{item?.email}</TableCell>
               <TableCell>
                 <div className="relative flex items-center gap-2">
-                  <Tooltip content="Editar parámetros">
-                    <span className="text-lg cursor-pointer text-default-400 active:opacity-50">
-                      <Link
-                        href={`/admin/users/parameters/${item?.id}`}
-                        className="text-gray-400"
-                      >
-                        <IconRobotFace />
-                      </Link>
-                    </span>
-                  </Tooltip>
                   <Tooltip content="Editar usuario">
-                    <span className="text-lg cursor-pointer text-default-400 active:opacity-50">
-                      <Link
-                        href={`/admin/users/edit/${item?.id}`}
-                        className="text-gray-400"
-                      >
-                        <IconEdit />
-                      </Link>
-                    </span>
+                    <Button
+                      startContent={<IconEdit size={16} />}
+                      as={Link}
+                      href={`/admin/users/edit/${item?.id}`}
+                      size="sm"
+                      className="w-7 h-7 min-h-[28px] min-w-[28px]"
+                      isIconOnly
+                      variant="flat"
+                    ></Button>
                   </Tooltip>
-                  <Tooltip color="danger" content="Borrar usuario">
-                    <span className="text-lg cursor-pointer text-danger active:opacity-50">
-                      <Link href="#" color="danger">
-                        <IconTrash />
-                      </Link>
-                    </span>
-                  </Tooltip>
+                  <DeleteUser id={item?.id} />
                 </div>
               </TableCell>
             </TableRow>

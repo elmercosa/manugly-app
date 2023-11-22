@@ -93,7 +93,7 @@ export default function FeedBack({ session }: { session: any }) {
           </ModalBody>
           <ModalFooter>
             <Button
-              className="bg-emerald-500 text-white rounded-xl p-4 font-semibold"
+              className="bg-manugly text-white rounded-xl p-4 font-semibold"
               onPress={saveUser}
               isLoading={enableQuery && isLoading}
             >

@@ -1,15 +1,8 @@
-import { Chip, Input, Spinner, Switch } from "@nextui-org/react";
-import {
-  IconCircleCheckFilled,
-  IconCircleXFilled,
-  IconLetterCase,
-} from "@tabler/icons-react";
+import { Switch } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 
-import { useParameters } from "@/app/contexts/parameter/context";
 import { ExportType } from "@/factory/types/interfaces";
 import { ParamComponent, ParamConfiguration } from "@/factory/types/param";
-import { paramService } from "@/services/paramService";
 
 const name = "Texto corto";
 const type = "text";
@@ -25,70 +18,59 @@ function Text({
   userId?: any;
   index?: any;
 }) {
-  const [config, setConfig] = useState({
-    min: 0,
-    max: 100,
-    required: false,
-    specialChars: false,
-    numbers: false,
-  });
-  const [value, setValue] = useState("");
-  const paramsContext = useParameters();
-  useEffect(() => {
-    if (paramsContext.state.parameters.length) {
-      let param = paramsContext.state.parameters[index];
-      let config = JSON.parse(param.data.configuration[0].configuration);
-      setConfig(config);
-      if (typeof param.data.value == "string") {
-        let valueAux = param.data.value;
-        if (valueAux !== value) {
-          setValue(valueAux);
-          let isValid = true;
-          let max = parseInt(config.max);
-          if (value.length > max) {
-            isValid = false;
-          }
-          let specialChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
-          if (!config.specialChars && specialChars.test(value)) {
-            isValid = false;
-          }
+  const [config, setConfig] = useState({} as any);
 
-          let hasNumber = /\d/;
-          if (!config.numbers && hasNumber.test(value)) {
-            isValid = false;
-          }
-
-          paramsContext.dispatch({
-            type: "setIsValid",
-            index: index,
-            isValid: isValid,
-          });
-        }
-
-        if (param.data.value == "" && config.required) {
-          paramsContext.dispatch({
-            type: "setIsValid",
-            index: index,
-            isValid: false,
-          });
-        }
+  const validateParam = (value: any, config: any) => {
+    setConfig(config);
+    if (typeof value == "string") {
+      let max = parseInt(config.max);
+      if (value.length > max) {
+        return false;
       }
+      let specialChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+      if (!config.specialChars && specialChars.test(value)) {
+        return false;
+      }
+
+      let hasNumber = /\d/;
+      if (!config.numbers && hasNumber.test(value)) {
+        return false;
+      }
+
+      if (value == "" && config.required) {
+        return false;
+      }
+
+      return true;
+    } else {
+      return true;
     }
-  }, [paramsContext]);
+  };
+
+  useEffect(() => {
+    if (
+      paramData &&
+      paramData.configuration &&
+      paramData.configuration.length
+    ) {
+      const config = JSON.parse(paramData.configuration[0].configuration);
+      setConfig(config);
+    }
+  }, [paramData]);
   return (
     <ParamComponent
       save={save}
       data={paramData}
-      config={null}
       type={type}
       paramTitle={name}
       index={index}
       userId={userId}
+      validateParam={validateParam}
       errorMessage={`Este valor ${config.required ? "es obligatorio" : ""}${
         config.specialChars ? "" : ", no puede contener caracteres especiales"
       }
       ${config.specialChars ? "" : ", no puede contener números"} 
-      debe tener como máximo ${config.max} caracteres`}
+      y debe tener como máximo ${config.max} caracteres`}
       description={`Este valor ${config.required ? "es obligatorio" : ""}${
         config.specialChars ? "" : ", no puede contener caracteres especiales"
       }
@@ -100,15 +82,7 @@ function Text({
   );
 }
 
-function Configuration({
-  save,
-  paramData,
-  index,
-}: {
-  save?: any;
-  paramData?: any;
-  index?: any;
-}) {
+function Configuration({ paramData, index }: { paramData?: any; index?: any }) {
   // Config
   const [max, setMax] = useState("3");
   const [specialChars, setSpecialChars] = useState(false);
@@ -144,14 +118,13 @@ function Configuration({
 
   return (
     <ParamConfiguration
-      save={save}
       data={paramData}
       config={config}
       type={type}
       paramTitle={name}
       index={index}
     >
-      <div className="flex items-center gap-2 w-full justify-between">
+      <div className="flex items-center justify-between w-full gap-2">
         <span className="text-sm">Permitir caracteres especiales</span>
         <Switch
           size="sm"
@@ -164,7 +137,7 @@ function Configuration({
         />
       </div>
 
-      <div className="flex items-center gap-2 w-full justify-between">
+      <div className="flex items-center justify-between w-full gap-2">
         <span className="text-sm">Permitir números</span>
         <Switch
           size="sm"

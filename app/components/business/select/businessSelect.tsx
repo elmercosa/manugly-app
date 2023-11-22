@@ -8,42 +8,35 @@ import {
   DropdownTrigger,
 } from "@nextui-org/react";
 import { IconSwitchVertical } from "@tabler/icons-react";
-import { useSession } from "next-auth/react";
-import { useQuery } from "react-query";
+import { useEffect, useState } from "react";
 
 import { useBusiness } from "@/app/contexts/business/context";
-import { Loader } from "@/components/loader";
-import { businessService } from "@/services/businessService";
 
 export default function BusinessSelect({ mini }: { mini?: boolean }) {
   const businessContext = useBusiness();
-
-  const { data: session, status } = useSession();
-  const user: any = session?.user || [];
-
-  const getBusiness = useQuery({
-    queryKey: ["get-business", user.id],
-    queryFn: () => businessService.getBusiness(user.id),
-    refetchOnWindowFocus: false,
-    retry: false,
-  });
+  const [businesses, setBusinesses] = useState([]);
 
   const handleChange = (key: any) => {
-    const business = getBusiness.data?.find(
-      (business: any) => business.id === key,
-    );
+    const business = businesses.find((business: any) => business.id === key);
     businessContext.dispatch({ type: "set", data: business });
     window.location.reload();
   };
+
+  useEffect(() => {
+    let businessesFromStorage = localStorage.getItem("businesses");
+    if (businessesFromStorage !== null) {
+      let businesses = JSON.parse(businessesFromStorage);
+      setBusinesses(businesses);
+    }
+  }, [businessContext]);
 
   return (
     <div className="flex items-center justify-center w-full px-5 mb-4">
       <Dropdown>
         <DropdownTrigger>
           <Button
-            isLoading={getBusiness.isLoading}
-            className="w-full font-semibold text-white bg-primary"
-            endContent={mini ? <></> : <IconSwitchVertical size={16} />}
+            className="w-full font-semibold text-white bg-manugly"
+            endContent={mini ? <></> : <IconSwitchVertical size={14} />}
           >
             {mini
               ? businessContext.state.business.name?.charAt(0)
@@ -51,7 +44,7 @@ export default function BusinessSelect({ mini }: { mini?: boolean }) {
           </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="Static Actions" onAction={handleChange}>
-          {getBusiness.data?.map((business: any) => (
+          {businesses.map((business: any) => (
             <DropdownItem key={business.id}>{business.name}</DropdownItem>
           ))}
         </DropdownMenu>

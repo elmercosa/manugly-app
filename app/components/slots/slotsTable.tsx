@@ -48,7 +48,7 @@ export default function SlotsTable() {
   const { state } = useBusiness();
 
   const { isLoading, data } = useQuery({
-    queryKey: ["slots", state.business.id],
+    queryKey: ["slots"],
     queryFn: () => slotService.getAllSlots(state.business.id ?? ""),
     retry: false,
     refetchOnWindowFocus: false,
@@ -56,7 +56,7 @@ export default function SlotsTable() {
   });
 
   const removeSlots = useQuery({
-    queryKey: ["removeSlot", slotSelected.id],
+    queryKey: ["removeSlot"],
     queryFn: () => slotService.removeSlot(slotSelected.id),
     retry: false,
     refetchOnWindowFocus: false,
@@ -89,7 +89,6 @@ export default function SlotsTable() {
 
   useEffect(() => {
     if (data && !isLoading) {
-      console.log("slots :>> ", data);
       setSlots(data);
       setPages(Math.ceil(data.length / rowsPerPage));
     }
@@ -111,9 +110,9 @@ export default function SlotsTable() {
 
   const topContent = useMemo(() => {
     return (
-      <div className="flex flex-col gap-4 w-full">
-        <div className="flex justify-between gap-3 items-end ">
-          <div className="flex gap-3 w-1/2 items-center justify-start">
+      <div className="flex flex-col w-full gap-4">
+        <div className="flex items-end justify-between gap-3 ">
+          <div className="flex items-center justify-start w-1/2 gap-3">
             <div className="flex">
               <Input
                 isClearable
@@ -131,9 +130,9 @@ export default function SlotsTable() {
               />
             </div>
           </div>
-          <div className="flex gap-3 w-1/2 items-center justify-end">
+          <div className="flex items-center justify-end w-1/2 gap-3">
             <Button
-              className="bg-emerald-500 text-white  rounded-xl  font-semibold"
+              className="font-semibold text-white bg-manugly rounded-xl"
               startContent={<IconPlus size={20} className="font-semibold" />}
               as={Link}
               href="/admin/slots/add"
@@ -148,7 +147,7 @@ export default function SlotsTable() {
 
   const bottomContent = useMemo(() => {
     return (
-      <div className="py-2 px-2 flex justify-between items-center">
+      <div className="flex items-center justify-between px-2 py-2">
         <span className="text-default-400 text-small">
           Total {slots.length} citas
         </span>
@@ -211,7 +210,7 @@ export default function SlotsTable() {
               <TableCell>
                 <div className="relative flex items-center gap-2">
                   {/* <Tooltip content="Ver usuario">
-                    <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                    <span className="text-lg cursor-pointer text-default-400 active:opacity-50">
                       <Link
                         href={`/admin/users/details/${item?.id}`}
                         className="text-gray-400"
@@ -221,14 +220,14 @@ export default function SlotsTable() {
                     </span>
                   </Tooltip> */}
                   {/* <Tooltip content="Editar usuario">
-                    <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                    <span className="text-lg cursor-pointer text-default-400 active:opacity-50">
                       <Link href="/admin/users/edit" className="text-gray-400">
                         <IconEdit />
                       </Link>
                     </span>
                   </Tooltip> */}
                   <Tooltip color="danger" content="Borrar cita">
-                    <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                    <span className="text-lg cursor-pointer text-danger active:opacity-50">
                       <Button
                         href="#"
                         color="danger"

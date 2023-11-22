@@ -21,15 +21,18 @@ function CheckboxCustom({
   userId?: any;
   index?: any;
 }) {
+  const validateParam = (value: any, config: any) => {
+    return true;
+  };
   return (
     <ParamComponent
       save={save}
       data={paramData}
-      config={null}
       type={type}
       paramTitle={name}
       index={index}
       userId={userId}
+      validateParam={validateParam}
       description=""
       errorMessage=""
     >
@@ -38,15 +41,7 @@ function CheckboxCustom({
   );
 }
 
-function Configuration({
-  save,
-  paramData,
-  index,
-}: {
-  save?: any;
-  paramData?: any;
-  index?: any;
-}) {
+function Configuration({ paramData, index }: { paramData?: any; index?: any }) {
   // Config
   const [checkedDefault, setCheckedDefault] = useState(false);
   const [config, setConfig] = useState({});
@@ -62,16 +57,26 @@ function Configuration({
     }
   }, [paramData]);
 
+  useEffect(() => {
+    makeConfig();
+  }, [checkedDefault]);
+
+  const makeConfig = () => {
+    const configuration = {
+      checkedDefault: checkedDefault,
+    };
+    setConfig(configuration);
+  };
+
   return (
     <ParamConfiguration
-      save={save}
       data={paramData}
       config={config}
       type={type}
       paramTitle={name}
       index={index}
     >
-      <div className="flex items-center gap-2 w-full justify-between">
+      <div className="flex items-center justify-between w-full gap-2">
         <span className="text-sm">¿Marcado por defecto?</span>
         <Switch
           size="sm"

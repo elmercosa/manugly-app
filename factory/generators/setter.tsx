@@ -1,6 +1,6 @@
 "use client";
 import { Button, CircularProgress } from "@nextui-org/react";
-import { IconDeviceFloppy, IconPlus } from "@tabler/icons-react";
+import { IconDeviceFloppy } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
@@ -11,17 +11,24 @@ import { PageLoader } from "@/components/pageLoader";
 import { Parameters } from "@/factory/types/parameters";
 import { paramService } from "@/services/paramService";
 
-export default function Setter({ userId }: { userId: string }) {
+export default function Setter({
+  userId,
+  save,
+}: {
+  userId: string;
+  save: boolean;
+}) {
   const businessContext = useBusiness();
   const paramsContext = useParameters();
 
+  const [paramsList, setParamsList] = useState([]);
+
   const parameters = Parameters.getInstance().getParameters();
-  const [save, setSave] = useState(false);
   const [enableQuery, setEnableQuery] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const params = useQuery({
-    queryKey: ["setter", businessContext.state.business.id],
+    queryKey: ["setter"],
     queryFn: () => paramService.getAllParams(businessContext.state.business.id),
     retry: false,
     refetchOnWindowFocus: false,
@@ -29,7 +36,7 @@ export default function Setter({ userId }: { userId: string }) {
   });
 
   const paramsWithValues = useQuery({
-    queryKey: ["setter-values", businessContext.state.business.id],
+    queryKey: ["setter-values"],
     queryFn: () =>
       paramService.getAllParamsWithValues(
         businessContext.state.business.id,
@@ -39,38 +46,6 @@ export default function Setter({ userId }: { userId: string }) {
     refetchOnWindowFocus: false,
     enabled: enableQuery,
   });
-
-  const saveParams = () => {
-    const validParams = paramsContext.state.parameters.filter(
-      (param, index) => {
-        let paramConfig = param.data.configuration[0];
-        paramConfig = JSON.parse(paramConfig.configuration);
-
-        if (!paramConfig.required) {
-          return true;
-        } else if (paramConfig.required && !param.data.value) {
-          paramsContext.dispatch({
-            type: "setIsValid",
-            index: index,
-            isValid: false,
-          });
-          return false;
-        } else if (paramConfig.required && param.data.value) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-    );
-
-    if (validParams.length === paramsContext.state.parameters.length) {
-      setSave(true);
-    } else {
-      toast.error(
-        "Se han encontrado errores en los parámetros.\n Por favor, revisa los campos marcados en rojo.",
-      );
-    }
-  };
 
   useEffect(() => {
     if (paramsContext.state.parameters.length && save) {
@@ -96,7 +71,6 @@ export default function Setter({ userId }: { userId: string }) {
         }
 
         setIsSaving(false);
-        setSave(false);
       }
     }
   }, [paramsContext, save]);
@@ -118,17 +92,29 @@ export default function Setter({ userId }: { userId: string }) {
       params.data.forEach((param: any, index: any) => {
         if (parameters[param.type]) {
           let paramWithValue = findParam(param.id);
+          const config = JSON.parse(param.configuration[0].configuration);
+          let isValid = false;
           if (paramWithValue) {
             param.value = paramWithValue.userParameters[0].value;
             param.idValue = true;
+            isValid = true;
           } else {
             param.value = null;
             param.idValue = null;
           }
+
+          if (!config.required && !paramWithValue) {
+            isValid = true;
+          }
+
+          if (param.type == "checkbox") {
+            isValid = true;
+          }
+
           let parameter = {
             param: parameters[param.type],
             data: param,
-            isValid: true,
+            isValid: isValid,
             isValidated: true,
             isSaving: false,
             hasError: false,
@@ -138,6 +124,7 @@ export default function Setter({ userId }: { userId: string }) {
         }
       });
       paramsContext.dispatch({ type: "set", data: paramsAux });
+      setParamsList(paramsAux as any);
     }
   }, [
     params.data,
@@ -155,29 +142,21 @@ export default function Setter({ userId }: { userId: string }) {
 
   return (
     <>
-      {enableQuery && !params.isLoading && (
-        <div className="flex w-full justify-end items-center">
-          <Button
-            className="bg-emerald-500 text-white"
-            startContent={<IconDeviceFloppy size={20} />}
-            onClick={saveParams}
-            isLoading={enableQuery && params.isLoading}
-          >
-            Guardar
-          </Button>
+      <div className="flex flex-col items-center gap-4">
+        <div className="flex items-center justify-between w-full">
+          <h2 className="text-2xl font-semibold">Parámetros del usuario</h2>
         </div>
-      )}
-      <div className="flex flex-col gap-6 h-full items-center bg-default-100">
-        {params.isLoading && (
-          <div className="flex flex-col gap-2 items-center justify-center w-full h-full">
+
+        {params.isLoading && paramsWithValues.isLoading && (
+          <div className="flex flex-col items-center justify-center w-full h-full gap-2">
             <CircularProgress aria-label="Loading..." />
             <span>Cargando...</span>
           </div>
         )}
 
-        <div className="flex flex-col w-full h-full gap-4 py-4">
+        <div className="grid grid-cols-2 gap-4">
           {!params.isLoading &&
-            paramsContext.state.parameters.map((parameter: any, index: any) => {
+            paramsList?.map((parameter: any, index: any) => {
               return (
                 <parameter.param.component
                   key={index}

@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   const mini = false;
   return (
-    <main className="flex h-screen max-h-screen p-4 bg-gray-100">
+    <main className="flex h-screen max-h-screen p-4 bg-manugly-grey-light">
       <SideNav mini={mini}></SideNav>
       <div
         className={`flex flex-col max-h-screen col-start-3 col-end-13 pl-10 pr-6 overflow-y-auto ${

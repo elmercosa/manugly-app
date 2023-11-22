@@ -1,11 +1,6 @@
 import { Input, Switch } from "@nextui-org/react";
-import { Icon123 } from "@tabler/icons-react";
-import { useCounter } from "@uidotdev/usehooks";
-import { parse } from "path";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { useParameters } from "@/app/contexts/parameter/context";
-import CustomInputNumber from "@/components/custom/custom-input-number";
 import { ExportType } from "@/factory/types/interfaces";
 
 import { ParamComponent, ParamConfiguration } from "../param";
@@ -24,46 +19,55 @@ function Number({
   userId?: any;
   index?: any;
 }) {
-  const [config, setConfig] = useState({ min: 0, max: 100, required: false });
-  const [value, setValue] = useState(-9999999990);
-  const paramsContext = useParameters();
-  useEffect(() => {
-    if (paramsContext.state.parameters.length) {
-      let param = paramsContext.state.parameters[index];
-      let config = JSON.parse(param.data.configuration[0].configuration);
-      setConfig(config);
-      if (typeof param.data.value == "string") {
-        let valueAux = parseInt(param.data.value);
-        if (valueAux != value) {
-          setValue(valueAux);
-          let isValid = valueAux >= config.min && valueAux <= config.max;
-          paramsContext.dispatch({
-            type: "setIsValid",
-            index: index,
-            isValid: isValid,
-          });
-          paramsContext.dispatch({
-            type: "setIsValidated",
-            index: index,
-            isValidated: true,
-          });
-        }
-      }
+  const [config, setConfig] = useState({} as any);
+
+  const validateParam = (value: any, config: any) => {
+    setConfig(config);
+    if (typeof value == "string") {
+      value = parseInt(value);
     }
-  }, [paramsContext]);
+    if (value != undefined) {
+      let val = parseInt(value);
+      if (isNaN(val) && config.required) {
+        return false;
+      }
+
+      let max = parseInt(config.max);
+      let min = parseInt(config.min);
+      if (val < min || val > max) {
+        return false;
+      }
+
+      return true;
+    } else {
+      return true;
+    }
+  };
+
+  useEffect(() => {
+    if (
+      paramData &&
+      paramData.configuration &&
+      paramData.configuration.length
+    ) {
+      const config = JSON.parse(paramData.configuration[0].configuration);
+      setConfig(config);
+    }
+  }, [paramData]);
+
   return (
     <ParamComponent
       save={save}
       data={paramData}
-      config={null}
       type={type}
       paramTitle={name}
       index={index}
       userId={userId}
-      errorMessage={`Este valor ${
+      validateParam={validateParam}
+      errorMessage={`Este campo ${
         config.required ? "es obligatorio y" : ""
       } debe estar entre ${config.min} y ${config.max}`}
-      description={`Este valor debe estar entre ${config.min} y ${config.max}`}
+      description={`Este campo debe estar entre ${config.min} y ${config.max}`}
     >
       <></>
     </ParamComponent>
@@ -128,7 +132,6 @@ function Configuration({
 
   return (
     <ParamConfiguration
-      save={save}
       data={paramData}
       config={config}
       type={type}
@@ -136,7 +139,7 @@ function Configuration({
       index={index}
     >
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2 w-full justify-between">
+        <div className="flex items-center justify-between w-full gap-2">
           <span className="text-sm">Limitar valores</span>
           <Switch
             size="sm"

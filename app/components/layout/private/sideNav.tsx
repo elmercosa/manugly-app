@@ -1,6 +1,7 @@
 "use client";
 import { Tooltip } from "@nextui-org/react";
 import { IconRobotFace } from "@tabler/icons-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import BusinessWrapper from "@/components/business/businessWrapper";
@@ -18,17 +19,28 @@ export default function SideNav({ mini }: { mini?: boolean }) {
               <Tooltip content="Manugly" placement="right" showArrow>
                 <Link
                   href="/"
-                  className="flex items-center justify-center gap-1 text-4xl font-bold text-emerald-600"
+                  className="flex items-center justify-center gap-1 text-4xl font-bold"
                 >
-                  <IconRobotFace size={40} />
+                  <Image
+                    src="/manugly.svg"
+                    alt="Manugly"
+                    width="48"
+                    height="48"
+                  />
                 </Link>
               </Tooltip>
             ) : (
               <Link
                 href="/"
-                className="flex items-center justify-center gap-1 text-4xl font-bold text-emerald-600"
+                className="flex items-center justify-center gap-1 text-4xl font-bold"
               >
-                <IconRobotFace size={40} />
+                <Image
+                  src="/manugly.svg"
+                  alt="Manugly"
+                  width="48"
+                  height="48"
+                />
+
                 <span className="tracking-tighter">Manugly</span>
               </Link>
             )}

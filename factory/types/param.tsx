@@ -17,13 +17,15 @@ import {
   IconCircleXFilled,
   IconSquareRoundedPlusFilled,
   IconTrashFilled,
+  IconYinYangFilled,
 } from "@tabler/icons-react";
 import { ReactNode, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { setTimeout } from "timers";
 
 import { useBusiness } from "@/app/contexts/business/context";
-import { ParamsType, useParameters } from "@/app/contexts/parameter/context";
+import { useParameters } from "@/app/contexts/parameter/context";
+import { Loader } from "@/components/loader";
 import { paramService } from "@/services/paramService";
 
 export function ParamComponent({
@@ -31,30 +33,32 @@ export function ParamComponent({
   children,
   save,
   data,
-  config,
   type,
   index,
   userId,
   errorMessage,
   description,
+  validateParam,
 }: {
   children: ReactNode;
   save: boolean;
   data: any;
-  config: any;
   type: string;
   paramTitle: string;
   index: number;
   userId: string;
   errorMessage: string;
   description: string;
+  validateParam: any;
 }) {
   const [id, setId] = useState(null);
   const [title, setTitle] = useState("");
   const [required, setRequired] = useState(false);
 
+  const [config, setConfig] = useState({} as any);
+
   //invalid state
-  const [isInvalid, setIsInvalid] = useState(false);
+  const [isValid, setIsValid] = useState(true);
 
   const [isSaved, setIsSaved] = useState(false);
   const [errorOnSave, setErrorOnSave] = useState(false);
@@ -96,8 +100,26 @@ export function ParamComponent({
   };
 
   const saveParam = async () => {
-    let valueAux =
-      type === "checkbox" || type === "number" ? value.toString() : value;
+    let valueAux = value;
+
+    if ((type === "checkbox" || type === "number") && valueAux != undefined) {
+      valueAux = value.toString();
+    }
+
+    if (
+      (type === "text" || type === "textarea" || type === "date") &&
+      valueAux == undefined
+    ) {
+      valueAux = "";
+    }
+
+    if (type === "number" && valueAux == undefined) {
+      valueAux = "0";
+    }
+
+    if (type === "checkbox" && valueAux == undefined) {
+      valueAux = false;
+    }
 
     const param = {
       businessId: businessContext.state.business.id,
@@ -140,18 +162,6 @@ export function ParamComponent({
   }, [save]);
 
   useEffect(() => {
-    if (type === "checkbox") {
-      setValue(false);
-    }
-    if (type === "number") {
-      setValue(0);
-    }
-    if (type === "textarea") {
-      setValue("");
-    }
-  }, [type]);
-
-  useEffect(() => {
     if (data.id) {
       setId(data.id);
       setTitle(data.title);
@@ -168,40 +178,41 @@ export function ParamComponent({
 
       if (data.configuration && data.configuration.length) {
         const config = JSON.parse(data.configuration[0].configuration);
+        if (type === "checkbox" && config.checkedDefault) {
+          setValue(true);
+        }
+        setConfig(config);
         setRequired(config.required);
       }
-
-      paramsContext.dispatch({
-        type: "setIsValid",
-        index: index,
-        isValid: true,
-      });
     }
   }, [data]);
 
   useEffect(() => {
-    paramsContext.dispatch({
-      type: "setValue",
-      index: index,
-      value: value,
-    });
     setIsSaved(false);
+    let isValid = validateParam(value, config);
+    setIsValid(isValid);
+    paramsContext.dispatch({ type: "setValue", index: index, value: value });
+    if (isValid) {
+      paramsContext.dispatch({
+        type: "setIsValid",
+        index: index,
+        isValid: isValid,
+      });
+    }
   }, [value]);
 
   useEffect(() => {
-    if (paramsContext.state.parameters.length) {
+    if (paramsContext.state.parameters.length && isValid) {
       let param = paramsContext.state.parameters[index];
-      if (param && !param.isValid) {
-        setIsInvalid(true);
-      } else {
-        setIsInvalid(false);
+      if (param) {
+        setIsValid(param.isValid);
       }
     }
   }, [paramsContext]);
 
   return (
-    <div className="bg-white rounded-xl p-4 flex flex-col gap-4">
-      <div className="flex flex-col gap-4 justify-between h-full">
+    <div className="flex flex-col gap-4 p-4 bg-white rounded-xl">
+      <div className="flex flex-col justify-between h-full gap-4">
         {type !== "textarea" && type !== "checkbox" && type !== "date" && (
           <div className="flex flex-col gap-4">
             <div className="flex flex-col">
@@ -220,11 +231,12 @@ export function ParamComponent({
               onValueChange={(data) => setValue(data)}
               isRequired={required}
               variant="bordered"
-              errorMessage={isInvalid ? errorMessage : ""}
+              errorMessage={!isValid ? errorMessage : ""}
               description={description}
-              isInvalid={isInvalid}
+              isInvalid={!isValid}
               size="sm"
               isClearable
+              isDisabled={userId === ""}
             />
           </div>
         )}
@@ -247,13 +259,14 @@ export function ParamComponent({
               onValueChange={(data) => setValue(data)}
               isRequired={required}
               variant="bordered"
-              errorMessage={isInvalid ? errorMessage : ""}
+              errorMessage={!isValid ? errorMessage : ""}
               description={description}
-              isInvalid={isInvalid}
+              isInvalid={!isValid}
               size="sm"
               min={JSON.parse(data.configuration[0].configuration).min}
               max={JSON.parse(data.configuration[0].configuration).max}
               isClearable
+              isDisabled={userId === ""}
             />
           </div>
         )}
@@ -274,15 +287,16 @@ export function ParamComponent({
               onValueChange={setValue}
               isRequired={required}
               variant="bordered"
-              errorMessage={isInvalid ? "Este campo es obligatorio" : ""}
-              isInvalid={isInvalid}
+              errorMessage={!isValid ? "Este campo es obligatorio" : ""}
+              isInvalid={!isValid}
               size="sm"
+              isDisabled={userId === ""}
             />
           </div>
         )}
 
         {type === "checkbox" && (
-          <div className="flex items-center gap-2 w-full justify-between">
+          <div className="flex items-center justify-between w-full gap-2">
             <div className="flex flex-col">
               <span className="text-xs font-semibold text-gray-500">
                 {paramTitle}
@@ -300,10 +314,11 @@ export function ParamComponent({
               classNames={{
                 wrapper: "m-0",
               }}
+              isDisabled={userId === ""}
             />
           </div>
         )}
-        <div className="flex justify-end bottom-2 right-2 gap-2 ">
+        <div className="flex justify-end gap-2 bottom-2 right-2 ">
           {isSaved && (
             <Chip
               startContent={<IconCircleCheckFilled size={18} />}
@@ -339,14 +354,12 @@ export function ParamComponent({
 export function ParamConfiguration({
   paramTitle,
   children,
-  save,
   data,
   config,
   type,
   index,
 }: {
   children: ReactNode;
-  save: boolean;
   data: any;
   config: any;
   type: string;
@@ -357,6 +370,7 @@ export function ParamConfiguration({
   const [title, setTitle] = useState("");
   const [required, setRequired] = useState(false);
 
+  const [save, setSave] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [errorOnSave, setErrorOnSave] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -392,7 +406,12 @@ export function ParamConfiguration({
         hasErrors: true,
       });
     }
+    setSave(false);
+    setSaving(false);
     switchSaveState();
+    setTimeout(() => {
+      setIsSaved(false);
+    }, 3000);
   };
 
   const normalize = (str: string) => {
@@ -464,12 +483,18 @@ export function ParamConfiguration({
   };
 
   useEffect(() => {
-    if (save && !isSaved) {
+    if (save) {
       switchSaveState();
-      if (id === null) {
-        saveParam();
+      if (isRepeated) {
+        toast.error(`El parámetro ${title} de tipo ${type} ya existe`);
+        setSave(false);
       } else {
-        updateParam();
+        setSaving(true);
+        if (id === null) {
+          saveParam();
+        } else {
+          updateParam();
+        }
       }
     }
   }, [save]);
@@ -518,178 +543,173 @@ export function ParamConfiguration({
   const checkIsRepeated = () => {
     setTimeout(() => {
       const key = normalize(title);
-
       const repeated = paramsContext.state.parameters.filter(
-        (param) => param.data.key == key,
+        (param) => param.data.key == key && param.data.type == type,
       );
-
-      if (repeated.length > 1) {
-        setIsRepeated(true);
-        paramsContext.dispatch({
-          type: "setIsValid",
-          index: index,
-          isValid: false,
-        });
-      } else {
-        setIsRepeated(false);
-        paramsContext.dispatch({
-          type: "setIsValid",
-          index: index,
-          isValid: true,
-        });
-      }
+      setIsRepeated(repeated.length > 1);
     }, 50);
   };
 
   return (
-    <div className="bg-white rounded-xl p-4 flex flex-col gap-4">
-      <div className="flex flex-col gap-4 justify-between h-full">
-        <div className="flex flex-col gap-6">
-          {id == null ? (
-            <div className="flex flex-col gap-2">
-              <h2 className="text-xl font-bold">{paramTitle}</h2>
-              <Input
-                type="text"
-                name="name"
-                label={id !== null ? "" : "Nombre del parámetro"}
-                value={title}
-                onValueChange={setTitle}
-                readOnly={id !== null}
-                isInvalid={id == null && isRepeated}
-                variant={id !== null ? "faded" : "bordered"}
-                size="sm"
-              />
-            </div>
-          ) : (
-            <div className="flex flex-col">
-              <span className="text-xs font-semibold text-gray-500">
-                {paramTitle}
-              </span>
-              <h2 className="text-xl font-bold">{title}</h2>
-            </div>
-          )}
-          <div className="flex flex-col gap-1 relative">
-            <h3 className="text-sm font-semibold absolute top-0 left-2 -translate-y-1/2 bg-white px-2">
-              Configuración avanzada
-            </h3>
-            <div className="flex flex-col gap-2 border rounded-lg p-3 pt-4">
-              {children}
-              <div className="flex items-center gap-2 w-full justify-between">
-                <span className="text-sm">¿Obligatorio?</span>
-                <Switch
+    <div className="relative flex flex-col gap-4 p-4 bg-white rounded-xl">
+      <Loader isLoading={saving} text="Guardando...">
+        <div className="flex flex-col justify-between h-full gap-4">
+          <div className="flex flex-col gap-6">
+            {id == null ? (
+              <div className="flex flex-col gap-2">
+                <h2 className="text-xl font-bold">{paramTitle}</h2>
+                <Input
+                  type="text"
+                  name="name"
+                  label={id !== null ? "" : "Nombre del parámetro"}
+                  value={title}
+                  onValueChange={setTitle}
+                  readOnly={id !== null}
+                  isInvalid={id == null && isRepeated}
+                  variant={id !== null ? "faded" : "bordered"}
                   size="sm"
-                  isSelected={required}
-                  onValueChange={setRequired}
-                  aria-label="¿Obligatorio?"
-                  classNames={{
-                    wrapper: "m-0",
-                  }}
                 />
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-gray-500">
+                  {paramTitle}
+                </span>
+                <h2 className="text-xl font-bold">{title}</h2>
+              </div>
+            )}
+            <div className="relative flex flex-col gap-1">
+              <h3 className="absolute top-0 px-2 text-sm font-semibold -translate-y-1/2 bg-white left-2">
+                Configuración avanzada
+              </h3>
+              <div className="flex flex-col gap-2 p-3 pt-4 border rounded-lg">
+                {children}
+                <div className="flex items-center justify-between w-full gap-2">
+                  <span className="text-sm">¿Obligatorio?</span>
+                  <Switch
+                    size="sm"
+                    isSelected={required}
+                    onValueChange={setRequired}
+                    aria-label="¿Obligatorio?"
+                    classNames={{
+                      wrapper: "m-0",
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="flex justify-end bottom-2 right-2 gap-2 ">
-          <Tooltip
-            content="Borrar usuario"
-            color="danger"
-            placement="left-start"
-          >
-            <Button
-              startContent={<IconTrashFilled size={16} />}
-              onPress={() => setIsOpen(true)}
-              isDisabled={saving}
-              size="sm"
-              className="w-7 h-7 min-h-[28px] min-w-[28px]"
-              isIconOnly
-              color="danger"
-              variant="flat"
-            ></Button>
-          </Tooltip>
-          {isSaved && (
-            <Chip
-              startContent={<IconCircleCheckFilled size={18} />}
-              variant="flat"
-              color="success"
-              classNames={{
-                content: "text-black",
-              }}
-              radius="sm"
-            >
-              Guardado
-            </Chip>
-          )}
-          {errorOnSave && (
-            <Chip
-              startContent={<IconCircleXFilled size={18} />}
-              variant="flat"
-              color="danger"
-              classNames={{
-                content: "text-black",
-              }}
-              radius="sm"
-            >
-              Error al guardar
-            </Chip>
-          )}
-          {isRepeated && (
-            <Chip
-              startContent={<IconAlertTriangleFilled size={18} />}
-              variant="flat"
-              color="warning"
-              classNames={{
-                content: "text-black",
-              }}
-              radius="sm"
-            >
-              Parámetro repetido
-            </Chip>
-          )}
-
-          {!id && (
-            <Chip
-              startContent={<IconSquareRoundedPlusFilled size={18} />}
-              variant="flat"
-              color="secondary"
-              classNames={{
-                content: "text-black",
-              }}
-              radius="sm"
-            >
-              Nuevo
-            </Chip>
-          )}
-        </div>
-        <Modal isOpen={isOpen} hideCloseButton={true}>
-          <ModalContent>
-            <ModalHeader className="flex flex-col gap-1 text-xl">
-              ¿Estás seguro?
-            </ModalHeader>
-            <ModalBody>
-              <p>
-                Este parmámetro se eliminará de todos los usuarios que lo tengan
-                asignado y no podrás recuperarlo.
-              </p>
-            </ModalBody>
-            <ModalFooter>
+          <div className="flex justify-end gap-2 bottom-2 right-2 ">
+            <Tooltip content="Borrar usuario" color="danger" placement="bottom">
               <Button
+                startContent={<IconTrashFilled size={16} />}
+                onPress={() => setIsOpen(true)}
+                isDisabled={saving}
+                size="sm"
+                className="w-7 h-7 min-h-[28px] min-w-[28px]"
+                isIconOnly
                 color="danger"
-                variant="light"
-                onPress={() => setIsOpen(false)}
-              >
-                No
-              </Button>
+                variant="flat"
+              ></Button>
+            </Tooltip>
+            <Tooltip
+              content="Guardar usuario"
+              color="primary"
+              placement="bottom"
+              classNames={{
+                content: "text-white",
+              }}
+            >
               <Button
-                className="bg-emerald-500 text-white shadow-md"
-                onPress={removeParam}
-                isLoading={isDeleting}
+                startContent={<IconYinYangFilled size={16} />}
+                onPress={() => setSave(true)}
+                isDisabled={saving}
+                size="sm"
+                className="w-7 h-7 min-h-[28px] min-w-[28px]"
+                isIconOnly
+                color="primary"
+                variant="flat"
+              ></Button>
+            </Tooltip>
+            {isSaved && (
+              <Chip
+                startContent={<IconCircleCheckFilled size={18} />}
+                variant="flat"
+                color="success"
+                classNames={{
+                  content: "text-black",
+                }}
+                radius="sm"
               >
-                Sí
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </div>
+                Guardado
+              </Chip>
+            )}
+            {errorOnSave && (
+              <Chip
+                startContent={<IconCircleXFilled size={18} />}
+                variant="flat"
+                color="danger"
+                classNames={{
+                  content: "text-black",
+                }}
+                radius="sm"
+              >
+                Error al guardar
+              </Chip>
+            )}
+            {isRepeated && (
+              <Chip
+                startContent={<IconAlertTriangleFilled size={18} />}
+                variant="flat"
+                color="warning"
+                radius="sm"
+              >
+                Parámetro repetido
+              </Chip>
+            )}
+
+            {!id && (
+              <Chip
+                startContent={<IconSquareRoundedPlusFilled size={18} />}
+                variant="flat"
+                color="secondary"
+                radius="sm"
+              >
+                Nuevo
+              </Chip>
+            )}
+          </div>
+          <Modal isOpen={isOpen} hideCloseButton={true}>
+            <ModalContent>
+              <ModalHeader className="flex flex-col gap-1 text-xl">
+                ¿Estás seguro?
+              </ModalHeader>
+              <ModalBody>
+                <p>
+                  Este parmámetro se eliminará de todos los usuarios que lo
+                  tengan asignado y no podrás recuperarlo.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="danger"
+                  variant="light"
+                  onPress={() => setIsOpen(false)}
+                >
+                  No
+                </Button>
+                <Button
+                  className="text-white shadow-md bg-manugly"
+                  onPress={removeParam}
+                  isLoading={isDeleting}
+                >
+                  Sí
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </div>
+      </Loader>
     </div>
   );
 }

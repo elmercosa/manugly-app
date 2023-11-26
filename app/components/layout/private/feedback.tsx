@@ -16,6 +16,7 @@ import {
   Textarea,
   useDisclosure,
 } from "@nextui-org/react";
+import { IconConfetti, IconSpeakerphone } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
@@ -68,7 +69,8 @@ export default function FeedBack({ session }: { session: any }) {
         onPress={() => {
           setIsOpen(true);
         }}
-        className="bg-white  rounded-xl p-4 font-bold"
+        className="p-4 font-bold bg-default-100"
+        startContent={<IconConfetti size={16} />}
       >
         Feedback
       </Button>
@@ -93,7 +95,7 @@ export default function FeedBack({ session }: { session: any }) {
           </ModalBody>
           <ModalFooter>
             <Button
-              className="bg-manugly text-white rounded-xl p-4 font-semibold"
+              className="p-4 font-semibold text-white bg-manugly rounded-xl"
               onPress={saveUser}
               isLoading={enableQuery && isLoading}
             >

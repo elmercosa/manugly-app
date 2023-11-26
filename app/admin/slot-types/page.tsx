@@ -7,7 +7,7 @@ import UsersTable from "@/components/users/usersTable";
 export default function Users() {
   return (
     <>
-      <TopBar title="Usuarios" />
+      <TopBar title="Empleados" />
       <main className="w-full mt-32">
         <AllWrapper>
           <UsersTable />

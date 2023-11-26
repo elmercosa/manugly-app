@@ -1,7 +1,7 @@
-import { getTest, postPrivate, remove } from "@/services/request";
+import { getPrivate, postPrivate, remove } from "@/services/request";
 
 async function getAllSlots(businessId: any) {
-  const response = await getTest(`/slots`);
+  const response = await getPrivate(`/slots`);
   return response;
 }
 

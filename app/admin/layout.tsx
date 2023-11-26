@@ -5,7 +5,6 @@ import type { Metadata } from "next";
 import { ToastContainer } from "react-toastify";
 
 import SideNav from "@/components/layout/private/sideNav";
-import TopBar from "@/components/layout/private/topBar";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,7 +25,6 @@ export default function RootLayout({
           mini ? "w-11/12" : "w-10/12"
         }`}
       >
-        <TopBar></TopBar>
         <ToastContainer
           position="bottom-right"
           autoClose={5000}
@@ -39,7 +37,9 @@ export default function RootLayout({
           pauseOnHover
           theme="light"
         />
-        <div className="flex justify-center w-full">{children}</div>
+        <div className="relative flex flex-col justify-center w-full">
+          {children}
+        </div>
       </div>
     </main>
   );

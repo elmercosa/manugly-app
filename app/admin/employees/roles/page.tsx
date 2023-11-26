@@ -1,16 +1,16 @@
 import React from "react";
 
 import AllWrapper from "@/components/allWrapper";
+import RolesTable from "@/components/employees/roles/rolesTable";
 import TopBar from "@/components/layout/private/topBar";
-import UsersTable from "@/components/users/usersTable";
 
-export default function Users() {
+export default function Page() {
   return (
     <>
-      <TopBar title="Usuarios" />
+      <TopBar title="Roles de empleados" />
       <main className="w-full mt-32">
         <AllWrapper>
-          <UsersTable />
+          <RolesTable />
         </AllWrapper>
       </main>
     </>

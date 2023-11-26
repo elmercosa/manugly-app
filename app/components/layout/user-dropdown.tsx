@@ -41,7 +41,7 @@ export default function UserDropdown({ session }: { session?: Session }) {
         }}
       >
         <DropdownTrigger>
-          <Button className="p-4 font-bold bg-white rounded-xl">
+          <Button className="p-4 font-bold bg-default-100">
             <Image src="/manugly.svg" alt="Manugly" width="24" height="24" />
             <p className="text-sm font-bold whitespace-nowrap">Hola, {name}</p>
           </Button>

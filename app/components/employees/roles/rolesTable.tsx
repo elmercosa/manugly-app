@@ -31,20 +31,24 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 
 import { useBusiness } from "@/app/contexts/business/context";
-import { userService } from "@/services/userService";
+import { employeeRolesService } from "@/services/employeeRolesService";
+import entityService from "@/services/entityService";
 
-import useDataQuery from "../../../hooks/useDataQuery";
-import useEnableQuery from "../../../hooks/useEnableQuery";
-import AddUserForm from "./addUser";
-import DeleteUser from "./deleteUser";
+import useDataQuery from "../../../../hooks/useDataQuery";
+import useEnableQuery from "../../../../hooks/useEnableQuery";
+import AddEmployee from "./add";
+import AddEmployeeRole from "./add";
+import DeleteEmployee from "./delete";
+// import AddUserForm from "./addUser";
+// import DeleteUser from "./deleteUser";
 
-export default function UsersTable() {
+export default function RolesTable() {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  let columns = userService.columns;
+  let columns = employeeRolesService.columns;
   const columnsKeys: Selection = new Set<string>(
     columns.map((column) => column.key),
   );
@@ -55,24 +59,29 @@ export default function UsersTable() {
   const BusinessContext = useBusiness();
 
   const enableQuery = useEnableQuery(BusinessContext.state.business.id);
-  const GetUsers = useQuery({
-    queryKey: "users",
-    queryFn: () => userService.getAllUsers(BusinessContext.state.business.id),
+  const GetEmployees = useQuery({
+    queryKey: "employees-roles",
+    queryFn: () =>
+      entityService("roles").getAll(BusinessContext.state.business.id),
     retry: false,
     refetchOnWindowFocus: false,
     enabled: enableQuery,
   });
-  const users = useDataQuery(BusinessContext.state.business.id, GetUsers);
+  const employees = useDataQuery(
+    BusinessContext.state.business.id,
+    GetEmployees,
+  );
 
   useEffect(() => {
-    if (users) {
-      setPages(Math.ceil(users.length / rowsPerPage));
+    if (employees) {
+      console.log("employees :>> ", employees);
+      setPages(Math.ceil(employees.length / rowsPerPage));
     }
-  }, [users, rowsPerPage]);
+  }, [employees, rowsPerPage]);
 
   useEffect(() => {
-    if (users) {
-      let dataFiltered = users.filter((user: any) => {
+    if (employees) {
+      let dataFiltered = employees.filter((user: any) => {
         return (
           user?.name?.toLowerCase().includes(filterValue.toLowerCase()) ||
           user?.surname?.toLowerCase().includes(filterValue.toLowerCase()) ||
@@ -88,13 +97,13 @@ export default function UsersTable() {
       setItems(dataPaginated);
       setPages(Math.ceil(dataFiltered.length / rowsPerPage));
     }
-  }, [filterValue, users, page, rowsPerPage]);
+  }, [filterValue, employees, page, rowsPerPage]);
 
   const bottomContent = useMemo(() => {
     return (
       <div className="flex items-center justify-between px-2 py-2">
         <span className="text-default-400 text-small">
-          Total {users.length} usuarios
+          Total {employees.length} empleados
         </span>
         <Pagination
           isCompact
@@ -113,7 +122,7 @@ export default function UsersTable() {
         />
       </div>
     );
-  }, [page, pages, users]);
+  }, [page, pages, employees]);
 
   const renderCell = useCallback((data: any, columnKey: any) => {
     const cellValue = data[columnKey];
@@ -122,7 +131,7 @@ export default function UsersTable() {
       case "actions":
         return (
           <div className="relative flex items-center gap-2">
-            <Tooltip content="Editar usuario">
+            <Tooltip content="Editar empleado">
               <Button
                 startContent={<IconEdit size={16} />}
                 as={Link}
@@ -133,7 +142,7 @@ export default function UsersTable() {
                 variant="flat"
               ></Button>
             </Tooltip>
-            <DeleteUser id={data.id} />
+            <DeleteEmployee id={data.id} />
           </div>
         );
       default:
@@ -164,41 +173,7 @@ export default function UsersTable() {
             </div>
           </div>
           <div className="flex items-center justify-end w-1/2 gap-3">
-            {/* <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<IconChevronDown size={14} />}
-                  variant="flat"
-                >
-                  Columns
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={visibleColumns}
-                selectionMode="multiple"
-                onSelectionChange={setVisibleColumns}
-              >
-                {columns.map((column) => (
-                  <DropdownItem key={column.key} className="capitalize">
-                    {column.label}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown> */}
-            <Button
-              href="/admin/users/config"
-              as={Link}
-              className="font-semibold text-white bg-manugly rounded-xl "
-              startContent={
-                <IconSettings size={20} className="font-semibold" />
-              }
-            >
-              Configurar usuarios
-            </Button>
-            <AddUserForm />
+            <AddEmployeeRole />
           </div>
         </div>
       </div>
@@ -208,7 +183,7 @@ export default function UsersTable() {
         bottomContentPlacement="outside"
         topContentPlacement="outside"
         classNames={{
-          table: `${GetUsers.isLoading ? "min-h-[400px]" : ""}`,
+          table: `${GetEmployees.isLoading ? "min-h-[400px]" : ""}`,
           base: "shadow-none rounded-xl",
           wrapper: "shadow-none rounded-xl",
         }}
@@ -225,11 +200,13 @@ export default function UsersTable() {
           }
         </TableHeader>
         <TableBody
-          isLoading={GetUsers.isLoading}
+          isLoading={GetEmployees.isLoading}
           loadingContent={<Spinner />}
           items={items ?? []}
           emptyContent={
-            GetUsers.isLoading ? "Cargando..." : "No hay usuarios que mostrar"
+            GetEmployees.isLoading
+              ? "Cargando..."
+              : "No hay empleados que mostrar"
           }
         >
           {(item: any) => (

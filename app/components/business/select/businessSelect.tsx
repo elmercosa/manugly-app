@@ -14,6 +14,7 @@ import { useBusiness } from "@/app/contexts/business/context";
 
 export default function BusinessSelect({ mini }: { mini?: boolean }) {
   const businessContext = useBusiness();
+  const [business, setBusiness] = useState({} as any);
   const [businesses, setBusinesses] = useState([]);
 
   const handleChange = (key: any) => {
@@ -28,19 +29,23 @@ export default function BusinessSelect({ mini }: { mini?: boolean }) {
       let businesses = JSON.parse(businessesFromStorage);
       setBusinesses(businesses);
     }
+    if (businessContext.state.business) {
+      setBusiness(businessContext.state.business);
+    }
   }, [businessContext]);
 
   return (
-    <div className="flex items-center justify-center w-full px-5 mb-4">
+    <div
+      className="flex items-center justify-center w-full px-5 mb-4"
+      key={businessContext.state.business.id}
+    >
       <Dropdown>
         <DropdownTrigger>
           <Button
             className="w-full font-semibold text-white bg-manugly"
             endContent={mini ? <></> : <IconSwitchVertical size={14} />}
           >
-            {mini
-              ? businessContext.state.business.name?.charAt(0)
-              : businessContext.state.business.name}
+            {mini ? business.name?.charAt(0) : business.name}
           </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="Static Actions" onAction={handleChange}>

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import LoginForm from "@/components/auth/login-form";
 
 export default function Page() {
@@ -7,7 +9,12 @@ export default function Page() {
         <LoginForm></LoginForm>
       </div>
       <div className="flex w-2/5 h-screen rounded-bl-[30%] bg-manugly items-center justify-center">
-        <h1 className="text-[200px] font-bold text-white">M</h1>
+        <Image
+          src="/manugly-logo-white.svg"
+          alt="Manugly"
+          width="200"
+          height="200"
+        />
       </div>
     </main>
   );

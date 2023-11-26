@@ -154,7 +154,7 @@ export default function Setter({
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid w-full grid-cols-2 gap-4">
           {!params.isLoading &&
             paramsList?.map((parameter: any, index: any) => {
               return (

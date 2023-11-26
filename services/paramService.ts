@@ -1,4 +1,4 @@
-import { getTest, postPrivate, remove } from "@/services/request";
+import { getPrivate, postPrivate, remove } from "@/services/request";
 
 async function createParam(data: any) {
   const response = await postPrivate("/parameters/create", data);
@@ -6,7 +6,7 @@ async function createParam(data: any) {
 }
 
 async function editParam(data: any) {
-  const response = await postPrivate(`/parameters/edit`, data);
+  const response = await postPrivate(`/parameters/update`, data);
   return response;
 }
 
@@ -26,13 +26,13 @@ async function linkParam(data: any) {
 }
 
 async function getAllParams(businessId: any) {
-  const response = await getTest(`/parameters/findByBusiness/${businessId}`);
+  const response = await getPrivate(`/parameters/findByBusiness/${businessId}`);
   return response;
 }
 
 async function getAllParamsWithValues(businessId: any, userId: any) {
   const response =
-    await getTest(`/parameters/findByBusiness/${businessId}/${userId}
+    await getPrivate(`/parameters/findByBusiness/${businessId}/${userId}
   `);
   return response;
 }

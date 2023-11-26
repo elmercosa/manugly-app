@@ -15,12 +15,10 @@ import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 
 import { useBusiness } from "@/app/contexts/business/context";
-import CustomRadio from "@/components/custom/custom-radio";
-import { Loader } from "@/components/loader";
 import { businessService } from "@/services/businessService";
 
 export default function BusinessSelector({ user }: { user: any }) {
-  const { push } = useRouter();
+  const router = useRouter();
 
   const [businesses, setBusinesses] = useState([]);
   const [business, setBusiness] = useState();
@@ -73,7 +71,7 @@ export default function BusinessSelector({ user }: { user: any }) {
   const handleContinue = () => {
     businessContext.dispatch({ type: "set", data: business });
     setIsLoading(true);
-    push("/admin");
+    router.replace(`/admin`);
   };
 
   useEffect(() => {
@@ -111,6 +109,20 @@ export default function BusinessSelector({ user }: { user: any }) {
       }, 500);
     }
   }, [createBusiness.data]);
+
+  const colors = [
+    { name: "Azul", hexa: "#0724BC" },
+    { name: "Verde", hexa: "#08C99B" },
+    { name: "Naranja", hexa: "#EF5614" },
+    { name: "Morado", hexa: "#8008C9" },
+  ];
+
+  const handleColorChange = (values: any) => {
+    const [first] = values;
+    console.log("first :>> ", first);
+    // const business = businesses.find((b: any) => b.id === first);
+    // setBusiness(business);
+  };
 
   return (
     <div className="w-1/4">
@@ -161,7 +173,6 @@ export default function BusinessSelector({ user }: { user: any }) {
               value={name}
               onValueChange={setName}
               isRequired={true}
-              variant="bordered"
               size="sm"
               autoFocus
               isClearable
@@ -172,7 +183,6 @@ export default function BusinessSelector({ user }: { user: any }) {
               value={email}
               onValueChange={setEmail}
               isRequired={true}
-              variant="bordered"
               size="sm"
               isClearable
             />
@@ -182,7 +192,6 @@ export default function BusinessSelector({ user }: { user: any }) {
               value={address}
               onValueChange={setAddress}
               isRequired={true}
-              variant="bordered"
               size="sm"
               isClearable
             />
@@ -192,23 +201,28 @@ export default function BusinessSelector({ user }: { user: any }) {
               value={phone}
               onValueChange={setPhone}
               isRequired={true}
-              variant="bordered"
               size="sm"
               isClearable
             />
-            <div className="flex items-center justify-between w-full px-3 py-2 transition-all border-2 rounded-lg hover:border-default-400">
-              <span className="text-sm text-default-500">
-                Color para tu negocio
-                <span className="ml-1 text-red-500">*</span>
-              </span>
-              <input
-                type="color"
-                value={colour}
-                onChange={(event) => {
-                  setColour(event.target.value);
-                }}
-              />
-            </div>
+            <Select
+              label="Selecciona un color para el negocio"
+              onSelectionChange={handleColorChange}
+            >
+              {colors.map((color: any) => (
+                <SelectItem
+                  key={color.name}
+                  value={color.hexa}
+                  startContent={
+                    <div
+                      className="w-4 h-4 rounded-full"
+                      style={{ backgroundColor: color.hexa }}
+                    ></div>
+                  }
+                >
+                  {color.name}
+                </SelectItem>
+              ))}
+            </Select>
           </div>
           <div className="flex items-center justify-end w-full gap-4">
             {businesses.length > 0 && (

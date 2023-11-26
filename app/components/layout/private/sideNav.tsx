@@ -1,6 +1,5 @@
 "use client";
 import { Tooltip } from "@nextui-org/react";
-import { IconRobotFace } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -45,11 +44,11 @@ export default function SideNav({ mini }: { mini?: boolean }) {
               </Link>
             )}
           </div>
-          <BusinessSelect mini={mini} />
           <Menu />
-          <div className="flex flex-col items-center justify-center gap-6 m-5">
+          <BusinessSelect mini={mini} />
+          {/* <div className="flex flex-col items-center justify-center gap-6 m-5">
             <BecomePro mini={mini} />
-          </div>
+          </div> */}
         </div>
       </div>
     </BusinessWrapper>

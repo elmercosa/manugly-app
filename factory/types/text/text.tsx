@@ -23,10 +23,6 @@ function Text({
   const validateParam = (value: any, config: any) => {
     setConfig(config);
     if (typeof value == "string") {
-      let max = parseInt(config.max);
-      if (value.length > max) {
-        return false;
-      }
       let specialChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
       if (!config.specialChars && specialChars.test(value)) {
         return false;
@@ -69,13 +65,11 @@ function Text({
       errorMessage={`Este valor ${config.required ? "es obligatorio" : ""}${
         config.specialChars ? "" : ", no puede contener caracteres especiales"
       }
-      ${config.specialChars ? "" : ", no puede contener números"} 
-      y debe tener como máximo ${config.max} caracteres`}
+      ${config.specialChars ? "" : " y no puede contener números"}`}
       description={`Este valor ${config.required ? "es obligatorio" : ""}${
         config.specialChars ? "" : ", no puede contener caracteres especiales"
       }
-      ${config.specialChars ? "" : ", no puede contener números"} 
-      y debe tener como máximo ${config.max} caracteres`}
+      ${config.specialChars ? "" : "y no puede contener números"}`}
     >
       <></>
     </ParamComponent>

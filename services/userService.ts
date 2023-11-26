@@ -1,17 +1,31 @@
-import { edit, getTest, postPrivate, remove } from "@/services/request";
+import { edit, getPrivate, postPrivate, remove } from "@/services/request";
+
+const columns = [
+  {
+    key: "name",
+    label: "Nombre",
+  },
+  {
+    key: "surname",
+    label: "Apellidos",
+  },
+  {
+    key: "email",
+    label: "Email",
+  },
+  {
+    key: "actions",
+    label: "Acciones",
+  },
+];
 
 async function getAllUsers(id: string) {
-  const response = await getTest(`/users/findAll/${id}`);
+  const response = await getPrivate(`/users/findAll/${id}`);
   return response;
 }
 
 async function getUser(id: string) {
-  const response = await getTest(`/users/findOne/${id}`);
-  return response;
-}
-
-async function getBusiness() {
-  const response = await getTest("/businesses");
+  const response = await getPrivate(`/users/findById/${id}`);
   return response;
 }
 
@@ -21,7 +35,7 @@ async function createUser(data: any, businessId: any) {
 }
 
 async function editUser(data: any, userId: any) {
-  const response = await postPrivate(`/users/edit/${userId}`, data);
+  const response = await postPrivate(`/users/update`, data);
   return response;
 }
 
@@ -34,7 +48,7 @@ export const userService = {
   createUser,
   getAllUsers,
   getUser,
-  getBusiness,
   editUser,
   removeUser,
+  columns,
 };

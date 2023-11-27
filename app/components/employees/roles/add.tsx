@@ -110,7 +110,7 @@ export default function AddEmployeeRole() {
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-2 bg-white rounded-xl">
                     <span className="font-semibold ">
-                      Nombre
+                      Descripción
                       <span className="font-semibold text-red-500">*</span>
                     </span>
                     <Textarea

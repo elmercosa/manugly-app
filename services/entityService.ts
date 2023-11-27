@@ -19,6 +19,7 @@ export default function entityService(entity: string) {
   };
   const remove = async (id: string) => {
     const response = await removeEntity(`/${entity}/remove/${id}`, {});
+    //asdas
     return response;
   };
 

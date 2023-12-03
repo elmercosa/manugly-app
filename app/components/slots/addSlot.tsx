@@ -57,7 +57,7 @@ export default function AddSlotForm({ session }: { session?: Session }) {
 
   const allUsers = useQuery({
     queryKey: ["all-users"],
-    queryFn: () => userService.getAllUsers(businessContext.state.business.id),
+    // queryFn: () => userService.getAllUsers(businessContext.state.business.id),
     retry: false,
     refetchOnWindowFocus: false,
     enabled: fetchUsers,
@@ -155,12 +155,12 @@ export default function AddSlotForm({ session }: { session?: Session }) {
               setUserId(event.target.value);
             }}
           >
-            {allUsers.isFetched &&
+            {/* {allUsers.isFetched &&
               allUsers.data.map((animal: any) => (
                 <SelectItem key={animal.id} value={animal.id}>
                   {animal.name} {animal.surname}
                 </SelectItem>
-              ))}
+              ))} */}
           </Select>
         </div>
         <div className="flex flex-col gap-2 p-4 bg-white rounded-xl">

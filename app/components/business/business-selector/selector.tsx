@@ -120,6 +120,7 @@ export default function BusinessSelector({ user }: { user: any }) {
   const handleColorChange = (values: any) => {
     const [first] = values;
     console.log("first :>> ", first);
+    setColour(first);
     // const business = businesses.find((b: any) => b.id === first);
     // setBusiness(business);
   };

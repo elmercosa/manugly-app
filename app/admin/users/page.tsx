@@ -2,15 +2,15 @@ import React from "react";
 
 import AllWrapper from "@/components/allWrapper";
 import TopBar from "@/components/layout/private/topBar";
-import UsersTable from "@/components/users/usersTable";
+import Users from "@/components/users/users";
 
-export default function Users() {
+export default function Page() {
   return (
     <>
       <TopBar title="Usuarios" />
       <main className="w-full mt-32">
         <AllWrapper>
-          <UsersTable />
+          <Users />
         </AllWrapper>
       </main>
     </>

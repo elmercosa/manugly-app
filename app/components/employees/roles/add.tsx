@@ -32,8 +32,6 @@ export default function AddEmployeeRole() {
 
   const router = useRouter();
 
-  const queryClient = useQueryClient();
-
   const AddUser = useQuery({
     queryKey: "add-role",
     queryFn: () => entityService("roles").create(user),
@@ -53,7 +51,7 @@ export default function AddEmployeeRole() {
   useEffect(() => {
     if (AddUser.data && !AddUser.isLoading) {
       toast.success("Empleado creado correctamente");
-      router.replace(`/admin/employees`);
+      router.replace(`/admin/employees/roles`);
     }
 
     if (AddUser.isError) {

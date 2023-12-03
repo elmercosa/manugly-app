@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 
 import { useParameters } from "@/app/contexts/parameter/context";
 import Setter from "@/factory/generators/setter";
+import entityService from "@/services/entityService";
 import { userService } from "@/services/userService";
 
 import { PageLoader } from "../pageLoader";
@@ -24,7 +25,7 @@ export default function EditUserForm({ userId }: { userId: string }) {
 
   const GetUser = useQuery({
     queryKey: "get-user",
-    queryFn: () => userService.getUser(userId),
+    queryFn: () => entityService("users").get(userId),
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -32,10 +33,13 @@ export default function EditUserForm({ userId }: { userId: string }) {
   const EditUser = useQuery({
     queryKey: "edit-user",
     queryFn: () =>
-      userService.editUser(
-        { id: userId, name, surname, email, idDocument },
-        userId,
-      ),
+      entityService("users").edit({
+        id: userId,
+        name,
+        surname,
+        email,
+        idDocument,
+      }),
     retry: false,
     refetchOnWindowFocus: false,
     enabled: enableEdit,

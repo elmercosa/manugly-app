@@ -1,7 +1,7 @@
 import React from "react";
 
 import AllWrapper from "@/components/allWrapper";
-import EmployeesTable from "@/components/employees/employeesTable";
+import Employees from "@/components/employees/employees";
 import TopBar from "@/components/layout/private/topBar";
 
 export default function Page() {
@@ -10,7 +10,7 @@ export default function Page() {
       <TopBar title="Empleados" />
       <main className="w-full mt-32">
         <AllWrapper>
-          <EmployeesTable />
+          <Employees />
         </AllWrapper>
       </main>
     </>

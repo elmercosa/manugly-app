@@ -16,6 +16,7 @@ import { useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 
 import { useBusiness } from "@/app/contexts/business/context";
+import entityService from "@/services/entityService";
 import { userService } from "@/services/userService";
 
 export default function AddUserForm() {
@@ -34,12 +35,9 @@ export default function AddUserForm() {
 
   const router = useRouter();
 
-  const queryClient = useQueryClient();
-
   const AddUser = useQuery({
     queryKey: ["add-user"],
-    queryFn: () =>
-      userService.createUser(user, businessContext.state.business.id),
+    queryFn: () => entityService("users").create(user),
     retry: false,
     refetchOnWindowFocus: false,
     enabled: enableQuery,
@@ -71,6 +69,7 @@ export default function AddUserForm() {
         idDocument,
         firstLogin,
         password: idDocument,
+        business: businessContext.state.business.id,
       };
       setUser(user);
     }

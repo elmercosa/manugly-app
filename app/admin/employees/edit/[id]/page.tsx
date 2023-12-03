@@ -1,6 +1,6 @@
 import AllWrapper from "@/components/allWrapper";
 import TopBar from "@/components/layout/private/topBar";
-import EditUserForm from "@/components/users/editUser";
+import EditUserForm from "@/components/users/edit";
 
 export default function Page({ params }: { params: { id: string } }) {
   const userId = params.id;

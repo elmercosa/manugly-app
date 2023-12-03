@@ -17,13 +17,21 @@ import { toast } from "react-toastify";
 import entityService from "@/services/entityService";
 import { userService } from "@/services/userService";
 
-export default function DeleteEmployee({ id }: { id: string }) {
+export default function DeleteEntity({
+  id,
+  endpoint,
+  entityName,
+}: {
+  id: string;
+  endpoint: string;
+  entityName: string;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [deleteSlot, setDeleteSlot] = useState(false);
 
   const removeUser = useQuery({
-    queryKey: "remove-employee",
-    queryFn: () => entityService("employees").remove(id),
+    queryKey: "remove",
+    queryFn: () => entityService(endpoint).remove(id),
     retry: false,
     refetchOnWindowFocus: false,
     enabled: deleteSlot,
@@ -35,20 +43,20 @@ export default function DeleteEmployee({ id }: { id: string }) {
 
   useEffect(() => {
     if (removeUser.data && !removeUser.isLoading) {
-      toast.success("Usuario eliminado correctamente");
+      toast.success("Se ha eliminado eliminado correctamente.");
       setTimeout(() => {
         window.location.reload();
       }, 3000);
     }
 
     if (removeUser.isError) {
-      toast.error("Error al eliminar el usuario");
+      toast.error("Ha ocurrido un error al borrar.");
     }
   }, [removeUser.data, removeUser.isError, removeUser.isLoading]);
 
   return (
     <>
-      <Tooltip content="Borrar usuario" color="danger">
+      <Tooltip content={`Borrar ${entityName}`} color="danger">
         <Button
           startContent={<IconTrashFilled size={16} />}
           onPress={() => setIsOpen(true)}
@@ -65,7 +73,7 @@ export default function DeleteEmployee({ id }: { id: string }) {
             ¿Estás seguro?
           </ModalHeader>
           <ModalBody>
-            <p>Este parmámetro se eliminará y no podrás recuperarlo.</p>
+            <p>Este valor se eliminará y no podrás recuperarlo.</p>
           </ModalBody>
           <ModalFooter>
             <Button

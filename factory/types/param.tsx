@@ -15,17 +15,21 @@ import {
   IconAlertTriangleFilled,
   IconCircleCheckFilled,
   IconCircleXFilled,
+  IconDeviceFloppy,
   IconSquareRoundedPlusFilled,
   IconTrashFilled,
   IconYinYangFilled,
 } from "@tabler/icons-react";
+import { IconTrash } from "@tabler/icons-react";
 import { ReactNode, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { setTimeout } from "timers";
 
 import { useBusiness } from "@/app/contexts/business/context";
 import { useParameters } from "@/app/contexts/parameter/context";
+import ManuglyIcon from "@/app/icons/ManuglyIcon";
 import { Loader } from "@/components/loader";
+import entityService from "@/services/entityService";
 import { paramService } from "@/services/paramService";
 
 export function ParamComponent({
@@ -422,11 +426,7 @@ export function ParamConfiguration({
   const removeParam = async () => {
     setIsDeleting(true);
     if (id) {
-      const param = {
-        businessId: businessContext.state.business.id,
-        parameterId: id,
-      };
-      const response = await paramService.removeParam(param);
+      const response = await entityService("parameters").remove(id);
 
       if (response) {
         toast.success("Parámetro eliminado correctamente");
@@ -460,7 +460,7 @@ export function ParamConfiguration({
       config: configuration,
       businessId: businessContext.state.business.id,
     };
-    const response = await paramService.createParam(param);
+    const response = await entityService("parameters").create(param);
 
     if (response) {
       setId(response.id);
@@ -477,7 +477,7 @@ export function ParamConfiguration({
       businessId: businessContext.state.business.id,
       id: id,
     };
-    const response = await paramService.editParam(param);
+    const response = await entityService("parameters").edit(param);
 
     afterSave(response);
   };
@@ -602,7 +602,7 @@ export function ParamConfiguration({
           <div className="flex justify-end gap-2 bottom-2 right-2 ">
             <Tooltip content="Borrar usuario" color="danger" placement="bottom">
               <Button
-                startContent={<IconTrashFilled size={16} />}
+                startContent={<IconTrash size={16} />}
                 onPress={() => setIsOpen(true)}
                 isDisabled={saving}
                 size="sm"
@@ -621,7 +621,7 @@ export function ParamConfiguration({
               }}
             >
               <Button
-                startContent={<IconYinYangFilled size={16} />}
+                startContent={<IconDeviceFloppy size={16} />}
                 onPress={() => setSave(true)}
                 isDisabled={saving}
                 size="sm"

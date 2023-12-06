@@ -58,7 +58,10 @@ export default function EntityTable({
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [filterValue, setFilterValue] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(
+    React.useState<Selection>(["10"]),
+  );
+  const rows = ["10", "50", "100"];
 
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
     column: columns[0].key,
@@ -222,6 +225,32 @@ export default function EntityTable({
                 {columns.map((column: any) => (
                   <DropdownItem key={column.key} className="capitalize">
                     {column.label}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+            <Dropdown
+              classNames={{
+                trigger: "bg-white",
+              }}
+            >
+              <DropdownTrigger className="hidden sm:flex">
+                <Button
+                  endContent={<IconChevronDown size={14} />}
+                  variant="flat"
+                >
+                  Nº de elementos
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Table Columns"
+                selectedKeys={["10"]}
+                // onSelectionChange={setRowsPerPage}
+              >
+                {rows.map((row: any) => (
+                  <DropdownItem key={row} className="capitalize">
+                    {row}
                   </DropdownItem>
                 ))}
               </DropdownMenu>

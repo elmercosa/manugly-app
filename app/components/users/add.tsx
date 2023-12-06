@@ -46,6 +46,9 @@ export default function AddUserForm() {
 
   const saveUser = async () => {
     setEnableQuery(true);
+    if (AddUser.isFetched) {
+      AddUser.refetch();
+    }
   };
 
   useEffect(() => {
@@ -60,7 +63,13 @@ export default function AddUserForm() {
   }, [AddUser.isLoading, AddUser.data, AddUser.isError]);
 
   useEffect(() => {
-    if (name && surname && email && idDocument) {
+    if (
+      name &&
+      surname &&
+      email &&
+      idDocument &&
+      businessContext.state.business.id
+    ) {
       const user = {
         id: "",
         name,
@@ -69,11 +78,11 @@ export default function AddUserForm() {
         idDocument,
         firstLogin,
         password: idDocument,
-        business: businessContext.state.business.id,
+        businessId: businessContext.state.business.id,
       };
       setUser(user);
     }
-  }, [name, surname, email, idDocument, firstLogin]);
+  }, [name, surname, email, idDocument, firstLogin, businessContext]);
 
   return (
     <>

@@ -713,3 +713,35 @@ export function ParamConfiguration({
     </div>
   );
 }
+
+export function ParamFilter({
+  index,
+  name,
+  type,
+  setFilterValue,
+}: {
+  index: number;
+  name: string;
+  type: string;
+  setFilterValue: any;
+}) {
+  const [value, setValue] = useState("");
+  return (
+    <div className="relative flex flex-col gap-4 p-4 bg-white rounded-xl">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
+          <span className="text-xs font-semibold text-gray-500">{type}</span>
+          <h2 className="text-xl font-bold">{name}</h2>
+        </div>
+        <Input
+          type="text"
+          name="name"
+          value={value}
+          onValueChange={setValue}
+          variant={"bordered"}
+          size="sm"
+        />
+      </div>
+    </div>
+  );
+}

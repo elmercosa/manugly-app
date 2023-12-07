@@ -1,8 +1,14 @@
-import { Switch } from "@nextui-org/react";
+import { Input, Switch } from "@nextui-org/react";
+import { IconTextSize } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 
+import { useParameters } from "@/app/contexts/parameter/context";
 import { ExportType } from "@/factory/types/interfaces";
-import { ParamComponent, ParamConfiguration } from "@/factory/types/param";
+import {
+  ParamComponent,
+  ParamConfiguration,
+  ParamFilter,
+} from "@/factory/types/param";
 
 const name = "Texto corto";
 const type = "text";
@@ -147,9 +153,51 @@ function Configuration({ paramData, index }: { paramData?: any; index?: any }) {
   );
 }
 
+function Filter({
+  index,
+  title,
+  type,
+  setFilterValue,
+}: {
+  index: number;
+  title: string;
+  type: string;
+  setFilterValue: any;
+}) {
+  const [value, setValue] = useState("");
+  const ParamContext = useParameters();
+  useEffect(() => {
+    ParamContext.dispatch({ type: "setValue", value, index });
+  }, [value]);
+
+  return (
+    <div className="relative flex flex-col gap-4 p-2 bg-white rounded-xl">
+      <div className="flex flex-col items-start justify-center gap-1">
+        <div className="flex flex-col pl-1">
+          <span className="text-sm font-semibold">{title}</span>
+        </div>
+        <Input
+          classNames={{
+            inputWrapper: "p-1 h-fit",
+          }}
+          startContent={<IconTextSize size={16} className="text-default-400" />}
+          type="text"
+          name="name"
+          value={value}
+          onValueChange={setValue}
+          variant={"bordered"}
+          size="sm"
+          isClearable
+        />
+      </div>
+    </div>
+  );
+}
+
 export const Schema: ExportType = {
   type,
   name,
   component: Text,
   configuration: Configuration,
+  filter: Filter,
 };

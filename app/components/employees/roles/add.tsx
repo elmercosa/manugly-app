@@ -50,8 +50,8 @@ export default function AddEmployeeRole() {
 
   useEffect(() => {
     if (AddUser.data && !AddUser.isLoading) {
-      toast.success("Empleado creado correctamente");
-      router.replace(`/admin/employees/roles`);
+      toast.success("Rol creado correctamente");
+      window.location.reload();
     }
 
     if (AddUser.isError) {

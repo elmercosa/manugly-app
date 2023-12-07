@@ -30,7 +30,7 @@ export default function DeleteEntity({
   const [deleteSlot, setDeleteSlot] = useState(false);
 
   const removeUser = useQuery({
-    queryKey: "remove",
+    queryKey: ["remove", id],
     queryFn: () => entityService(endpoint).remove(id),
     retry: false,
     refetchOnWindowFocus: false,

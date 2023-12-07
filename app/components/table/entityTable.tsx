@@ -20,7 +20,13 @@ import {
   TableRow,
   Tooltip,
 } from "@nextui-org/react";
-import { IconChevronDown, IconEdit, IconSearch } from "@tabler/icons-react";
+import {
+  IconChevronDown,
+  IconEdit,
+  IconFilterFilled,
+  IconSearch,
+} from "@tabler/icons-react";
+import { IconFilter } from "@tabler/icons-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 
@@ -42,6 +48,9 @@ export default function EntityTable({
   entityName,
   entityNamePlural,
   endpoint,
+  filters,
+  showFilters,
+  needsUpdate,
 }: {
   columns: any;
   queryKey: string;
@@ -53,15 +62,17 @@ export default function EntityTable({
   entityName: string;
   entityNamePlural?: string;
   endpoint: string;
+  filters?: any;
+  showFilters?: boolean;
+  needsUpdate?: boolean;
 }) {
   const [items, setItems] = useState([] as any);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [filterValue, setFilterValue] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(
-    React.useState<Selection>(["10"]),
-  );
-  const rows = ["10", "50", "100"];
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [hideFilters, setHideFilters] = useState(true);
+  const rows = [10, 50, 100];
 
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
     column: columns[0].key,
@@ -103,8 +114,23 @@ export default function EntityTable({
       let dataSorted = dataFiltered;
       if (sortDescriptor.column) {
         dataSorted = dataFiltered.sort((a: any, b: any) => {
-          const first = a[sortDescriptor.column ?? columns[0].key] as number;
-          const second = b[sortDescriptor.column ?? columns[0].key] as number;
+          let first = a[sortDescriptor.column ?? columns[0].key] as number;
+          let second = b[sortDescriptor.column ?? columns[0].key] as number;
+
+          if (sortDescriptor.column?.toString().includes("parameter.")) {
+            let parameterName = sortDescriptor.column?.toString().split(".")[1];
+            let paramA = a.userParameters.find((param: any) => {
+              return param.parameter.title == parameterName;
+            });
+            let paramB = a.userParameters.find((param: any) => {
+              return param.parameter.title == parameterName;
+            });
+            if (paramA && paramB) {
+              first = paramA.value as number;
+              second = paramB.value as number;
+            }
+          }
+
           const cmp = first < second ? -1 : first > second ? 1 : 0;
 
           return sortDescriptor.direction === "descending" ? -cmp : cmp;
@@ -122,11 +148,10 @@ export default function EntityTable({
   }, [filterValue, entities, page, rowsPerPage, sortDescriptor]);
 
   useEffect(() => {
-    setSelectedColumns(
-      columns.filter((column: any) =>
-        (visibleColumns as Set<string>).has(column.key),
-      ),
+    let columnsAux = columns.filter((column: any) =>
+      (visibleColumns as Set<string>).has(column.key),
     );
+    setSelectedColumns(columnsAux);
   }, [visibleColumns]);
 
   const bottomContent = useMemo(() => {
@@ -150,12 +175,44 @@ export default function EntityTable({
           total={pages}
           onChange={setPage}
         />
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-small text-default-400 break-keep">
+            Nº de filas
+          </span>
+          <select
+            className="bg-transparent outline-none text-default-400 text-small"
+            onChange={(e) => setRowsPerPage(parseInt(e.target.value))}
+          >
+            <option value="5">10</option>
+            <option value="10">50</option>
+            <option value="15">100</option>
+          </select>
+        </div>
       </div>
     );
   }, [page, pages, entities]);
 
   const renderCell = useCallback((data: any, columnKey: any) => {
-    const cellValue = data[columnKey];
+    let cellValue = data[columnKey];
+
+    if (columnKey.includes("parameter.")) {
+      let parameterName = columnKey.split(".")[1];
+      // cellValue = data.userParameters.find()
+      let param = data.userParameters.find((param: any) => {
+        return param.parameter.title == parameterName;
+      });
+      if (param) {
+        cellValue = param.value;
+        if (param.parameter.type == "textarea") {
+          cellValue = cellValue.substring(0, 20) + "...";
+        }
+        if (param.parameter.type == "checkbox") {
+          cellValue = param.value ? "Sí" : "No";
+        }
+      } else {
+        cellValue = "";
+      }
+    }
 
     switch (columnKey) {
       case "actions":
@@ -178,19 +235,45 @@ export default function EntityTable({
     }
   }, []);
 
+  useEffect(() => {
+    if (entities && needsUpdate) {
+      let dataFiltered = filterFunction(entities, filterValue);
+
+      // sort
+      let dataSorted = dataFiltered;
+      if (sortDescriptor.column) {
+        dataSorted = dataFiltered.sort((a: any, b: any) => {
+          const first = a[sortDescriptor.column ?? columns[0].key] as number;
+          const second = b[sortDescriptor.column ?? columns[0].key] as number;
+          const cmp = first < second ? -1 : first > second ? 1 : 0;
+
+          return sortDescriptor.direction === "descending" ? -cmp : cmp;
+        });
+      }
+
+      const start = (page - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+
+      const dataPaginated = [...dataSorted.slice(start, end)];
+
+      setItems(dataPaginated);
+      setPages(Math.ceil(dataSorted.length / rowsPerPage));
+    }
+  }, [needsUpdate]);
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col w-full gap-4">
-        <div className="flex items-end justify-between gap-3 ">
+        <div className="flex flex-wrap items-end justify-between">
           <div className="flex items-center justify-start w-1/2 gap-3">
-            <div className="flex">
+            <div className="flex items-center justify-start ">
               <Input
                 isClearable
                 classNames={{
                   inputWrapper:
-                    "border-none bg-white shadow-none rounded-xl w-96",
+                    "border-none bg-white shadow-none rounded-xl w-80 p-3 h-fit",
                 }}
-                startContent={<IconSearch size={20} />}
+                startContent={<IconSearch size={16} />}
                 placeholder={`Buscar ${entityName}`}
                 value={filterValue}
                 onValueChange={setFilterValue}
@@ -198,6 +281,19 @@ export default function EntityTable({
                 variant="bordered"
                 size="sm"
               />
+              {showFilters && (
+                <Button
+                  variant="flat"
+                  className="p-5 bg-white"
+                  startContent={<IconFilter size={30} />}
+                  isLoading={filters?.length == 0}
+                  onClick={() => {
+                    setHideFilters(!hideFilters);
+                  }}
+                >
+                  Filtrar
+                </Button>
+              )}
             </div>
           </div>
           <div className="flex items-center justify-end w-1/2 gap-3">
@@ -209,6 +305,7 @@ export default function EntityTable({
               <DropdownTrigger className="hidden sm:flex">
                 <Button
                   endContent={<IconChevronDown size={14} />}
+                  className="p-5"
                   variant="flat"
                 >
                   Columnas
@@ -229,34 +326,9 @@ export default function EntityTable({
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Dropdown
-              classNames={{
-                trigger: "bg-white",
-              }}
-            >
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<IconChevronDown size={14} />}
-                  variant="flat"
-                >
-                  Nº de elementos
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                selectedKeys={["10"]}
-                // onSelectionChange={setRowsPerPage}
-              >
-                {rows.map((row: any) => (
-                  <DropdownItem key={row} className="capitalize">
-                    {row}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
             {tableHeader && tableHeader()}
           </div>
+          {!hideFilters && <div className="flex w-full mt-2">{filters}</div>}
         </div>
       </div>
       <Table

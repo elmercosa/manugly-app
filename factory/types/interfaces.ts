@@ -3,4 +3,5 @@ export interface ExportType {
   name: string;
   component: Function;
   configuration: Function;
+  filter: Function;
 }

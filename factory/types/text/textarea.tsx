@@ -73,9 +73,24 @@ function Configuration({ paramData, index }: { paramData?: any; index?: any }) {
   );
 }
 
+function Filter({
+  index,
+  name,
+  type,
+  setFilterValue,
+}: {
+  index: number;
+  name: string;
+  type: string;
+  setFilterValue: any;
+}) {
+  return <></>;
+}
+
 export const Schema: ExportType = {
   type,
   name,
   component: TextAreaCustom,
   configuration: Configuration,
+  filter: Filter,
 };

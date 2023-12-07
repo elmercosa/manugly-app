@@ -17,6 +17,7 @@ export const authOptions: NextAuthOptions = {
       credentials: {},
       async authorize(credentials, req) {
         const userData = await post("/auth/loginCustomer", credentials);
+        console.log("userData :>> ", userData);
 
         const secret = process.env.NEXTAUTH_SECRET || "";
         let user = null;

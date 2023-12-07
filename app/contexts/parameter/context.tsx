@@ -106,8 +106,8 @@ function ParameterProvider({ children }: ParameterProviderProps) {
     let dataFromStorage = localStorage.getItem(name);
 
     if (dataFromStorage !== null) {
-      initialState = JSON.parse(dataFromStorage);
-      dispatch({ type: "set", data: initialState });
+      // initialState = JSON.parse(dataFromStorage);
+      // dispatch({ type: "set", data: initialState });
     }
   }, []);
   const value = { state, dispatch };

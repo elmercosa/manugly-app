@@ -1,17 +1,16 @@
-"use client";
-
-import { BusinessProvider } from "@/app/contexts/business/context";
-import { ParameterProvider } from "@/app/contexts/parameter/context";
-import SlotsTable from "@/components/slots/slotsTable";
+import AllWrapper from "@/components/allWrapper";
+import Calendar from "@/components/calendar/calendar";
+import TopBar from "@/components/layout/private/topBar";
 
 export default function Page() {
   return (
-    <div className="flex flex-col w-full gap-6 pb-10 h-full">
-      <ParameterProvider>
-        <BusinessProvider>
-          <SlotsTable></SlotsTable>
-        </BusinessProvider>
-      </ParameterProvider>
-    </div>
+    <>
+      <TopBar title="Eventos" />
+      <main className="w-full mt-32">
+        <AllWrapper>
+          <Calendar />
+        </AllWrapper>
+      </main>
+    </>
   );
 }

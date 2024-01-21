@@ -12,10 +12,10 @@ import { usePathname } from "next/navigation";
 export default function Menu() {
   const pathname = usePathname();
   const menuClass =
-    "flex items-center justify-start gap-4 px-4 py-3 font-semibold transition-all rounded-lg hover:text-white hover:bg-manugly hover:shadow-md ";
+    "flex items-center justify-start gap-4 px-3 py-3 font-semibold transition-all rounded-lg hover:text-white hover:bg-manugly hover:shadow-md ";
   const active = menuClass + "bg-manugly text-white";
   return (
-    <div className="flex h-[80%] flex-col w-full px-5 gap-1">
+    <div className="flex h-[80%] flex-col w-full px-4 gap-1">
       <Link
         href="/admin"
         className={pathname == "/admin" ? active : menuClass}

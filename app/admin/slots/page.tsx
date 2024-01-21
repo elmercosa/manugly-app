@@ -4,13 +4,12 @@ import TopBar from "@/components/layout/private/topBar";
 
 export default function Page() {
   return (
-    <>
-      <TopBar title="Eventos" />
-      <main className="w-full mt-32">
-        <AllWrapper>
+    <main className="flex w-full">
+      <AllWrapper>
+        <div className="w-10/12 max-h-[calc(100vh-2rem)] overflow-y-hidden">
           <Calendar />
-        </AllWrapper>
-      </main>
-    </>
+        </div>
+      </AllWrapper>
+    </main>
   );
 }

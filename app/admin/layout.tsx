@@ -22,7 +22,7 @@ export default function RootLayout({
       <SideNav mini={mini}></SideNav>
       <div
         className={`flex flex-col max-h-screen col-start-3 col-end-13 pl-10 pr-6 overflow-y-auto ${
-          mini ? "w-11/12" : "w-10/12"
+          mini ? "w-11/12" : "w-[88vw]"
         }`}
       >
         <ToastContainer

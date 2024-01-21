@@ -11,7 +11,7 @@ import Menu from "@/components/layout/private/menu";
 export default function SideNav({ mini }: { mini?: boolean }) {
   return (
     <BusinessWrapper>
-      <div className={`h-full transition-all ${mini ? "w-12" : "w-[12vw]"}`}>
+      <div className={`h-full transition-all ${mini ? "w-12" : "w-2/12"}`}>
         <div className="flex flex-col h-full bg-white rounded-xl">
           <div className="flex items-center justify-center h-28 min-h-[7rem]">
             {mini ? (
@@ -31,13 +31,13 @@ export default function SideNav({ mini }: { mini?: boolean }) {
             ) : (
               <Link
                 href="/"
-                className="flex items-center justify-center gap-1 text-3xl font-bold"
+                className="flex items-center justify-center gap-1 text-4xl font-bold"
               >
                 <Image
                   src="/manugly.svg"
                   alt="Manugly"
-                  width="40"
-                  height="40"
+                  width="48"
+                  height="48"
                 />
 
                 <span className="tracking-tighter">Manugly</span>

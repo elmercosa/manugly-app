@@ -36,12 +36,15 @@ export default function BusinessSelect({ mini }: { mini?: boolean }) {
 
   return (
     <div
-      className="flex items-center justify-center w-full px-4 mb-4"
+      className="flex items-center justify-center w-full px-5 mb-4"
       key={businessContext.state.business.id}
     >
       <Dropdown>
         <DropdownTrigger>
-          <Button className="w-full text-xs font-semibold text-white bg-manugly">
+          <Button
+            className="w-full font-semibold text-white bg-manugly"
+            endContent={mini ? <></> : <IconSwitchVertical size={14} />}
+          >
             {mini ? business.name?.charAt(0) : business.name}
           </Button>
         </DropdownTrigger>

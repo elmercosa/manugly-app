@@ -4,12 +4,13 @@ import TopBar from "@/components/layout/private/topBar";
 
 export default function Page() {
   return (
-    <main className="flex w-full">
-      <AllWrapper>
-        <div className="w-10/12 max-h-[calc(100vh-2rem)] overflow-y-hidden">
+    <>
+      <TopBar title="Citas" />
+      <main className="flex w-full mt-32">
+        <AllWrapper>
           <Calendar />
-        </div>
-      </AllWrapper>
-    </main>
+        </AllWrapper>
+      </main>
+    </>
   );
 }

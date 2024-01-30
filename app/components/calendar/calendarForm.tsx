@@ -14,6 +14,7 @@ import { IconDeviceFloppy, IconPlus, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
+import { isNull } from "util";
 
 import entityService from "@/services/entityService";
 
@@ -133,22 +134,24 @@ export default function CalendarForm({
           date={date}
           businessId={businessId}
           slotTypes={slotTypes}
-          findSlots={findSlots}
+          slotAssigned={slot}
         >
           <div
             key={index}
-            className="flex flex-col gap-2 p-2 rounded-lg bg-secondary/10"
+            className="flex flex-col gap-2 p-2 text-white rounded-lg bg-manugly aria-expanded:opacity-70"
           >
             <div className="flex flex-col gap-1">
               <div className="flex items-center justify-between">
                 <div className="text-sm font-semibold">{slot.title}</div>
-                <div className="text-xs text-gray-500">
-                  {new Date(slot.start).getHours()}:
-                  {`${new Date(slot.start).getMinutes()}`.padStart(2, "0")}
+                <div className="text-xs">
+                  {new Date(slot.start.replace("Z", "")).getHours()}:
+                  {`${new Date(
+                    slot.start.replace("Z", ""),
+                  ).getMinutes()}`.padStart(2, "0")}
                 </div>
               </div>
-              <div className="text-xs text-gray-500">{`${slot.user.name} ${slot.user.surname}`}</div>
-              <div className="p-1 text-xs text-gray-500 bg-white rounded-xl w-fit">
+              <div className="text-xs">{`${slot.user.name} ${slot.user.surname}`}</div>
+              <div className="p-1 text-xs text-black bg-white rounded-xl w-fit">
                 {slot.slotType.name}
               </div>
             </div>
@@ -166,7 +169,7 @@ export default function CalendarForm({
         date={date}
         businessId={businessId}
         slotTypes={slotTypes}
-        findSlots={findSlots}
+        slotAssigned={isNull}
       >
         <div className="flex items-center justify-center w-full h-full bg-white border rounded-lg group-hover:text-white">
           <IconPlus size={14}></IconPlus>

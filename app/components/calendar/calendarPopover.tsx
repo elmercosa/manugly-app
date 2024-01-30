@@ -27,8 +27,8 @@ export default function CalendarPopover({
   employees,
   businessId,
   slotTypes,
-  findSlots,
   children,
+  slotAssigned,
 }: {
   index: any;
   day: any;
@@ -39,9 +39,12 @@ export default function CalendarPopover({
   employees: any;
   businessId: any;
   slotTypes: any;
-  findSlots: any;
+  slotAssigned: any;
   children: React.ReactNode;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const [id, setId] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [userId, setUserId] = useState([] as any);
@@ -115,6 +118,21 @@ export default function CalendarPopover({
     }
   }, [AddSlot.isLoading, AddSlot.data, AddSlot.isError, AddSlot.isFetched]);
 
+  useEffect(() => {
+    if (slotAssigned) {
+      setId(slotAssigned?.id);
+      setTitle(slotAssigned?.title);
+      setDescription(slotAssigned?.description);
+      let start = slotAssigned?.start?.replace("Z", "");
+      let end = slotAssigned?.end?.replace("Z", "");
+      setStartDate(start);
+      setEndDate(end);
+      setUserId([slotAssigned?.userId]);
+      setEmployeeId([slotAssigned?.customerId]);
+      setSlotTypeId([slotAssigned?.slotTypeId]);
+    }
+  }, [slotAssigned]);
+
   return (
     <Popover
       key={index}
@@ -123,10 +141,12 @@ export default function CalendarPopover({
       classNames={{
         base: "w-[550px]",
       }}
-      radius="none"
-      shadow="md"
+      radius="lg"
+      shadow="lg"
+      isOpen={isOpen}
+      onOpenChange={(open) => setIsOpen(open)}
     >
-      <PopoverTrigger className="transition-background aria-expanded:scale-100 aria-expanded:opacity-100 aria-expanded:bg-secondary/50 hover:bg-secondary/50 group">
+      <PopoverTrigger className="transition-background aria-expanded:scale-100 aria-expanded:opacity-80">
         {children}
       </PopoverTrigger>
       <PopoverContent>
@@ -139,6 +159,7 @@ export default function CalendarPopover({
                 placeholder="Usuario"
                 selectionMode="single"
                 onSelectionChange={setUserId}
+                selectedKeys={userId}
                 size="sm"
               >
                 {users.map((user: any) => (
@@ -152,10 +173,11 @@ export default function CalendarPopover({
                 placeholder="Empleado"
                 selectionMode="single"
                 onSelectionChange={setEmployeeId}
+                selectedKeys={employeeId}
                 size="sm"
               >
                 {employees.map((employee: any) => (
-                  <SelectItem key={employee.id} value={employee.id}>
+                  <SelectItem key={employee.id} value={employee.name}>
                     {employee.name}
                   </SelectItem>
                 ))}
@@ -165,6 +187,7 @@ export default function CalendarPopover({
                 placeholder="Tipo de cita"
                 selectionMode="single"
                 onSelectionChange={setSlotTypeId}
+                selectedKeys={slotTypeId}
                 size="sm"
               >
                 {slotTypes.map((slotType: any) => (
@@ -221,6 +244,7 @@ export default function CalendarPopover({
                 startContent={<IconX size={16} />}
                 color="danger"
                 size="sm"
+                onPress={() => setIsOpen(false)}
               >
                 Cancelar
               </Button>

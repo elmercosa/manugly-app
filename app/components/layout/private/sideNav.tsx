@@ -11,7 +11,7 @@ import Menu from "@/components/layout/private/menu";
 export default function SideNav({ mini }: { mini?: boolean }) {
   return (
     <BusinessWrapper>
-      <div className={`h-full transition-all ${mini ? "w-12" : "w-[12vw]"}`}>
+      <div className={`h-full transition-all ${mini ? "w-12" : "w-2/12"}`}>
         <div className="flex flex-col h-full bg-white rounded-xl">
           <div className="flex items-center justify-center h-28 min-h-[7rem]">
             {mini ? (

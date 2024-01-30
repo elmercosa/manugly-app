@@ -17,6 +17,8 @@ import { toast } from "react-toastify";
 
 import entityService from "@/services/entityService";
 
+import CalendarPopover from "./calendarPopover";
+
 export default function CalendarForm({
   index,
   day,
@@ -66,7 +68,7 @@ export default function CalendarForm({
   );
 
   const AddSlot = useQuery({
-    queryKey: ["add-slot", `slot-${row.startDate}-${row.endDate}-${date.day}`],
+    queryKey: "add-slot",
     queryFn: () => entityService("slots").create(slot),
     retry: false,
     refetchOnWindowFocus: false,
@@ -98,14 +100,18 @@ export default function CalendarForm({
 
   useEffect(() => {
     if (AddSlot.data && !AddSlot.isLoading && AddSlot.isFetched) {
-      toast.success("Cita creada correctamente");
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+      toast.success("Cita creada correctamente", {
+        toastId: "add-slot",
+      });
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 2000);
     }
 
     if (AddSlot.isError) {
-      toast.error("Ha ocurrido un error al crear la cita");
+      toast.error("Ha ocurrido un error al crear la cita", {
+        toastId: "error-slot",
+      });
     }
   }, [AddSlot.isLoading, AddSlot.data, AddSlot.isError, AddSlot.isFetched]);
 
@@ -116,145 +122,56 @@ export default function CalendarForm({
       }`}
     >
       {findSlots.map((slot: any, index: number) => (
-        <div
-          key={index}
-          className="flex flex-col gap-2 p-2 rounded-lg bg-secondary/10"
+        <CalendarPopover
+          employees={employees}
+          users={users}
+          key={"form-" + index}
+          day={day}
+          row={row}
+          index={index}
+          rows={rows}
+          date={date}
+          businessId={businessId}
+          slotTypes={slotTypes}
+          findSlots={findSlots}
         >
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold">{slot.title}</div>
-              <div className="text-xs text-gray-500">
-                {new Date(slot.start).getHours()}:
-                {`${new Date(slot.start).getMinutes()}`.padStart(2, "0")}
+          <div
+            key={index}
+            className="flex flex-col gap-2 p-2 rounded-lg bg-secondary/10"
+          >
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">{slot.title}</div>
+                <div className="text-xs text-gray-500">
+                  {new Date(slot.start).getHours()}:
+                  {`${new Date(slot.start).getMinutes()}`.padStart(2, "0")}
+                </div>
+              </div>
+              <div className="text-xs text-gray-500">{`${slot.user.name} ${slot.user.surname}`}</div>
+              <div className="p-1 text-xs text-gray-500 bg-white rounded-xl w-fit">
+                {slot.slotType.name}
               </div>
             </div>
-            <div className="text-xs text-gray-500">{slot.description}</div>
           </div>
-        </div>
+        </CalendarPopover>
       ))}
-      <Popover
-        key={index}
-        showArrow={true}
-        placement="right"
-        classNames={{
-          base: "w-[550px]",
-        }}
-        radius="none"
-        shadow="md"
+      <CalendarPopover
+        employees={employees}
+        users={users}
+        key={"form-" + index}
+        day={day}
+        row={row}
+        index={index}
+        rows={rows}
+        date={date}
+        businessId={businessId}
+        slotTypes={slotTypes}
+        findSlots={findSlots}
       >
-        <PopoverTrigger className="transition-background aria-expanded:scale-100 aria-expanded:opacity-100 aria-expanded:bg-secondary/50 hover:bg-secondary/50 group">
-          <div className="flex items-center justify-center w-full h-full rounded-lg bg-manugly-grey-light group-hover:text-white">
-            <IconPlus size={14}></IconPlus>
-          </div>
-        </PopoverTrigger>
-        <PopoverContent>
-          <div className="flex flex-col w-full gap-2 p-2">
-            <h2 className="ml-2 text-xl font-semibold">Cita</h2>
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-center w-full gap-1">
-                <Select
-                  variant="bordered"
-                  placeholder="Usuario"
-                  selectionMode="single"
-                  onSelectionChange={setUserId}
-                  size="sm"
-                >
-                  {users.map((user: any) => (
-                    <SelectItem key={user.id} value={user.id}>
-                      {`${user.name} ${user.surname}`}
-                    </SelectItem>
-                  ))}
-                </Select>
-                <Select
-                  variant="bordered"
-                  placeholder="Empleado"
-                  selectionMode="single"
-                  onSelectionChange={setEmployeeId}
-                  size="sm"
-                >
-                  {employees.map((employee: any) => (
-                    <SelectItem key={employee.id} value={employee.id}>
-                      {employee.name}
-                    </SelectItem>
-                  ))}
-                </Select>
-                <Select
-                  variant="bordered"
-                  placeholder="Tipo de cita"
-                  selectionMode="single"
-                  onSelectionChange={setSlotTypeId}
-                  size="sm"
-                >
-                  {slotTypes.map((slotType: any) => (
-                    <SelectItem key={slotType.id} value={slotType.id}>
-                      {slotType.name}
-                    </SelectItem>
-                  ))}
-                </Select>
-              </div>
-              <div className="flex items-center justify-center w-full gap-1">
-                <Input
-                  label="Fecha de inicio"
-                  type="datetime-local"
-                  value={startDate}
-                  onValueChange={setStartDate}
-                  isRequired
-                  variant="bordered"
-                  size="sm"
-                  placeholder="a"
-                />
-                <Input
-                  label="Fecha de fin"
-                  type="datetime-local"
-                  value={endDate}
-                  onValueChange={setEndDate}
-                  isRequired
-                  variant="bordered"
-                  size="sm"
-                  placeholder="a"
-                />
-              </div>
-              <Input
-                label="Título de la cita"
-                type="text"
-                value={title}
-                onValueChange={setTitle}
-                isRequired
-                variant="bordered"
-                size="sm"
-              />
-              <Textarea
-                label="Descripción de la cita"
-                type="text"
-                value={description}
-                onValueChange={setDescription}
-                isRequired
-                variant="bordered"
-                size="sm"
-                maxRows={2}
-              />
-              <div className="flex items-center justify-center w-full gap-2">
-                <Button
-                  className="w-full"
-                  startContent={<IconX size={16} />}
-                  color="danger"
-                  size="sm"
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  className="w-full font-semibold text-white bg-manugly"
-                  startContent={<IconDeviceFloppy size={16} />}
-                  size="sm"
-                  onPress={saveUser}
-                >
-                  Guardar
-                </Button>
-              </div>
-            </div>
-          </div>
-        </PopoverContent>
-      </Popover>
+        <div className="flex items-center justify-center w-full h-full bg-white border rounded-lg group-hover:text-white">
+          <IconPlus size={14}></IconPlus>
+        </div>
+      </CalendarPopover>
     </td>
   );
 }

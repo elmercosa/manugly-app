@@ -22,11 +22,13 @@ export default function Calendar() {
   const [slotTypeId, setSlotTypeId] = useState([] as any);
   const [employeeId, setEmployeeId] = useState([] as any);
 
+  const [slotsList, setSlotsList] = useState([] as any[]);
+
   const BusinessContext = useBusiness();
 
   const enableSlotsQuery = useEnableQuery(BusinessContext.state.business.id);
   const GetSlots = useQuery({
-    queryKey: "get-slots",
+    queryKey: "get-slotsasdasd",
     queryFn: () =>
       entityService("slots").getAll(BusinessContext.state.business.id),
     retry: false,
@@ -159,24 +161,46 @@ export default function Calendar() {
     const dateEnd = new Date(
       new Date(date.date).setHours(parseInt(endHours[0]), endHours[1], 0),
     );
-    let slot = slots?.filter((slot: any) => {
-      return (
-        new Date(slot.startDate) >= dateStart &&
-        new Date(slot.endDate) <= dateEnd
-      );
+    let slot = slotsList?.filter((slot: any) => {
+      let start = slot.start.replace("Z", "");
+      let end = slot.end.replace("Z", "");
+      return new Date(start) >= dateStart && new Date(end) <= dateEnd;
     });
 
-    return slots;
+    return slot;
   };
+
+  useEffect(() => {
+    if (slots) {
+      setSlotsList(slots);
+    }
+  }, [slots]);
+
+  useEffect(() => {
+    let slotId = [...slotTypeId][0];
+    let employeId = [...employeeId][0];
+    let slotsAux = slots;
+    if (slotId !== undefined) {
+      slotsAux = slotsAux.filter((slot: any) => {
+        return slotId.includes(slot.slotTypeId);
+      });
+    }
+    if (employeId !== undefined) {
+      slotsAux = slotsAux.filter((slot: any) => {
+        return employeId.includes(slot.employeeId);
+      });
+    }
+    setSlotsList(slotsAux);
+  }, [slotTypeId, employeeId, slots]);
 
   return (
     <div className="relative flex flex-col w-full gap-4">
       <div className="flex items-center justify-between h-12">
-        <div className="text-2xl font-semibold w-1/3">
+        <div className="w-1/3 text-2xl font-semibold">
           <span className="capitalize">{currentMonth}</span> de{" "}
           <span>{date.getFullYear()}</span>
         </div>
-        <div className="flex items-center gap-2 w-2/3 justify-end">
+        <div className="flex items-center justify-end w-2/3 gap-2">
           <Select
             placeholder="Empleado"
             selectionMode="single"
@@ -233,7 +257,7 @@ export default function Calendar() {
         <div className="flex flex-col items-end w-full p-6 bg-white rounded-xl">
           <table className="w-full">
             <thead className="block pb-2">
-              <tr className="sticky grid items-center grid-flow-col  grid-cols-calendar-big auto-cols-max min-h-unit-3">
+              <tr className="sticky grid items-center grid-flow-col grid-cols-calendar-big auto-cols-max min-h-unit-3">
                 <th></th>
                 {week.map((day: any, index: number) => (
                   <th
@@ -254,7 +278,7 @@ export default function Calendar() {
                   key={"row-" + index}
                   className="grid items-center grid-flow-col grid-cols-calendar-big auto-cols-max min-h-unit-8"
                 >
-                  <td className="text-xs h-full flex items-start justify-center text-default-500">
+                  <td className="flex items-start justify-center h-full text-xs text-default-500">
                     {row.startDate}
                   </td>
                   {week.map((day: any, index: number) => (

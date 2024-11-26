@@ -58,7 +58,9 @@ export default function DeleteEntity({
     <>
       <Tooltip content={`Borrar ${entityName}`} color="danger">
         <Button
-          startContent={<IconTrashFilled size={16} />}
+          startContent={
+            <IconTrashFilled size={16} className="dark:text-default-700" />
+          }
           onPress={() => setIsOpen(true)}
           size="sm"
           className="w-7 h-7 min-h-[28px] min-w-[28px]"

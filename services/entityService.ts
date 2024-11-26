@@ -3,6 +3,7 @@ import { getPrivate, postPrivate, remove as removeEntity } from "./request";
 export default function entityService(entity: string) {
   const getAll = async (id: string) => {
     const response = await getPrivate(`/${entity}/findAll/${id}`);
+    console.log("response :>> ", response);
     return response;
   };
   const get = async (id: string) => {

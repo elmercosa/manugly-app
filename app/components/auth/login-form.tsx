@@ -26,42 +26,20 @@ export default function LoginForm() {
       signIn(provider, {
         email,
         password,
-        callbackUrl: `${window.location.origin}/admin/business/selector`,
+        callbackUrl: `${window.location.origin}/business`,
       });
     }
   };
   return (
     <div className="flex flex-col w-[40%] gap-6">
       <div className="flex flex-col gap-1">
-        <h2 className="text-3xl font-bold text-primary">Accede a Manugly</h2>
-        <p className="text-sm text-slate-500">
+        <h2 className="text-3xl font-bold text-primary dark:text-default-700">
+          Accede a Manugly
+        </h2>
+        <p className="text-sm text-slate-500 dark:text-default-500">
           Introduce tu email y tu contraseña para iniciar sesión
         </p>
       </div>
-      {/* <div className="flex justify-center w-full gap-4">
-        <Button
-          className="w-full font-bold transition-all shadow-md bg-emerald-50 text-slate-600 hover:bg-emerald-100"
-          onClick={() => login("google")}
-          isLoading={isLoading}
-          startContent={<IconBrandGoogle size={18} stroke={4} />}
-        >
-          Google
-        </Button>
-        <Button
-          className="w-full font-bold transition-all shadow-md bg-emerald-50 text-slate-600 hover:bg-emerald-100"
-          onClick={() => login("auth0")}
-          isLoading={isLoading}
-          startContent={<IconShieldFilled size={18} stroke={4} />}
-        >
-          Auth0
-        </Button>
-      </div> */}
-      {/* <div className="relative w-full my-4">
-        <Divider />
-        <p className="absolute px-4 text-xs -translate-x-1/2 -translate-y-1/2 bg-white top-1/2 left-1/2">
-          O inicia sesión con
-        </p>
-      </div> */}
       <div className="flex flex-col gap-4">
         <Input
           label="Email"

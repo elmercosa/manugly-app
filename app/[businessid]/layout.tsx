@@ -16,11 +16,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const mini = true;
   return (
-    <main className="flex h-screen max-h-screen p-4 bg-manugly-grey-light dark:bg-neutral-950">
-      <SideNav />
+    <main className="flex h-screen max-h-screen p-4 bg-manugly-grey-light">
+      <SideNav></SideNav>
       <div
-        className={`flex flex-col max-h-screen col-start-3 col-end-13 pl-10 pr-6 overflow-y-auto w-10/12`}
+        className={`flex flex-col max-h-screen col-start-3 col-end-13 pl-10 pr-6 overflow-y-auto ${
+          mini ? "w-11/12" : "w-10/12"
+        }`}
       >
         <ToastContainer
           position="bottom-right"

@@ -36,6 +36,7 @@ import useDataQuery from "../../../hooks/useDataQuery";
 import useEnableQuery from "../../../hooks/useEnableQuery";
 import DeleteEntity from "./delete";
 import EditEntity from "./edit";
+import { useAppSelector } from "@/redux/hooks";
 
 export default function EntityTable({
   columns,
@@ -88,9 +89,9 @@ export default function EntityTable({
 
   const [selectedColumns, setSelectedColumns] = useState(columns);
 
-  const BusinessContext = useBusiness();
+  const business = useAppSelector((state) => state.business.business);
 
-  const enableQuery = useEnableQuery(BusinessContext.state.business.id);
+  const enableQuery = useEnableQuery(business.id);
   const GetEntities = useQuery({
     queryKey: queryKey,
     queryFn: () => queryFn(queryParams),
@@ -98,7 +99,7 @@ export default function EntityTable({
     refetchOnWindowFocus: false,
     enabled: enableQuery,
   });
-  const entities = useDataQuery(BusinessContext.state.business.id, GetEntities);
+  const entities = useDataQuery(business.id, GetEntities);
 
   useEffect(() => {
     if (entities) {
@@ -165,10 +166,10 @@ export default function EntityTable({
           showControls
           showShadow={false}
           classNames={{
-            wrapper: "shadow-none text-white font-semibold",
-            item: "bg-white",
-            next: "bg-white",
-            prev: "bg-white",
+            wrapper: "shadow-none text-white font-semibold ",
+            item: "bg-white dark:bg-content1",
+            next: "bg-white dark:bg-content1",
+            prev: "bg-white dark:bg-content1",
           }}
           color="primary"
           page={page}
@@ -271,7 +272,7 @@ export default function EntityTable({
                 isClearable
                 classNames={{
                   inputWrapper:
-                    "border-none bg-white shadow-none rounded-xl w-80 p-3 h-fit",
+                    "border-none bg-white shadow-none rounded-xl w-80 p-3 h-fit dark:bg-content1",
                 }}
                 startContent={<IconSearch size={16} />}
                 placeholder={`Buscar ${entityName}`}
@@ -284,7 +285,7 @@ export default function EntityTable({
               {showFilters && (
                 <Button
                   variant="flat"
-                  className="p-5 bg-white"
+                  className="p-5 bg-white dark:bg-content1"
                   startContent={<IconFilter size={30} />}
                   isLoading={filters?.length == 0}
                   onClick={() => {
@@ -299,7 +300,7 @@ export default function EntityTable({
           <div className="flex items-center justify-end w-1/2 gap-3">
             <Dropdown
               classNames={{
-                trigger: "bg-white",
+                trigger: "bg-white dark:bg-content1",
               }}
             >
               <DropdownTrigger className="hidden sm:flex">

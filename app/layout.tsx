@@ -1,13 +1,18 @@
 import "@/styles/globals.css";
 
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { DM_Sans, DM_Mono } from "next/font/google";
 
 import { Providers } from "./providers";
 
 const dm = DM_Sans({
   subsets: ["latin"],
   display: "swap",
+});
+
+const mono = DM_Mono({
+  weight: ["300", "400", "500"],
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -22,8 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="light scroll-smooth">
-      <body className={dm.className}>
+    <html lang="en" className="dark scroll-smooth">
+      <body className={mono.className}>
         <Providers>{children}</Providers>
       </body>
     </html>

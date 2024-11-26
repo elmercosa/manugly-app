@@ -1,9 +1,5 @@
-import Cookies from "js-cookie";
-import { cookies } from "next/headers";
 import NextAuth, { NextAuthOptions } from "next-auth";
-import Auth0Provider from "next-auth/providers/auth0";
 import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
 
 import { post } from "@/services/request";
 
@@ -17,7 +13,6 @@ export const authOptions: NextAuthOptions = {
       credentials: {},
       async authorize(credentials, req) {
         const userData = await post("/auth/loginCustomer", credentials);
-        console.log("userData :>> ", userData);
 
         const secret = process.env.NEXTAUTH_SECRET || "";
         let user = null;
@@ -25,9 +20,6 @@ export const authOptions: NextAuthOptions = {
         try {
           user = jwt.verify(userData.accessToken, secret);
           user.accessToken = userData.accessToken;
-          user.business = null;
-          const cookieStore = cookies();
-          cookieStore.set("accessToken", userData.accessToken);
         } catch (e) {
           return null;
         }
@@ -35,21 +27,13 @@ export const authOptions: NextAuthOptions = {
         return user ?? null;
       },
     }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    }),
-    Auth0Provider({
-      clientId: process.env.AUTH0_CLIENT_ID as string,
-      clientSecret: process.env.AUTH0_CLIENT_SECRET as string,
-      issuer: process.env.AUTH0_ISSUER as string,
-    }),
   ],
   callbacks: {
     async jwt({ token, user }) {
       return { ...token, ...user };
     },
     async session({ session, token, user }) {
+      session.accessToken = token.accessToken as any;
       session.user = token as any;
       return session;
     },

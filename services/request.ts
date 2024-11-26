@@ -1,13 +1,13 @@
-import axios from "axios";
+import axiosInstance from "@/lib/axiosInstance";
 import Cookies from "js-cookie";
 
-const API_URL = "https://manugly-api-xog1-dev.fl0.io";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function post(method: string, data: any) {
   let response;
 
   try {
-    response = await axios.post(API_URL + method, data);
+    response = await axiosInstance.post(API_URL + method, data);
   } catch (e) {
     console.log("e :>> ", e);
     return false;
@@ -21,14 +21,7 @@ export async function post(method: string, data: any) {
 }
 
 export async function getPrivate(method: string) {
-  let config = {
-    headers: {
-      "Content-type": "application/json",
-      Authorization: `Bearer ${Cookies.get("accessToken")}`,
-    },
-  };
-
-  const { data } = await axios.get(API_URL + method, config);
+  const { data } = await axiosInstance.get(API_URL + method);
   return data;
 }
 
@@ -40,7 +33,7 @@ export async function postPrivate(method: string, values: any) {
     },
   };
 
-  const { data } = await axios.post(API_URL + method, values, config);
+  const { data } = await axiosInstance.post(API_URL + method, values, config);
   return data;
 }
 
@@ -52,7 +45,7 @@ export async function remove(method: string, values: any) {
     Authorization: `Bearer ${Cookies.get("accessToken")}`,
   };
 
-  const { data } = await axios.delete(API_URL + method, {
+  const { data } = await axiosInstance.delete(API_URL + method, {
     data: values,
     headers,
   });
@@ -68,7 +61,7 @@ export async function edit(method: string, data: any) {
   };
 
   try {
-    response = await axios.patch(API_URL + method, { data, headers });
+    response = await axiosInstance.patch(API_URL + method, { data, headers });
   } catch (e) {
     console.log("e :>> ", e);
     return false;
@@ -92,7 +85,7 @@ export async function get(method: string) {
   };
 
   try {
-    response = await axios.get(API_URL + method, config);
+    response = await axiosInstance.get(API_URL + method, config);
   } catch (e) {
     console.log("e :>> ", e);
     return false;

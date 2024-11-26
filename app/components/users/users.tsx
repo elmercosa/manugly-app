@@ -14,18 +14,21 @@ import { userService } from "@/services/userService";
 
 import EntityTable from "../table/entityTable";
 import AddUserForm from "./add";
+import { useAppSelector } from "@/redux/hooks";
 
 export default function Users() {
   const [enableQuery, setEnableQuery] = useState(false);
   const [filters, setFilters] = useState([] as any);
   const [paramValues, setParamValues] = useState([]);
   const [needsUpdate, setNeedsUpdate] = useState(false);
-  const BusinessContext = useBusiness();
   const columns = userService.columns;
   const queryKey = "users";
   const queryFn = entityService("users").getAll;
-  const queryParams = BusinessContext.state.business.id;
+
   const actions: any[] = [];
+
+  const business = useAppSelector((state) => state.business.business);
+  const queryParams = business?.id;
 
   const parameters = Parameters.getInstance().getParameters();
   const ParamsContext = useParameters();
@@ -97,7 +100,7 @@ export default function Users() {
 
   const GetParameters = useQuery({
     queryKey: "get-parameters",
-    queryFn: () => paramService.getAllParams(BusinessContext.state.business.id),
+    queryFn: () => paramService.getAllParams(business.id),
     retry: false,
     refetchOnWindowFocus: false,
     enabled: enableQuery,
@@ -171,10 +174,11 @@ export default function Users() {
   }, [GetParameters.data, GetParameters.isLoading]);
 
   useEffect(() => {
-    if (BusinessContext.state.business.id) {
+    console.log("business :>> ", business);
+    if (business?.id) {
       setEnableQuery(true);
     }
-  }, [BusinessContext.state.business.id]);
+  }, [business]);
 
   return (
     <>

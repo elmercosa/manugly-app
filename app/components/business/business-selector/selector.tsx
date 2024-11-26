@@ -15,10 +15,13 @@ import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 
 import { useBusiness } from "@/app/contexts/business/context";
+import { updateBusiness } from "@/redux/features/businessSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { businessService } from "@/services/businessService";
 
 export default function BusinessSelector({ user }: { user: any }) {
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const [businesses, setBusinesses] = useState([]);
   const [business, setBusiness] = useState();
@@ -35,8 +38,6 @@ export default function BusinessSelector({ user }: { user: any }) {
   const [colour, setColour] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const businessContext = useBusiness();
 
   //fetch businesses
   const getBusiness = useQuery({
@@ -69,9 +70,9 @@ export default function BusinessSelector({ user }: { user: any }) {
   };
 
   const handleContinue = () => {
-    businessContext.dispatch({ type: "set", data: business });
+    dispatch(updateBusiness(business));
     setIsLoading(true);
-    router.replace(`/admin`);
+    router.replace(`/${business.id}`);
   };
 
   useEffect(() => {
@@ -91,10 +92,10 @@ export default function BusinessSelector({ user }: { user: any }) {
   useEffect(() => {
     if (getBusiness.data) {
       setBusinesses(getBusiness.data);
-      businessContext.dispatch({
-        type: "setBusinesses",
-        data: getBusiness.data,
-      });
+      // businessContext.dispatch({
+      //   type: "setBusinesses",
+      //   data: getBusiness.data,
+      // });
       if (!getBusiness.data.length) {
         setShowForm(true);
       }

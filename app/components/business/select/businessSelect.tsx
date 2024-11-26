@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 
 import { useBusiness } from "@/app/contexts/business/context";
 
-export default function BusinessSelect({ mini }: { mini?: boolean }) {
+export default function BusinessSelect() {
   const businessContext = useBusiness();
   const [business, setBusiness] = useState({} as any);
   const [businesses, setBusinesses] = useState([]);
@@ -43,9 +43,9 @@ export default function BusinessSelect({ mini }: { mini?: boolean }) {
         <DropdownTrigger>
           <Button
             className="w-full text-xs font-semibold text-white bg-manugly"
-            endContent={mini ? <></> : <IconSwitchVertical size={14} />}
+            endContent={<IconSwitchVertical size={14} />}
           >
-            {mini ? business.name?.charAt(0) : business.name}
+            {business.name}
           </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="Static Actions" onAction={handleChange}>
